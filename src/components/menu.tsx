@@ -37,6 +37,9 @@ export function Menu({ fileRef }: MenuParams): React.JSX.Element {
       case 'paste':
         file.paste();
         break;
+      case 'delete':
+        file.delete();
+        break;
     }
 
     setActiveMenuIndex(null);

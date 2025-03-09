@@ -12,6 +12,7 @@ export type FileOperations = {
   copy: () => void;
   cut: () => void;
   paste: () => void;
+  delete: () => void;
 };
 
 type SelectionInfo = {
@@ -125,11 +126,24 @@ export function File({ ref }: { ref: RefObject<FileOperations | null> }): React.
       textArea.selectionStart = textArea.selectionEnd = selectionEnd + text.length;
     };
 
+    const deleteSelection = (): void => {
+      const selection = getSelectionInfo();
+      if (!selection.selectedText) {
+        return;
+      }
+
+      const { textArea, selectionStart, selectionEnd } = selection;
+      textArea.value =
+        textArea.value.substring(0, selectionStart) + textArea.value.substring(selectionEnd);
+      textArea.selectionStart = textArea.selectionEnd = selectionStart;
+    };
+
     return {
       focus,
       copy,
       cut,
       paste,
+      delete: deleteSelection,
     };
   }, []);
 
