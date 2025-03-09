@@ -6,7 +6,7 @@
 
 .file {
   position: relative;
-  top: calc(-0.0625rem - 1rem);
+  top: calc(-0.8125rem);
   height: 100%;
 }
 
@@ -46,7 +46,7 @@
   margin-bottom: 0;
   padding: 0.25rem;
   position: relative;
-  top: calc(-0.0625rem - 1.25rem);
+  top: calc(-0.0625rem - 1.5rem);
 
   .cursor {
     display: flex;
