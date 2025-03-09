@@ -48,16 +48,10 @@
       border: 0.0625rem solid #000;
 
       > li {
-        &.grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          grid-template-rows: repeat(1, 1fr);
-          gap: 1rem;
-        }
-
         cursor: pointer;
-        padding: 0 0.5rem;
+        padding: 0.5rem;
         color: #000;
+        white-space: pre;
 
         &:hover {
           background: #000;
