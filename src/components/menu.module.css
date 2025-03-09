@@ -13,12 +13,18 @@
 
     > li {
       position: relative;
-      padding: 0.5rem 1rem;
+    }
 
-      &.active, &:hover {
-        background: #000;
-        color: #A5A6A5;
-      }
+    > li.active, > li:hover {
+      background: #000;
+      color: #A5A6A5;
+    }
+  }
+
+  > ul:has(li.active) {
+    > li:not(.active):hover {
+      background: #222;
+      color: #A5A6A5;
     }
   }
 
@@ -26,7 +32,7 @@
     background: none;
     color: inherit;
     border: none;
-    padding: 0;
+    padding: 0.5rem 1rem;
     font: inherit;
     cursor: pointer;
     outline: inherit;
@@ -49,7 +55,6 @@
 
       > li {
         cursor: pointer;
-        padding: 0.5rem;
         color: #000;
         white-space: pre;
 
