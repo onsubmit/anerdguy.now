@@ -35,7 +35,10 @@
     padding: 0.5rem 1rem;
     font: inherit;
     cursor: pointer;
-    outline: inherit;
+
+    &:focus:not(:focus-visible) {
+      outline: none;
+    }
   }
 
   .subMenu {
@@ -43,7 +46,6 @@
     top: 2.32rem;
     left: 0rem;
     background: #a5a6a5;
-    padding: 0.25rem;
     z-index: 1;
     box-shadow: 0.5rem 0.5rem #000;
 
@@ -57,6 +59,11 @@
         cursor: pointer;
         color: #000;
         white-space: pre;
+
+        > button {
+          width: 100%;
+          text-align: left;
+        }
 
         &:hover {
           background: #000;
