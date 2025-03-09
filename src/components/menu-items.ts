@@ -1,4 +1,4 @@
-export type MenuAction = 'open-sub-menu' | 'none' | 'copy';
+export type MenuAction = 'open-sub-menu' | 'none' | 'copy' | 'cut';
 
 export type MenuItem = {
   title: string;
@@ -47,7 +47,7 @@ export const menuItems: Array<MenuItem> = [
       {
         title: 'Cut',
         keyCombo: 'Ctrl+X',
-        action: 'none',
+        action: 'cut',
       },
       {
         title: 'Copy',

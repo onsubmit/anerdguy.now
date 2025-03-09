@@ -10,11 +10,25 @@ type CursorPosition = {
 export type FileOperations = {
   focus: () => void;
   copy: () => void;
+  cut: () => void;
+};
+
+type SelectionInfo = {
+  selection: {
+    textArea: HTMLTextAreaElement;
+    selectedText: string;
+    line: string;
+    lineNumber: number;
+    selectionStart: number;
+    selectionEnd: number;
+  };
+  text: string;
+  copiedFrom: 'selection' | 'line' | 'empty';
 };
 
 export function File({ ref }: { ref: RefObject<FileOperations | null> }): React.JSX.Element {
   const [cursorPosition, setCursorPosition] = useState<CursorPosition>({ line: 1, column: 1 });
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const getLineAndColumnNumbers: React.KeyboardEventHandler<HTMLTextAreaElement> = (event) => {
     const { value, selectionStart } = event.currentTarget;
@@ -25,37 +39,78 @@ export function File({ ref }: { ref: RefObject<FileOperations | null> }): React.
     });
   };
 
-  const getSelectedText = ():
-    | { selectedText: string; line: string; selectionStart: number; selectionEnd: number }
-    | undefined => {
-    const textarea = textareaRef.current;
-    if (!textarea) {
-      return;
-    }
-
-    const { selectionStart, selectionEnd, value } = textarea;
-    const selectedText = value.substring(selectionStart, selectionEnd);
-    const lines = value.substring(0, selectionStart).split('\n');
-    const line = lines[lines.length - 1];
-    return { selectedText, line, selectionStart, selectionEnd };
-  };
-
   useImperativeHandle(ref, () => {
-    const focus = (): void => textareaRef.current?.focus();
+    const getTextArea = (): HTMLTextAreaElement => {
+      const textArea = textAreaRef.current;
+      if (!textArea) {
+        throw new Error();
+      }
 
-    const copy = async (): Promise<void> => {
-      const selection = getSelectedText();
-      const text = selection?.selectedText || selection?.line || '\n';
+      return textArea;
+    };
+
+    const getSelectionInfo = (): SelectionInfo['selection'] => {
+      const textArea = getTextArea();
+      const { selectionStart, selectionEnd, value } = textArea;
+
+      const selectedText = value.substring(selectionStart, selectionEnd);
+      const lines = value.substring(0, selectionStart).split('\n');
+      const lineNumber = lines.length - 1;
+      const line = lines[lineNumber];
+
+      return { textArea, selectedText, line, lineNumber, selectionStart, selectionEnd };
+    };
+
+    const focus = (): void => textAreaRef.current?.focus();
+
+    const copy = async (): Promise<SelectionInfo> => {
+      const selection = getSelectionInfo();
+      let text = selection?.selectedText;
+      let copiedFrom: SelectionInfo['copiedFrom'] = 'selection';
+      if (!text) {
+        text = selection?.line;
+        copiedFrom = 'line';
+
+        if (!text) {
+          text = '\n';
+          copiedFrom = 'empty';
+        }
+      }
+
       try {
         await navigator.clipboard.writeText(text);
       } catch {
         console.warn(`Could not copy text to clipboard: ${text}`);
+      }
+
+      return { selection, text, copiedFrom };
+    };
+
+    const cut = async (): Promise<void> => {
+      const { selection, copiedFrom } = await copy();
+      const { textArea } = selection;
+      switch (copiedFrom) {
+        case 'selection': {
+          const { selectionStart, selectionEnd } = selection;
+          textArea.value =
+            textArea.value.substring(0, selectionStart) + textArea.value.substring(selectionEnd);
+          textArea.selectionStart = textArea.selectionStart = selectionStart;
+          break;
+        }
+        case 'line': {
+          textArea.value = textArea.value
+            .split('\n')
+            .filter((_l, i) => i !== selection.lineNumber)
+            .join('\n');
+          break;
+        }
       }
     };
 
     return {
       focus,
       copy,
+      cut,
     };
   }, []);
 
@@ -66,7 +121,7 @@ export function File({ ref }: { ref: RefObject<FileOperations | null> }): React.
           <span className={styles.fileName}>UNTITLED1</span>
         </div>
         <textarea
-          ref={textareaRef}
+          ref={textAreaRef}
           className={styles.fileContents}
           onKeyUp={getLineAndColumnNumbers}
         ></textarea>

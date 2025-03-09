@@ -24,14 +24,20 @@ export function Menu({ fileRef }: MenuParams): React.JSX.Element {
   });
 
   function handleMenuClick(action: MenuAction): void {
+    const file = fileRef?.current;
+    if (!file) return;
+
     switch (action) {
-      case 'copy': {
-        fileRef?.current?.copy();
-      }
+      case 'copy':
+        file.copy();
+        break;
+      case 'cut':
+        file.cut();
+        break;
     }
 
-    fileRef?.current?.focus();
     setActiveMenuIndex(null);
+    fileRef?.current?.focus();
   }
 
   function getSubItems(subItems: Array<MenuItem>): Array<React.JSX.Element> {
