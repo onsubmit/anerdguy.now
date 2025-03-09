@@ -11,6 +11,7 @@ export type FileOperations = {
   focus: () => void;
   copy: () => void;
   cut: () => void;
+  paste: () => void;
 };
 
 type SelectionInfo = {
@@ -94,7 +95,7 @@ export function File({ ref }: { ref: RefObject<FileOperations | null> }): React.
           const { selectionStart, selectionEnd } = selection;
           textArea.value =
             textArea.value.substring(0, selectionStart) + textArea.value.substring(selectionEnd);
-          textArea.selectionStart = textArea.selectionStart = selectionStart;
+          textArea.selectionStart = textArea.selectionEnd = selectionStart;
           break;
         }
         case 'line': {
@@ -107,10 +108,28 @@ export function File({ ref }: { ref: RefObject<FileOperations | null> }): React.
       }
     };
 
+    const paste = async (): Promise<void> => {
+      let text = '';
+      try {
+        text = await navigator.clipboard.readText();
+      } catch {
+        console.warn('Could not read text from clipboard');
+        return;
+      }
+
+      const textArea = getTextArea();
+      const { selectionStart, selectionEnd } = textArea;
+
+      textArea.value =
+        textArea.value.substring(0, selectionStart) + text + textArea.value.substring(selectionEnd);
+      textArea.selectionStart = textArea.selectionEnd = selectionEnd + text.length;
+    };
+
     return {
       focus,
       copy,
       cut,
+      paste,
     };
   }, []);
 

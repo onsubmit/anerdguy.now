@@ -34,6 +34,9 @@ export function Menu({ fileRef }: MenuParams): React.JSX.Element {
       case 'cut':
         file.cut();
         break;
+      case 'paste':
+        file.paste();
+        break;
     }
 
     setActiveMenuIndex(null);
