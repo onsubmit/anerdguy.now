@@ -1,0 +1,56 @@
+.fileContainer {
+  border: 0.0625rem solid #a5a6a5;
+  margin: 0.75rem;
+  height: 100%;
+}
+
+.file {
+  position: relative;
+  top: calc(-0.0625rem - 1rem);
+  height: 100%;
+}
+
+.fileHeader {
+  display: flex;
+  justify-content: center;
+}
+
+.fileName {
+  background: #a5a6a5;
+  color: #000;
+  padding: 0.25rem 1rem;
+}
+
+.fileContents {
+  background: #0000a5;
+  color: #a5a6a5;
+  font-size: 1.5rem;
+  border: 0;
+  padding: 1rem;
+  margin: 0 0.75rem;
+  resize: none;
+  width: calc(100% - 3.5rem);
+  height: calc(100% - 3.5rem);
+
+  &:focus {
+    outline: none !important;
+  }
+}
+
+.status {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  justify-content: space-between;
+  background: #a5a6a5;
+  margin-bottom: 0;
+  padding: 0.25rem;
+  position: relative;
+  top: calc(-0.0625rem - 1.25rem);
+
+  .cursor {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+  }
+}

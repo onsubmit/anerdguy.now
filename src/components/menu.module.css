@@ -1,0 +1,12 @@
+.menu {
+  background: #a5a6a5;
+  margin-bottom: 0;
+  padding: 0.25rem;
+
+  ul {
+    list-style-type: none;
+    display: flex;
+    gap: 1.5rem;
+    margin-left: 0.5rem;
+  }
+}
