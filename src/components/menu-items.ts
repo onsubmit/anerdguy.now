@@ -80,8 +80,24 @@ export const menuItems: Array<MenuItem> = [
   },
   {
     title: 'Options',
+    subItems: [
+      {
+        title: 'Settings...',
+      },
+      {
+        title: 'Colors...',
+      },
+    ],
   },
   {
     title: 'Help',
+    subItems: [
+      {
+        title: 'Commands...',
+      },
+      {
+        title: 'About...',
+      },
+    ],
   },
 ];
