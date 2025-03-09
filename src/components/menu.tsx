@@ -5,6 +5,7 @@ import styles from './menu.module.css';
 type MenuItem = {
   title: string;
   subItems?: Array<MenuItem>;
+  keyCombo?: string;
 };
 
 const menuItems: Array<MenuItem> = [
@@ -30,6 +31,24 @@ const menuItems: Array<MenuItem> = [
   },
   {
     title: 'Edit',
+    subItems: [
+      {
+        title: 'Cut',
+        keyCombo: 'Ctrl+X',
+      },
+      {
+        title: 'Copy',
+        keyCombo: 'Ctrl+C',
+      },
+      {
+        title: 'Paste',
+        keyCombo: 'Ctrl+V',
+      },
+      {
+        title: 'Clear',
+        keyCombo: 'Del',
+      },
+    ],
   },
   {
     title: 'Search',
@@ -62,9 +81,12 @@ export function Menu(): React.JSX.Element {
             {activeMenuIndex === index && subItems ? (
               <div className={styles.subMenu}>
                 <ul>
-                  {subItems.map(({ title }) => (
-                    <li>
-                      <button type="button">{title}</button>
+                  {subItems.map(({ title, keyCombo }) => (
+                    <li className={keyCombo ? styles.grid : undefined}>
+                      <span>
+                        <button type="button">{title}</button>
+                      </span>
+                      {keyCombo ? <span>{keyCombo}</span> : undefined}
                     </li>
                   ))}
                 </ul>

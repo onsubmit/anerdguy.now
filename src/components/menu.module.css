@@ -12,6 +12,7 @@
     flex-direction: row;
 
     > li {
+      position: relative;
       padding: 0.5rem 1rem;
 
       &.active, &:hover {
@@ -34,7 +35,7 @@
   .subMenu {
     position: absolute;
     top: 2.32rem;
-    left: 0.5rem;
+    left: 0rem;
     background: #a5a6a5;
     padding: 0.25rem;
     z-index: 1;
@@ -47,7 +48,14 @@
       border: 0.0625rem solid #000;
 
       > li {
-        display: inline-block;
+        &.grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          grid-template-rows: repeat(1, 1fr);
+          gap: 1rem;
+        }
+
+        cursor: pointer;
         padding: 0 0.5rem;
         color: #000;
 
