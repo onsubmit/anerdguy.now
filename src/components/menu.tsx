@@ -7,10 +7,10 @@ import { isSettingAction } from './setting-action';
 
 type MenuParams = {
   editorRef: RefObject<EditorOperations | null>;
-  colorDialogRef: RefObject<HTMLDialogElement | null>;
+  setCurrentDialog: React.Dispatch<React.SetStateAction<'color' | null>>;
 };
 
-export function Menu({ editorRef, colorDialogRef }: MenuParams): React.JSX.Element {
+export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeMenuIndex, setActiveMenuIndex] = useState<number | null>(null);
 
@@ -37,7 +37,7 @@ export function Menu({ editorRef, colorDialogRef }: MenuParams): React.JSX.Eleme
     if (isSettingAction(action)) {
       switch (action) {
         case 'open-colors-dialog': {
-          return colorDialogRef.current?.showModal();
+          setCurrentDialog('color');
         }
       }
     }

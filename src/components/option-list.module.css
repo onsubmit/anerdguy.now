@@ -1,0 +1,32 @@
+.optionList {
+  display: flex;
+  flex-direction: column;
+  list-style-type: none;
+  max-height: 12.88rem;
+  margin-top: 1rem;
+  overflow-y: scroll;
+  border: 0.0625rem solid #000;
+
+  li {
+    cursor: pointer;
+
+    &.active,
+    &:hover {
+      background: #000;
+      color: #a5a6a5;
+    }
+
+    button {
+      background: none;
+      color: inherit;
+      border: none;
+      padding: 0.25rem 1rem;
+      font: inherit;
+      cursor: pointer;
+
+      &:focus:not(:focus-visible) {
+        outline: none;
+      }
+    }
+  }
+}

@@ -8,6 +8,11 @@
   background: #A5A6A5;
   box-shadow: 0.5rem 0.5rem #000;
 
+  &::backdrop {
+    background: #000;
+    opacity: 0.5;
+  }
+
   .title {
     background: #FFFBFF;
     color: #000000;
@@ -21,27 +26,6 @@
     background: #A5A6A5;
     margin: 0 1rem;
     justify-content: space-around;
-
-    ul {
-      display: flex;
-      flex-direction: column;
-      list-style-type: none;
-      max-height: 12.5rem;
-      margin-top: 1rem;
-      overflow-y: scroll;
-      border: 0.0625rem solid #000;
-
-
-      li {
-        padding: 0.25rem 1rem;
-        cursor: pointer;
-      }
-
-      li.active, li:hover {
-        background: #000;
-        color: #A5A6A5;
-      }
-    }
   }
 
   .sample {
@@ -69,6 +53,10 @@
       }
 
       &:hover {
+        background: #DDDBDD;
+      }
+
+      &:focus {
         &::before {
           position: absolute;
           content: "▶";
