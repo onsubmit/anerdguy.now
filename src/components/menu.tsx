@@ -3,12 +3,14 @@ import { RefObject, useEffect, useRef, useState } from 'react';
 import { EditorOperations, isEditorOperation } from './editor-operation';
 import styles from './menu.module.css';
 import { MenuAction, MenuItem, menuItems } from './menu-items';
+import { isSettingAction } from './setting-action';
 
 type MenuParams = {
   editorRef: RefObject<EditorOperations | null>;
+  colorDialogRef: RefObject<HTMLDialogElement | null>;
 };
 
-export function Menu({ editorRef }: MenuParams): React.JSX.Element {
+export function Menu({ editorRef, colorDialogRef }: MenuParams): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeMenuIndex, setActiveMenuIndex] = useState<number | null>(null);
 
@@ -24,12 +26,21 @@ export function Menu({ editorRef }: MenuParams): React.JSX.Element {
   });
 
   function handleMenuClick(action: MenuAction): void {
-    const file = editorRef?.current;
-    if (!file || !isEditorOperation(action)) return;
-
-    file[action]();
     setActiveMenuIndex(null);
-    editorRef?.current?.focus();
+
+    if (isEditorOperation(action)) {
+      editorRef?.current?.[action]();
+      editorRef?.current?.focus();
+      return;
+    }
+
+    if (isSettingAction(action)) {
+      switch (action) {
+        case 'open-colors-dialog': {
+          return colorDialogRef.current?.showModal();
+        }
+      }
+    }
   }
 
   function getSubItems(subItems: Array<MenuItem>): Array<React.JSX.Element> {

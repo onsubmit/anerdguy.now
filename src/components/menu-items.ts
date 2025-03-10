@@ -1,6 +1,7 @@
 import { EditorOperationName } from './editor-operation';
+import { SettingAction } from './setting-action';
 
-export type MenuAction = 'open-sub-menu' | 'none' | EditorOperationName;
+export type MenuAction = 'open-sub-menu' | 'none' | EditorOperationName | SettingAction;
 
 export type MenuItem = {
   title: string;
@@ -118,7 +119,7 @@ export const menuItems: Array<MenuItem> = [
       },
       {
         title: 'Colors...',
-        action: 'none',
+        action: 'open-colors-dialog',
       },
     ],
   },
