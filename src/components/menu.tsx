@@ -1,14 +1,14 @@
 import { RefObject, useEffect, useRef, useState } from 'react';
 
-import { FileOperations } from './file';
+import { EditorOperations, isEditorOperation } from './editor-operation';
 import styles from './menu.module.css';
 import { MenuAction, MenuItem, menuItems } from './menu-items';
 
 type MenuParams = {
-  fileRef?: RefObject<FileOperations | null>;
+  editorRef: RefObject<EditorOperations | null>;
 };
 
-export function Menu({ fileRef }: MenuParams): React.JSX.Element {
+export function Menu({ editorRef }: MenuParams): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeMenuIndex, setActiveMenuIndex] = useState<number | null>(null);
 
@@ -24,26 +24,12 @@ export function Menu({ fileRef }: MenuParams): React.JSX.Element {
   });
 
   function handleMenuClick(action: MenuAction): void {
-    const file = fileRef?.current;
-    if (!file) return;
+    const file = editorRef?.current;
+    if (!file || !isEditorOperation(action)) return;
 
-    switch (action) {
-      case 'copy':
-        file.copy();
-        break;
-      case 'cut':
-        file.cut();
-        break;
-      case 'paste':
-        file.paste();
-        break;
-      case 'delete':
-        file.delete();
-        break;
-    }
-
+    file[action]();
     setActiveMenuIndex(null);
-    fileRef?.current?.focus();
+    editorRef?.current?.focus();
   }
 
   function getSubItems(subItems: Array<MenuItem>): Array<React.JSX.Element> {

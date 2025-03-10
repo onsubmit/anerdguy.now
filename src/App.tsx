@@ -1,16 +1,17 @@
 import { useRef } from 'react';
 
 import styles from './app.module.css';
-import { File, FileOperations } from './components/file';
+import { EditorOperations } from './components/editor-operation';
+import { File } from './components/file';
 import { Menu } from './components/menu';
 
 export function App(): React.JSX.Element {
-  const fileRef = useRef<FileOperations>(null);
+  const editorRef = useRef<EditorOperations>(null);
 
   return (
     <div className={styles.container}>
-      <Menu fileRef={fileRef}></Menu>
-      <File ref={fileRef}></File>
+      <Menu editorRef={editorRef}></Menu>
+      <File editorRef={editorRef}></File>
     </div>
   );
 }

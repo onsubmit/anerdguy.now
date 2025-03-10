@@ -1,4 +1,6 @@
-export type MenuAction = 'open-sub-menu' | 'none' | 'copy' | 'cut' | 'paste' | 'delete';
+import { EditorOperationName } from './editor-operation';
+
+export type MenuAction = 'open-sub-menu' | 'none' | EditorOperationName;
 
 export type MenuItem = {
   title: string;
