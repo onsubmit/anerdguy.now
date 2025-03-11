@@ -109,6 +109,25 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
     );
   };
 
+  const setDefaults = (): void => {
+    const defaults: ChosenColors = {};
+    for (const item of knownThemeableItems) {
+      const { foreground, background } = (defaults[item] = themeableItems[item].defaults);
+
+      setCssVariable('foreground', item, foreground);
+      setCssVariable('background', item, background);
+
+      if (selectedItem === item) {
+        setSelectedForeground(foreground);
+        foregroundColorRef.current?.refocus(foreground);
+        setSelectedBackground(background);
+        backgroundColorRef.current?.refocus(background);
+      }
+    }
+
+    setPendingColors(defaults);
+  };
+
   return (
     <dialog ref={dialogRef} className={styles.dialog}>
       <div className={styles.title}>Colors</div>
@@ -142,7 +161,9 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
         </div>
       </div>
       <div className={styles.buttons}>
-        <button type="button">Default</button>
+        <button type="button" onClick={setDefaults}>
+          Default
+        </button>
         <button
           type="button"
           className={styles.active}
