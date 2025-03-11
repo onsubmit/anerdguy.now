@@ -1,6 +1,6 @@
 .editor {
-  background: #0000a5;
-  color: #a5a6a5;
+  background: var(--normal-text-background);
+  color: var(--normal-text-foreground);
   font-size: 1.5rem;
   border: 0;
   padding: 1rem;
@@ -11,5 +11,10 @@
 
   &:focus {
     outline: none !important;
+  }
+
+  &::selection {
+    color: var(--selected-text-foreground);
+    background-color: var(--selected-text-background);
   }
 }

@@ -2,17 +2,19 @@ import { useEffect, useRef } from 'react';
 
 import styles from './option-list.module.css';
 
-export type OptionListParams = {
-  options: Array<string>;
-  selectedOption: string;
-  setSelectedOption: React.Dispatch<React.SetStateAction<string>>;
+export type OptionListParams<T extends string> = {
+  options: ReadonlyArray<T>;
+  selectedOption: T;
+  setSelectedOption: React.Dispatch<React.SetStateAction<T>>;
+  onSelectionChange?: (color: T) => void;
 };
 
-export function OptionsList({
+export function OptionsList<T extends string>({
   options,
   selectedOption,
   setSelectedOption,
-}: OptionListParams): React.JSX.Element {
+  onSelectionChange,
+}: OptionListParams<T>): React.JSX.Element {
   const ulRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
@@ -25,7 +27,10 @@ export function OptionsList({
         <li
           key={option}
           className={option === selectedOption ? styles.active : undefined}
-          onClick={() => setSelectedOption(option)}
+          onClick={() => {
+            setSelectedOption(option);
+            onSelectionChange?.(option);
+          }}
         >
           <button type="button">{option}</button>
         </li>

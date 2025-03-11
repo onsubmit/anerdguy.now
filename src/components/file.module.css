@@ -1,5 +1,5 @@
 .fileContainer {
-  border: 0.0625rem solid #a5a6a5;
+  border: 0.0625rem solid var(--window-border-foreground);
   margin: 0.75rem;
   height: 100%;
 }
@@ -16,8 +16,8 @@
 }
 
 .fileName {
-  background: #a5a6a5;
-  color: #000;
+  color: var(--window-border-background);
+  background: var(--window-border-foreground);
   padding: 0.25rem 1rem;
 }
 
@@ -26,7 +26,8 @@
   flex-direction: row;
   gap: 1rem;
   justify-content: space-between;
-  background: #a5a6a5;
+  color: var(--status-line-foreground);
+  background: var(--status-line-background);
   margin-bottom: 0;
   padding: 0.25rem;
   position: relative;

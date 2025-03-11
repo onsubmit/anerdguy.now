@@ -5,7 +5,9 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  background: #A5A6A5;
+  color: var(--dialogs-foreground);
+  background: var(--dialogs-background);
+  border: 0;
   box-shadow: 0.5rem 0.5rem #000;
 
   &::backdrop {
@@ -14,8 +16,8 @@
   }
 
   .title {
-    background: #FFFBFF;
-    color: #000000;
+    color: var(--dialog-titlebar-foreground);
+    background: var(--dialog-titlebar-background);
     text-align: center;
   }
 
@@ -23,13 +25,8 @@
     display: flex;
     flex-direction: row;
     gap: 2rem;
-    background: #A5A6A5;
     margin: 0 1rem;
     justify-content: space-around;
-  }
-
-  .sample {
-    text-align: center;
   }
 
   .buttons {
@@ -40,9 +37,9 @@
 
     button {
       position: relative;
-      background: #FFFBFF;
+      color: var(--dialog-buttons-foreground);
+      background: var(--dialog-buttons-background);
       box-shadow: 0.5rem 0.5rem #000;
-      color: inherit;
       border: none;
       padding: 0.5rem 1rem;
       font: inherit;
@@ -53,10 +50,6 @@
       }
 
       &:hover {
-        background: #DDDBDD;
-      }
-
-      &:focus {
         &::before {
           position: absolute;
           content: "▶";
@@ -70,8 +63,6 @@
           right: 0.1rem;
         }
       }
-
-
     }
   }
 }

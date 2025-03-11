@@ -1,6 +1,6 @@
 .container {
   display: flex;
   flex-direction: column;
-  background: #000;
+  background: var(--window-border-background);
   height: 100vh;
 }

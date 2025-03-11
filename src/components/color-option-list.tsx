@@ -1,36 +1,23 @@
+import { KnownColor, knownColors } from './colors';
 import { OptionsList } from './option-list';
 
 type ColorOptionListParams = {
-  selectedColor: string;
-  setSelectedColor: React.Dispatch<React.SetStateAction<string>>;
+  selectedColor: KnownColor;
+  setSelectedColor: React.Dispatch<React.SetStateAction<KnownColor>>;
+  onSelectedColorChange?: (color: KnownColor) => void;
 };
 
 export function ColorOptionList({
   selectedColor,
   setSelectedColor,
+  onSelectedColorChange,
 }: ColorOptionListParams): React.JSX.Element {
   return (
     <OptionsList
       selectedOption={selectedColor}
       setSelectedOption={setSelectedColor}
-      options={[
-        'Black',
-        'Blue',
-        'Green',
-        'Cyan',
-        'Red',
-        'Magenta',
-        'Brown',
-        'White',
-        'Gray',
-        'BrBlue',
-        'BrGreen',
-        'BrCyan',
-        'BrRed',
-        'Pink',
-        'Yellow',
-        'BrWhite',
-      ]}
+      onSelectionChange={onSelectedColorChange}
+      options={knownColors}
     ></OptionsList>
   );
 }

@@ -12,8 +12,8 @@
 
     &.active,
     &:hover {
-      background: #000;
-      color: #a5a6a5;
+      color: var(--dialogs-background);
+      background: var(--dialogs-foreground);
     }
 
     button {

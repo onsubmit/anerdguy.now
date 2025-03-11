@@ -1,5 +1,5 @@
 .menu {
-  background: #a5a6a5;
+  background: var(--menubar-background);
   margin-bottom: 0;
 
   ul {
@@ -16,15 +16,15 @@
     }
 
     > li.active, > li:hover {
-      background: #000;
-      color: #A5A6A5;
+      background: var(--menubar-foreground);
+      color: var(--menubar-background);
     }
   }
 
   > ul:has(li.active) {
     > li:not(.active):hover {
-      background: #222;
-      color: #A5A6A5;
+      background: color-mix(in srgb, var(--menubar-foreground) 75%, var(--menubar-background));
+      color: var(--menubar-background);
     }
   }
 
@@ -45,7 +45,7 @@
     position: absolute;
     top: 2.32rem;
     left: 0rem;
-    background: #a5a6a5;
+    background: var(--menubar-background);
     z-index: 1;
     box-shadow: 0.5rem 0.5rem #000;
 
@@ -57,7 +57,7 @@
 
       > li {
         cursor: pointer;
-        color: #000;
+        color: var(--menubar-foreground);
         white-space: pre;
 
         > button {
@@ -66,8 +66,8 @@
         }
 
         &:hover {
-          background: #000;
-          color: #A5A6A5;
+          background: var(--menubar-foreground);
+          color: var(--menubar-background);
         }
       }
     }

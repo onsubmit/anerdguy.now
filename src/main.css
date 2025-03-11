@@ -8,7 +8,43 @@
 }
 
 body {
-  background: #000;
   width: 100vw;
   height: 100vh;
+}
+
+:root {
+  --black: #000000;
+  --blue: #0000a5;
+  --green: #00a600;
+  --cyan: #00a6a5;
+  --red: #a50000;
+  --magenta: #a500a5;
+  --brown: #a55100;
+  --white: #a5a6a5;
+  --gray: #525152;
+  --bright-blue: #5251ff;
+  --bright-green: #52fb52;
+  --bright-cyan: #52fbff;
+  --bright-red: #ff5152;
+  --pink: #ff51ff;
+  --yellow: #fffb52;
+  --bright-white: #fffbff;
+
+  --normal-text-foreground: var(--white);
+  --selected-text-foreground: var(--black);
+  --window-border-foreground: var(--white);
+  --menubar-foreground: var(--black);
+  --status-line-foreground: var(--black);
+  --dialogs-foreground: var(--black);
+  --dialog-titlebar-foreground: var(--white);
+  --dialog-buttons-foreground: var(--black);
+
+  --normal-text-background: var(--blue);
+  --selected-text-background: var(--white);
+  --window-border-background: var(--black);
+  --menubar-background: var(--white);
+  --status-line-background: var(--white);
+  --dialogs-background: var(--white);
+  --dialog-titlebar-background: var(--bright-white);
+  --dialog-buttons-background: var(--bright-white);
 }
