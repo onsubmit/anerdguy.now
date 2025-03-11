@@ -10,10 +10,14 @@
   li {
     cursor: pointer;
 
-    &.active,
-    &:hover {
+    &.active {
       color: var(--dialogs-background);
       background: var(--dialogs-foreground);
+    }
+
+    &:not(.active):hover {
+      color: var(--dialogs-background);
+      background: color-mix(in srgb, var(--dialogs-foreground) 75%, var(--dialogs-background));
     }
 
     button {
