@@ -17,9 +17,10 @@ export function App(): React.JSX.Element {
         <Menu editorRef={editorRef} setCurrentDialog={setCurrentDialog}></Menu>
         <File editorRef={editorRef}></File>
       </div>
-      {currentDialog === 'color' ? (
-        <ColorDialog setCurrentDialog={setCurrentDialog}></ColorDialog>
-      ) : undefined}
+      <ColorDialog
+        open={currentDialog === 'color'}
+        setCurrentDialog={setCurrentDialog}
+      ></ColorDialog>
     </>
   );
 }

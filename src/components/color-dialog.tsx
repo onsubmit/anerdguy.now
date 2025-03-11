@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import styles from './color-dialog.module.css';
 import { ColorOptionList } from './color-option-list';
@@ -7,13 +7,17 @@ import { OptionsList } from './option-list';
 import { KnownThemeableItem, knownThemeableItems, themeableItems } from './themeable-items';
 
 type ColorDialogParams = {
+  open: boolean;
   setCurrentDialog: React.Dispatch<React.SetStateAction<'color' | null>>;
 };
 
-export function ColorDialog({ setCurrentDialog }: ColorDialogParams): React.JSX.Element {
+export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): React.JSX.Element {
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [selectedItem, setSelectedItem] = useState<KnownThemeableItem>('Normal Text');
   const [selectedForeground, setSelectedForeground] = useState<KnownColor>('White');
   const [selectedBackground, setSelectedBackground] = useState<KnownColor>('Blue');
+
+  dialogRef.current?.[open ? 'showModal' : 'close']();
 
   const onSelectedForegroundChange = (color: KnownColor): void => {
     document.documentElement.style.setProperty(
@@ -30,7 +34,7 @@ export function ColorDialog({ setCurrentDialog }: ColorDialogParams): React.JSX.
   };
 
   return (
-    <dialog className={styles.dialog} open>
+    <dialog ref={dialogRef} className={styles.dialog}>
       <div className={styles.title}>Colors</div>
       <div className={styles.settings}>
         <div>
