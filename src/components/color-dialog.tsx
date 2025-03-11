@@ -41,40 +41,25 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
   backgroundColorRef.current?.refocus(selectedBackground);
 
   const onSelectedItemChange = (item: KnownThemeableItem): void => {
-    const cssForegroundColor = window
-      .getComputedStyle(document.body)
-      .getPropertyValue(`${themeableItems[item].cssVariableName}-foreground`)
-      .toLocaleLowerCase();
+    const currentColors = getCurrentItemColors(item);
+    const { foreground, background } = currentColors;
 
-    const cssBackgroundColor = window
-      .getComputedStyle(document.body)
-      .getPropertyValue(`${themeableItems[item].cssVariableName}-background`)
-      .toLocaleLowerCase();
+    setSelectedForeground(foreground);
+    foregroundColorRef.current?.refocus(foreground);
 
-    const foregroundColorName = getKnownColor(cssForegroundColor);
-    setSelectedForeground(foregroundColorName);
-    foregroundColorRef.current?.refocus(foregroundColorName);
+    setSelectedBackground(background);
+    backgroundColorRef.current?.refocus(background);
 
-    const backgroundColorName = getKnownColor(cssBackgroundColor);
-    setSelectedBackground(backgroundColorName);
-    backgroundColorRef.current?.refocus(backgroundColorName);
-
-    if (!initialColors[item]?.foreground || !initialColors[item]?.background) {
+    if (!originalColors[item]?.foreground || !originalColors[item]?.background) {
       setOriginalColors((x) => ({
         ...x,
-        [item]: {
-          foreground: foregroundColorName,
-          background: backgroundColorName,
-        },
+        [item]: currentColors,
       }));
     }
 
     setPendingColors((x) => ({
       ...x,
-      [item]: {
-        foreground: foregroundColorName,
-        background: backgroundColorName,
-      },
+      [item]: currentColors,
     }));
   };
 
@@ -109,10 +94,37 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
     );
   };
 
+  const getCurrentItemColors = (
+    item: KnownThemeableItem,
+  ): { foreground: KnownColor; background: KnownColor } => {
+    const cssForegroundColor = window
+      .getComputedStyle(document.body)
+      .getPropertyValue(`${themeableItems[item].cssVariableName}-foreground`)
+      .toLocaleLowerCase();
+
+    const cssBackgroundColor = window
+      .getComputedStyle(document.body)
+      .getPropertyValue(`${themeableItems[item].cssVariableName}-background`)
+      .toLocaleLowerCase();
+
+    return {
+      foreground: getKnownColor(cssForegroundColor),
+      background: getKnownColor(cssBackgroundColor),
+    };
+  };
+
   const setDefaults = (): void => {
     const defaults: ChosenColors = {};
     for (const item of knownThemeableItems) {
       const { foreground, background } = (defaults[item] = themeableItems[item].defaults);
+
+      if (!originalColors[item]?.foreground || !originalColors[item]?.background) {
+        const currentColors = getCurrentItemColors(item);
+        setOriginalColors((x) => ({
+          ...x,
+          [item]: currentColors,
+        }));
+      }
 
       setCssVariable('foreground', item, foreground);
       setCssVariable('background', item, background);
