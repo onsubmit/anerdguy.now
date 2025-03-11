@@ -11,14 +11,30 @@ type ColorDialogParams = {
   setCurrentDialog: React.Dispatch<React.SetStateAction<'color' | null>>;
 };
 
+type ChosenColors = Partial<
+  Record<KnownThemeableItem, Partial<{ foreground: KnownColor; background: KnownColor }>>
+>;
+
+const initialItem: KnownThemeableItem = 'Normal Text';
+const initialForegroundColor: KnownColor = 'White';
+const initialBackgroundColor: KnownColor = 'Blue';
+const initialColors: ChosenColors = {
+  [initialItem]: {
+    foreground: initialForegroundColor,
+    background: initialBackgroundColor,
+  },
+};
+
 export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): React.JSX.Element {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const foregroundColorRef = useRef<OptionListOperations<KnownColor>>(null);
   const backgroundColorRef = useRef<OptionListOperations<KnownColor>>(null);
 
-  const [selectedItem, setSelectedItem] = useState<KnownThemeableItem>('Normal Text');
-  const [selectedForeground, setSelectedForeground] = useState<KnownColor>('White');
-  const [selectedBackground, setSelectedBackground] = useState<KnownColor>('Blue');
+  const [selectedItem, setSelectedItem] = useState<KnownThemeableItem>(initialItem);
+  const [selectedForeground, setSelectedForeground] = useState<KnownColor>(initialForegroundColor);
+  const [selectedBackground, setSelectedBackground] = useState<KnownColor>(initialBackgroundColor);
+  const [originalColors, setOriginalColors] = useState<ChosenColors>(initialColors);
+  const [pendingColors, setPendingColors] = useState<ChosenColors>({});
 
   dialogRef.current?.[open ? 'showModal' : 'close']();
   foregroundColorRef.current?.refocus(selectedForeground);
@@ -42,18 +58,53 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
     const backgroundColorName = getKnownColor(cssBackgroundColor);
     setSelectedBackground(backgroundColorName);
     backgroundColorRef.current?.refocus(backgroundColorName);
+
+    if (!initialColors[item]?.foreground || !initialColors[item]?.background) {
+      setOriginalColors((x) => ({
+        ...x,
+        [item]: {
+          foreground: foregroundColorName,
+          background: backgroundColorName,
+        },
+      }));
+    }
+
+    setPendingColors((x) => ({
+      ...x,
+      [item]: {
+        foreground: foregroundColorName,
+        background: backgroundColorName,
+      },
+    }));
   };
 
   const onSelectedForegroundChange = (color: KnownColor): void => {
-    document.documentElement.style.setProperty(
-      `${themeableItems[selectedItem].cssVariableName}-foreground`,
-      `var(${colors[color].cssVariableName})`,
-    );
+    setCssVariable('foreground', selectedItem, color);
+    setPendingColors((x) => ({
+      ...x,
+      [selectedItem]: {
+        foreground: color,
+      },
+    }));
   };
 
   const onSelectedBackgroundChange = (color: KnownColor): void => {
+    setCssVariable('background', selectedItem, color);
+    setPendingColors((x) => ({
+      ...x,
+      [selectedItem]: {
+        background: color,
+      },
+    }));
+  };
+
+  const setCssVariable = (
+    layer: 'foreground' | 'background',
+    item: KnownThemeableItem,
+    color: KnownColor,
+  ): void => {
     document.documentElement.style.setProperty(
-      `${themeableItems[selectedItem].cssVariableName}-background`,
+      `${themeableItems[item].cssVariableName}-${layer}`,
       `var(${colors[color].cssVariableName})`,
     );
   };
@@ -92,10 +143,43 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
       </div>
       <div className={styles.buttons}>
         <button type="button">Default</button>
-        <button type="button" className={styles.active} onClick={() => setCurrentDialog(null)}>
+        <button
+          type="button"
+          className={styles.active}
+          onClick={() => {
+            setOriginalColors((x) => ({
+              ...x,
+              ...pendingColors,
+            }));
+
+            setCurrentDialog(null);
+          }}
+        >
           OK
         </button>
-        <button type="button" onClick={() => setCurrentDialog(null)}>
+        <button
+          type="button"
+          onClick={() => {
+            for (const [name, { foreground, background }] of Object.entries(originalColors)) {
+              const item = name as KnownThemeableItem;
+              if (foreground) {
+                setCssVariable('foreground', item, foreground);
+                if (name === selectedItem) {
+                  setSelectedForeground(foreground);
+                }
+              }
+
+              if (background) {
+                setCssVariable('background', item, background);
+                if (name === selectedItem) {
+                  setSelectedBackground(background);
+                }
+              }
+            }
+
+            setCurrentDialog(null);
+          }}
+        >
           Cancel
         </button>
         <button type="button">Help</button>

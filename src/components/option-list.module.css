@@ -23,6 +23,7 @@
       padding: 0.25rem 1rem;
       font: inherit;
       cursor: pointer;
+      white-space: nowrap;
 
       &:focus:not(:focus-visible) {
         outline: none;
