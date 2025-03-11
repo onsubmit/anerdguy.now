@@ -69,7 +69,7 @@ export const themeableItems: ThemeableItems = {
   'Dialog Titlebar': {
     cssVariableName: '--dialog-titlebar',
     defaults: {
-      foreground: 'White',
+      foreground: 'Black',
       background: 'BrWhite',
     },
   },

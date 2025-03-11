@@ -1,5 +1,6 @@
 import { RefObject, useEffect, useRef, useState } from 'react';
 
+import { Dialog } from '../dialog';
 import { EditorOperations, isEditorOperation } from './editor-operation';
 import styles from './menu.module.css';
 import { MenuAction, MenuItem, menuItems } from './menu-items';
@@ -7,7 +8,7 @@ import { isSettingAction } from './setting-action';
 
 type MenuParams = {
   editorRef: RefObject<EditorOperations | null>;
-  setCurrentDialog: React.Dispatch<React.SetStateAction<'color' | null>>;
+  setCurrentDialog: React.Dispatch<React.SetStateAction<Dialog | null>>;
 };
 
 export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Element {

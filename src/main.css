@@ -36,7 +36,7 @@ body {
   --menubar-foreground: var(--black);
   --status-line-foreground: var(--black);
   --dialogs-foreground: var(--black);
-  --dialog-titlebar-foreground: var(--white);
+  --dialog-titlebar-foreground: var(--black);
   --dialog-buttons-foreground: var(--black);
 
   --normal-text-background: var(--blue);

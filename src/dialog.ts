@@ -1,1 +1,1 @@
-export type Dialog = 'color';
+export type Dialog = 'color' | 'color-help';
