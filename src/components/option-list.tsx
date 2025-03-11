@@ -7,6 +7,7 @@ export type OptionListParams<T extends string> = {
   selectedOption: T;
   setSelectedOption: React.Dispatch<React.SetStateAction<T>>;
   onSelectionChange?: (color: T) => void;
+  refocus: boolean;
 };
 
 export function OptionsList<T extends string>({
@@ -14,12 +15,13 @@ export function OptionsList<T extends string>({
   selectedOption,
   setSelectedOption,
   onSelectionChange,
+  refocus,
 }: OptionListParams<T>): React.JSX.Element {
   const ulRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     ulRef.current?.querySelector(`.${styles.active}`)?.scrollIntoView();
-  }, []);
+  }, [refocus, selectedOption]);
 
   return (
     <ul ref={ulRef} className={styles.optionList}>

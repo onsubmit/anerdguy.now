@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 
 import styles from './color-dialog.module.css';
 import { ColorOptionList } from './color-option-list';
-import { colors, KnownColor } from './colors';
+import { colors, getKnownColor, KnownColor } from './colors';
 import { OptionsList } from './option-list';
 import { KnownThemeableItem, knownThemeableItems, themeableItems } from './themeable-items';
 
@@ -19,17 +19,35 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
 
   dialogRef.current?.[open ? 'showModal' : 'close']();
 
+  const onSelectedItemChange = (item: KnownThemeableItem): void => {
+    const cssForegroundColor = window
+      .getComputedStyle(document.body)
+      .getPropertyValue(`${themeableItems[item].cssVariableName}-foreground`)
+      .toLocaleLowerCase();
+
+    const cssBackgroundColor = window
+      .getComputedStyle(document.body)
+      .getPropertyValue(`${themeableItems[item].cssVariableName}-background`)
+      .toLocaleLowerCase();
+
+    const foregroundColorName = getKnownColor(cssForegroundColor);
+    setSelectedForeground(foregroundColorName);
+
+    const backgroundColorName = getKnownColor(cssBackgroundColor);
+    setSelectedBackground(backgroundColorName);
+  };
+
   const onSelectedForegroundChange = (color: KnownColor): void => {
     document.documentElement.style.setProperty(
       `${themeableItems[selectedItem].cssVariableName}-foreground`,
-      `var(${colors[color].cssVariableName}`,
+      `var(${colors[color].cssVariableName})`,
     );
   };
 
   const onSelectedBackgroundChange = (color: KnownColor): void => {
     document.documentElement.style.setProperty(
       `${themeableItems[selectedItem].cssVariableName}-background`,
-      `var(${colors[color].cssVariableName}`,
+      `var(${colors[color].cssVariableName})`,
     );
   };
 
@@ -43,6 +61,8 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
             selectedOption={selectedItem}
             setSelectedOption={setSelectedItem}
             options={knownThemeableItems}
+            onSelectionChange={onSelectedItemChange}
+            refocus={open}
           ></OptionsList>
         </div>
         <div>
@@ -51,6 +71,7 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
             selectedColor={selectedForeground}
             setSelectedColor={setSelectedForeground}
             onSelectedColorChange={onSelectedForegroundChange}
+            refocus={open}
           ></ColorOptionList>
         </div>
         <div>
@@ -59,6 +80,7 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
             selectedColor={selectedBackground}
             setSelectedColor={setSelectedBackground}
             onSelectedColorChange={onSelectedBackgroundChange}
+            refocus={open}
           ></ColorOptionList>
         </div>
       </div>
