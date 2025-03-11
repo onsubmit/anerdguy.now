@@ -1,26 +1,28 @@
+import { RefObject } from 'react';
+
 import { KnownColor, knownColors } from './colors';
-import { OptionsList } from './option-list';
+import { OptionListOperations, OptionsList } from './option-list';
 
 type ColorOptionListParams = {
   selectedColor: KnownColor;
   setSelectedColor: React.Dispatch<React.SetStateAction<KnownColor>>;
   onSelectedColorChange?: (color: KnownColor) => void;
-  refocus: boolean;
+  ref?: RefObject<OptionListOperations<KnownColor> | null>;
 };
 
 export function ColorOptionList({
   selectedColor,
   setSelectedColor,
   onSelectedColorChange,
-  refocus,
+  ref,
 }: ColorOptionListParams): React.JSX.Element {
   return (
     <OptionsList
+      ref={ref}
       selectedOption={selectedColor}
       setSelectedOption={setSelectedColor}
       onSelectionChange={onSelectedColorChange}
       options={knownColors}
-      refocus={refocus}
     ></OptionsList>
   );
 }

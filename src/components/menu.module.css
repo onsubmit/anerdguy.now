@@ -1,4 +1,5 @@
 .menu {
+  color: var(--menubar-foreground);
   background: var(--menubar-background);
   margin-bottom: 0;
 
@@ -15,7 +16,8 @@
       position: relative;
     }
 
-    > li.active, > li:hover {
+    > li.active,
+    > li:hover {
       background: var(--menubar-foreground);
       color: var(--menubar-background);
     }

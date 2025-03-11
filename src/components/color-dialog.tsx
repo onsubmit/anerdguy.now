@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import styles from './color-dialog.module.css';
 import { ColorOptionList } from './color-option-list';
 import { colors, getKnownColor, KnownColor } from './colors';
-import { OptionsList } from './option-list';
+import { OptionListOperations, OptionsList } from './option-list';
 import { KnownThemeableItem, knownThemeableItems, themeableItems } from './themeable-items';
 
 type ColorDialogParams = {
@@ -13,11 +13,16 @@ type ColorDialogParams = {
 
 export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): React.JSX.Element {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const foregroundColorRef = useRef<OptionListOperations<KnownColor>>(null);
+  const backgroundColorRef = useRef<OptionListOperations<KnownColor>>(null);
+
   const [selectedItem, setSelectedItem] = useState<KnownThemeableItem>('Normal Text');
   const [selectedForeground, setSelectedForeground] = useState<KnownColor>('White');
   const [selectedBackground, setSelectedBackground] = useState<KnownColor>('Blue');
 
   dialogRef.current?.[open ? 'showModal' : 'close']();
+  foregroundColorRef.current?.refocus(selectedForeground);
+  backgroundColorRef.current?.refocus(selectedBackground);
 
   const onSelectedItemChange = (item: KnownThemeableItem): void => {
     const cssForegroundColor = window
@@ -32,9 +37,11 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
 
     const foregroundColorName = getKnownColor(cssForegroundColor);
     setSelectedForeground(foregroundColorName);
+    foregroundColorRef.current?.refocus(foregroundColorName);
 
     const backgroundColorName = getKnownColor(cssBackgroundColor);
     setSelectedBackground(backgroundColorName);
+    backgroundColorRef.current?.refocus(backgroundColorName);
   };
 
   const onSelectedForegroundChange = (color: KnownColor): void => {
@@ -62,25 +69,24 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
             setSelectedOption={setSelectedItem}
             options={knownThemeableItems}
             onSelectionChange={onSelectedItemChange}
-            refocus={open}
           ></OptionsList>
         </div>
         <div>
           <div>Foreground:</div>
           <ColorOptionList
+            ref={foregroundColorRef}
             selectedColor={selectedForeground}
             setSelectedColor={setSelectedForeground}
             onSelectedColorChange={onSelectedForegroundChange}
-            refocus={open}
           ></ColorOptionList>
         </div>
         <div>
           <div>Background:</div>
           <ColorOptionList
+            ref={backgroundColorRef}
             selectedColor={selectedBackground}
             setSelectedColor={setSelectedBackground}
             onSelectedColorChange={onSelectedBackgroundChange}
-            refocus={open}
           ></ColorOptionList>
         </div>
       </div>
