@@ -75,7 +75,7 @@ export const menuItems: Array<MenuItem> = [
     subItems: [
       {
         title: 'Find...',
-        action: 'none',
+        action: 'find',
       },
       {
         title: 'Repeat Last Find',

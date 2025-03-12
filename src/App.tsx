@@ -7,6 +7,7 @@ import { ColorHelpDialog } from './components/color-help-dialog';
 import { DialogType } from './components/dialog';
 import { EditorOperations } from './components/editor-operation';
 import { File } from './components/file';
+import { FindDialog } from './components/find-dialog';
 import { Menu } from './components/menu';
 
 export function App(): React.JSX.Element {
@@ -31,6 +32,11 @@ export function App(): React.JSX.Element {
         open={currentDialog === 'about'}
         setCurrentDialog={setCurrentDialog}
       ></AboutDialog>
+      <FindDialog
+        replace={false}
+        open={currentDialog === 'find'}
+        setCurrentDialog={setCurrentDialog}
+      ></FindDialog>
     </>
   );
 }

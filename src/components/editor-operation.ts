@@ -1,4 +1,4 @@
-const editorOperationNames = ['focus', 'copy', 'cut', 'paste', 'delete'] as const;
+const editorOperationNames = ['focus', 'copy', 'cut', 'paste', 'delete', 'find'] as const;
 export type EditorOperationName = (typeof editorOperationNames)[number];
 export type EditorOperations = {
   [K in EditorOperationName]: () => void;
