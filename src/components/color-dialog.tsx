@@ -1,15 +1,15 @@
 import { useRef, useState } from 'react';
 
-import { Dialog } from '../dialog';
 import styles from './color-dialog.module.css';
 import { ColorOptionList } from './color-option-list';
 import { colors, getKnownColor, KnownColor } from './colors';
+import { Dialog, DialogType } from './dialog';
 import { OptionListOperations, OptionsList } from './option-list';
 import { KnownThemeableItem, knownThemeableItems, themeableItems } from './themeable-items';
 
 type ColorDialogParams = {
   open: boolean;
-  setCurrentDialog: React.Dispatch<React.SetStateAction<Dialog | null>>;
+  setCurrentDialog: React.Dispatch<React.SetStateAction<DialogType | null>>;
 };
 
 type ChosenColors = Partial<
@@ -142,8 +142,7 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
   };
 
   return (
-    <dialog ref={dialogRef} className={styles.dialog}>
-      <div className={styles.title}>Colors</div>
+    <Dialog open={open} title="Colors">
       <div className={styles.settings}>
         <div>
           <div>Item:</div>
@@ -220,6 +219,6 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
           Help
         </button>
       </div>
-    </dialog>
+    </Dialog>
   );
 }

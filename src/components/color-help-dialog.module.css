@@ -1,79 +1,51 @@
-.dialog[open] {
+.help {
   display: flex;
-}
-
-.dialog {
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%);
   flex-direction: column;
   gap: 1rem;
-  color: var(--dialogs-foreground);
-  background: var(--dialogs-background);
-  border: 0;
-  box-shadow: 0.5rem 0.5rem #000;
+  margin: 0 1rem;
 
-  &::backdrop {
-    background: linear-gradient(rgba(18, 16, 16, 0.4) 50%, rgba(0, 0, 0, 0.5) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.0));
-    background-size: 100% 0.125rem, 0.125rem 100%;
-    pointer-events: none;
+  ol,
+  ul {
+    padding-left: 2rem;
   }
 
-  .title {
-    color: var(--dialog-titlebar-foreground);
-    background: var(--dialog-titlebar-background);
-    text-align: center;
+  ul {
+    list-style-type: '◆ ';
   }
+}
 
-  .help {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin: 0 1rem;
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  margin-bottom: 1rem;
 
-    ol, ul {
-      padding-left: 2rem;
+  button {
+    position: relative;
+    color: var(--dialog-buttons-foreground);
+    background: var(--dialog-buttons-background);
+    box-shadow: 0.5rem 0.5rem #000;
+    border: none;
+    padding: 0.5rem 1rem;
+    font: inherit;
+    cursor: pointer;
+
+    &:focus:not(:focus-visible) {
+      outline: none;
     }
 
-    ul {
-      list-style-type: "◆ ";
-    }
-
-  }
-
-  .buttons {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    margin-bottom: 1rem;
-
-    button {
-      position: relative;
-      color: var(--dialog-buttons-foreground);
-      background: var(--dialog-buttons-background);
-      box-shadow: 0.5rem 0.5rem #000;
-      border: none;
-      padding: 0.5rem 1rem;
-      font: inherit;
-      cursor: pointer;
-
-      &:focus:not(:focus-visible) {
-        outline: none;
+    &:hover {
+      &::before {
+        position: absolute;
+        content: '▶';
+        left: 0.1rem;
       }
 
-      &:hover {
-        &::before {
-          position: absolute;
-          content: "▶";
-          left: 0.1rem;
-        }
-
-        &::after {
-          position: absolute;
-          content: "◀";
-          float: right;
-          right: 0.1rem;
-        }
+      &::after {
+        position: absolute;
+        content: '◀';
+        float: right;
+        right: 0.1rem;
       }
     }
   }

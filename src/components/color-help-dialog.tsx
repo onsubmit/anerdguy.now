@@ -1,24 +1,17 @@
-import { useRef } from 'react';
-
-import { Dialog } from '../dialog';
 import styles from './color-help-dialog.module.css';
+import { Dialog, DialogType } from './dialog';
 
 type ColorHelpDialogParams = {
   open: boolean;
-  setCurrentDialog: React.Dispatch<React.SetStateAction<Dialog | null>>;
+  setCurrentDialog: React.Dispatch<React.SetStateAction<DialogType | null>>;
 };
 
 export function ColorHelpDialog({
   open,
   setCurrentDialog,
 }: ColorHelpDialogParams): React.JSX.Element {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  dialogRef.current?.[open ? 'showModal' : 'close']();
-
   return (
-    <dialog ref={dialogRef} className={styles.dialog}>
-      <div className={styles.title}>Colors</div>
+    <Dialog open={open} title="Colors">
       <div className={styles.help}>
         <p>Determines the color of screen elements.</p>
         <ol>
@@ -45,6 +38,6 @@ export function ColorHelpDialog({
           OK
         </button>
       </div>
-    </dialog>
+    </Dialog>
   );
 }

@@ -3,14 +3,14 @@ import { useRef, useState } from 'react';
 import styles from './app.module.css';
 import { ColorDialog } from './components/color-dialog';
 import { ColorHelpDialog } from './components/color-help-dialog';
+import { DialogType } from './components/dialog';
 import { EditorOperations } from './components/editor-operation';
 import { File } from './components/file';
 import { Menu } from './components/menu';
-import { Dialog } from './dialog';
 
 export function App(): React.JSX.Element {
   const editorRef = useRef<EditorOperations>(null);
-  const [currentDialog, setCurrentDialog] = useState<Dialog | null>(null);
+  const [currentDialog, setCurrentDialog] = useState<DialogType | null>(null);
 
   return (
     <>
