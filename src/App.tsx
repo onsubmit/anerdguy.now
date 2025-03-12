@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 
 import styles from './app.module.css';
+import { AboutDialog } from './components/about-dialog';
 import { ColorDialog } from './components/color-dialog';
 import { ColorHelpDialog } from './components/color-help-dialog';
 import { DialogType } from './components/dialog';
@@ -26,6 +27,10 @@ export function App(): React.JSX.Element {
         open={currentDialog === 'color-help'}
         setCurrentDialog={setCurrentDialog}
       ></ColorHelpDialog>
+      <AboutDialog
+        open={currentDialog === 'about'}
+        setCurrentDialog={setCurrentDialog}
+      ></AboutDialog>
     </>
   );
 }

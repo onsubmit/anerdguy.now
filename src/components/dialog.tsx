@@ -2,7 +2,7 @@ import { useRef } from 'react';
 
 import styles from './dialog.module.css';
 
-export type DialogType = 'color' | 'color-help';
+export type DialogType = 'color' | 'color-help' | 'about';
 
 type DialogParams = {
   title: string;

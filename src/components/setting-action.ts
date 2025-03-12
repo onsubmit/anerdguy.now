@@ -1,4 +1,4 @@
-const settingActions = ['open-colors-dialog'] as const;
+const settingActions = ['open-colors-dialog', 'open-about-dialog'] as const;
 export type SettingAction = (typeof settingActions)[number];
 export type SettingActions = {
   [K in SettingAction]: () => void;

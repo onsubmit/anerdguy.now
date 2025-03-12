@@ -133,7 +133,7 @@ export const menuItems: Array<MenuItem> = [
       },
       {
         title: 'About...',
-        action: 'none',
+        action: 'open-about-dialog',
       },
     ],
   },

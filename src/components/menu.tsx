@@ -38,7 +38,10 @@ export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Ele
     if (isSettingAction(action)) {
       switch (action) {
         case 'open-colors-dialog': {
-          setCurrentDialog('color');
+          return setCurrentDialog('color');
+        }
+        case 'open-about-dialog': {
+          setCurrentDialog('about');
         }
       }
     }
