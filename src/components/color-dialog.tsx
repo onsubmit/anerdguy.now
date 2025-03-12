@@ -4,6 +4,7 @@ import styles from './color-dialog.module.css';
 import { ColorOptionList } from './color-option-list';
 import { colors, getKnownColor, KnownColor } from './colors';
 import { Dialog, DialogType } from './dialog';
+import { DialogButtons } from './dialog-buttons';
 import { OptionListOperations, OptionsList } from './option-list';
 import { KnownThemeableItem, knownThemeableItems, themeableItems } from './themeable-items';
 
@@ -172,7 +173,7 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
           ></ColorOptionList>
         </div>
       </div>
-      <div className={styles.buttons}>
+      <DialogButtons>
         <button type="button" onClick={setDefaults}>
           Default
         </button>
@@ -218,7 +219,7 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
         <button type="button" onClick={() => setCurrentDialog('color-help')}>
           Help
         </button>
-      </div>
+      </DialogButtons>
     </Dialog>
   );
 }

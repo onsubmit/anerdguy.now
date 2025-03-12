@@ -1,0 +1,36 @@
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  margin-bottom: 1rem;
+
+  button {
+    position: relative;
+    color: var(--dialog-buttons-foreground);
+    background: var(--dialog-buttons-background);
+    box-shadow: 0.5rem 0.5rem #000;
+    border: none;
+    padding: 0.5rem 1rem;
+    font: inherit;
+    cursor: pointer;
+
+    &:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    &:hover {
+      &::before {
+        position: absolute;
+        content: '▶';
+        left: 0.1rem;
+      }
+
+      &::after {
+        position: absolute;
+        content: '◀';
+        float: right;
+        right: 0.1rem;
+      }
+    }
+  }
+}

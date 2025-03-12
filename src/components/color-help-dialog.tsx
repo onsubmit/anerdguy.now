@@ -1,5 +1,6 @@
 import styles from './color-help-dialog.module.css';
 import { Dialog, DialogType } from './dialog';
+import { DialogButtons } from './dialog-buttons';
 
 type ColorHelpDialogParams = {
   open: boolean;
@@ -27,7 +28,7 @@ export function ColorHelpDialog({
           </li>
         </ul>
       </div>
-      <div className={styles.buttons}>
+      <DialogButtons>
         <button
           type="button"
           className={styles.active}
@@ -37,7 +38,7 @@ export function ColorHelpDialog({
         >
           OK
         </button>
-      </div>
+      </DialogButtons>
     </Dialog>
   );
 }
