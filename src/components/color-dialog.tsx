@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 
+import { getCachedItem, setCachedItem } from '../localStorage';
 import styles from './color-dialog.module.css';
 import { ColorOptionList } from './color-option-list';
 import { colors, getKnownColor, KnownColor } from './colors';
@@ -13,13 +14,38 @@ type ColorDialogParams = {
   setCurrentDialog: React.Dispatch<React.SetStateAction<DialogType | null>>;
 };
 
-type ChosenColors = Partial<
+export type ChosenColors = Partial<
   Record<KnownThemeableItem, Partial<{ foreground: KnownColor; background: KnownColor }>>
 >;
 
+const setCssVariable = (
+  layer: 'foreground' | 'background',
+  item: KnownThemeableItem,
+  color: KnownColor,
+): void => {
+  document.documentElement.style.setProperty(
+    `${themeableItems[item].cssVariableName}-${layer}`,
+    `var(${colors[color].cssVariableName})`,
+  );
+};
+
+const cachedTheme = getCachedItem('theme');
+if (cachedTheme) {
+  for (const [key, { foreground, background }] of Object.entries(cachedTheme)) {
+    const item = key as KnownThemeableItem;
+    if (foreground) {
+      setCssVariable('foreground', item, foreground);
+    }
+
+    if (background) {
+      setCssVariable('background', item, background);
+    }
+  }
+}
+
 const initialItem: KnownThemeableItem = 'Normal Text';
-const initialForegroundColor: KnownColor = 'White';
-const initialBackgroundColor: KnownColor = 'Blue';
+const initialForegroundColor: KnownColor = cachedTheme?.[initialItem]?.foreground ?? 'White';
+const initialBackgroundColor: KnownColor = cachedTheme?.[initialItem]?.background ?? 'Blue';
 const initialColors: ChosenColors = {
   [initialItem]: {
     foreground: initialForegroundColor,
@@ -39,8 +65,11 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
   const [pendingColors, setPendingColors] = useState<ChosenColors>({});
 
   dialogRef.current?.[open ? 'showModal' : 'close']();
-  foregroundColorRef.current?.refocus(selectedForeground);
-  backgroundColorRef.current?.refocus(selectedBackground);
+  // TODO: Remove this hack and figure out how to scroll the selected colors after the dialog loads
+  setTimeout(() => {
+    foregroundColorRef.current?.refocus(selectedForeground);
+    backgroundColorRef.current?.refocus(selectedBackground);
+  });
 
   const onSelectedItemChange = (item: KnownThemeableItem): void => {
     const currentColors = getCurrentItemColors(item);
@@ -70,6 +99,7 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
     setPendingColors((x) => ({
       ...x,
       [selectedItem]: {
+        ...x[selectedItem],
         foreground: color,
       },
     }));
@@ -80,20 +110,10 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
     setPendingColors((x) => ({
       ...x,
       [selectedItem]: {
+        ...x[selectedItem],
         background: color,
       },
     }));
-  };
-
-  const setCssVariable = (
-    layer: 'foreground' | 'background',
-    item: KnownThemeableItem,
-    color: KnownColor,
-  ): void => {
-    document.documentElement.style.setProperty(
-      `${themeableItems[item].cssVariableName}-${layer}`,
-      `var(${colors[color].cssVariableName})`,
-    );
   };
 
   const getCurrentItemColors = (
@@ -181,10 +201,15 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
           type="button"
           className={styles.active}
           onClick={() => {
-            setOriginalColors((x) => ({
-              ...x,
-              ...pendingColors,
-            }));
+            setOriginalColors((x) => {
+              const newValue = {
+                ...x,
+                ...pendingColors,
+              };
+
+              setCachedItem('theme', newValue);
+              return newValue;
+            });
 
             setCurrentDialog(null);
           }}
