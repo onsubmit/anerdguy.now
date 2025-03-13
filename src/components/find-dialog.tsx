@@ -26,7 +26,7 @@ export function FindDialog({
   });
 
   return (
-    <Dialog open={open} title="Find">
+    <Dialog open={open} title="Find" setCurrentDialog={setCurrentDialog}>
       <div className={styles.find}>
         <label>
           <span>Find What:{replace ? '   ' : ''}</span>

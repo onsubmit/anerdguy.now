@@ -12,7 +12,7 @@ export function ColorHelpDialog({
   setCurrentDialog,
 }: ColorHelpDialogParams): React.JSX.Element {
   return (
-    <Dialog open={open} title="Colors">
+    <Dialog open={open} title="Colors" setCurrentDialog={setCurrentDialog}>
       <div className={styles.help}>
         <p>Determines the color of screen elements.</p>
         <ol>

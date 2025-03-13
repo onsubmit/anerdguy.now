@@ -163,7 +163,7 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
   };
 
   return (
-    <Dialog open={open} title="Colors">
+    <Dialog open={open} title="Colors" setCurrentDialog={setCurrentDialog}>
       <div className={styles.settings}>
         <div>
           <div>Item:</div>

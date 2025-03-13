@@ -9,7 +9,7 @@ type AboutDialogParams = {
 
 export function AboutDialog({ open, setCurrentDialog }: AboutDialogParams): React.JSX.Element {
   return (
-    <Dialog open={open} title="About">
+    <Dialog open={open} title="About" setCurrentDialog={setCurrentDialog}>
       <div className={styles.about}>
         <p>Andy Young</p>
         <p>Version 1.0.0</p>
