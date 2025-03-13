@@ -84,7 +84,7 @@ export const menuItems: Array<MenuItem> = [
       },
       {
         title: 'Replace',
-        action: 'none',
+        action: 'replace',
       },
     ],
   },

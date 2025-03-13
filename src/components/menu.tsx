@@ -30,8 +30,8 @@ export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Ele
     setActiveMenuIndex(null);
 
     if (isEditorOperation(action)) {
-      if (action === 'find') {
-        setCurrentDialog('find');
+      if (action === 'find' || action === 'replace') {
+        setCurrentDialog(action);
       } else {
         editorRef?.current?.[action]();
         editorRef?.current?.focus();

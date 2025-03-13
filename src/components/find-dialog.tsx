@@ -20,9 +20,9 @@ export function FindDialog({
 }: FindDialogParams): React.JSX.Element {
   const [params, setParams] = useState<FindParams>({
     value: '',
-    replaceWith: replace ? '' : null,
     matchWord: false,
     matchCase: false,
+    replaceWith: replace ? '' : null,
   });
 
   return (
@@ -33,6 +33,7 @@ export function FindDialog({
           <input
             type="text"
             autoFocus={true}
+            value={params.value}
             onChange={(e) => {
               const value = e.currentTarget.value;
               setParams((x) => ({
@@ -48,6 +49,7 @@ export function FindDialog({
               <span>Replace With:</span>
               <input
                 type="text"
+                value={params.replaceWith ?? ''}
                 onChange={(e) => {
                   const replaceWith = e.currentTarget.value;
                   setParams((x) => ({
@@ -62,6 +64,7 @@ export function FindDialog({
         <label>
           <input
             type="checkbox"
+            checked={params.matchWord}
             onChange={(e) => {
               const matchWord = e.currentTarget.checked;
               setParams((x) => ({
@@ -75,6 +78,7 @@ export function FindDialog({
         <label>
           <input
             type="checkbox"
+            checked={params.matchCase}
             onChange={(e) => {
               const matchCase = e.currentTarget.checked;
               setParams((x) => ({
@@ -87,16 +91,49 @@ export function FindDialog({
         </label>
       </div>
       <DialogButtons>
-        <button
-          type="button"
-          className={styles.active}
-          onClick={() => {
-            setCurrentDialog(null);
-            editorRef.current?.find(params);
-          }}
-        >
-          Find
-        </button>
+        {replace ? (
+          <>
+            <button
+              type="button"
+              className={styles.active}
+              onClick={() => {
+                setCurrentDialog(null);
+                editorRef.current?.find({
+                  ...params,
+                  replaceAll: false,
+                });
+              }}
+            >
+              Replace
+            </button>
+            <button
+              type="button"
+              className={styles.active}
+              onClick={() => {
+                setCurrentDialog(null);
+                editorRef.current?.replace({
+                  ...params,
+                  replaceAll: true,
+                });
+              }}
+            >
+              Replace All
+            </button>
+          </>
+        ) : (
+          <button
+            type="button"
+            className={styles.active}
+            onClick={() => {
+              setCurrentDialog(null);
+              editorRef.current?.find({
+                ...params,
+              });
+            }}
+          >
+            Find
+          </button>
+        )}
         <button
           type="button"
           className={styles.active}

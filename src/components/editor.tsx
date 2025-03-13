@@ -135,7 +135,13 @@ export function Editor({ onCursorPositionChange, ref }: EditorParams): React.JSX
       textArea.selectionStart = textArea.selectionEnd = selectionStart;
     };
 
-    const find = ({ value, replaceWith, matchWord, matchCase }: FindParams): void => {
+    const find = ({
+      value,
+      matchWord,
+      matchCase,
+      replaceWith,
+      replaceAll,
+    }: FindParams & { replaceAll?: boolean }): void => {
       const textArea = getTextArea();
       let currentText = textArea.value;
       if (!matchCase) {
@@ -196,6 +202,7 @@ export function Editor({ onCursorPositionChange, ref }: EditorParams): React.JSX
       paste,
       delete: deleteSelection,
       find,
+      replace: find,
     };
   }, []);
 
