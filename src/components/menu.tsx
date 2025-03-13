@@ -28,9 +28,8 @@ export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Ele
       if (activeMenuIndex === null && focusedMenuIndex !== null) {
         if (containerRef.current?.contains(document.activeElement)) {
           let newIndex = -1;
-          topMenuItemsRef.current[newIndex]?.focus();
           if (e.key === 'ArrowLeft') {
-            newIndex = (focusedMenuIndex - 1) % menuItems.length;
+            newIndex = focusedMenuIndex === 0 ? menuItems.length - 1 : focusedMenuIndex - 1;
           } else if (e.key === 'ArrowRight') {
             newIndex = (focusedMenuIndex + 1) % menuItems.length;
           } else {
@@ -49,7 +48,7 @@ export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Ele
 
       let newIndex = -1;
       if (e.key === 'ArrowLeft') {
-        newIndex = (activeMenuIndex - 1) % menuItems.length;
+        newIndex = activeMenuIndex === 0 ? menuItems.length - 1 : activeMenuIndex - 1;
       } else if (e.key === 'ArrowRight') {
         newIndex = (activeMenuIndex + 1) % menuItems.length;
       } else {
