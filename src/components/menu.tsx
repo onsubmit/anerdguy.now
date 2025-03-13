@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useRef, useState } from 'react';
+import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 
 import { DialogType } from './dialog';
 import { EditorOperations, isEditorOperation } from './editor-operation';
@@ -13,17 +13,63 @@ type MenuParams = {
 
 export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
+  const topMenuItemsRef = useRef<Array<HTMLButtonElement | null>>([]);
   const [activeMenuIndex, setActiveMenuIndex] = useState<number | null>(null);
+  const [focusedMenuIndex, setFocusedMenuIndex] = useState<number | null>(null);
 
-  const handleClickOutside = (e: MouseEvent): void => {
+  const handleClickOutside = useCallback((e: MouseEvent): void => {
     if (e.target instanceof Node && !containerRef.current?.contains(e.target)) {
       setActiveMenuIndex(null);
     }
-  };
+  }, []);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent): void => {
+      if (activeMenuIndex === null && focusedMenuIndex !== null) {
+        if (containerRef.current?.contains(document.activeElement)) {
+          let newIndex = -1;
+          topMenuItemsRef.current[newIndex]?.focus();
+          if (e.key === 'ArrowLeft') {
+            newIndex = (focusedMenuIndex - 1) % menuItems.length;
+          } else if (e.key === 'ArrowRight') {
+            newIndex = (focusedMenuIndex + 1) % menuItems.length;
+          } else {
+            return;
+          }
+
+          topMenuItemsRef.current[newIndex]?.focus();
+          setFocusedMenuIndex(newIndex);
+        }
+        return;
+      }
+
+      if (activeMenuIndex === null) {
+        return;
+      }
+
+      let newIndex = -1;
+      if (e.key === 'ArrowLeft') {
+        newIndex = (activeMenuIndex - 1) % menuItems.length;
+      } else if (e.key === 'ArrowRight') {
+        newIndex = (activeMenuIndex + 1) % menuItems.length;
+      } else {
+        return;
+      }
+
+      setActiveMenuIndex(newIndex);
+      topMenuItemsRef.current[newIndex]?.focus();
+      setFocusedMenuIndex(newIndex);
+    },
+    [activeMenuIndex, focusedMenuIndex],
+  );
 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
-    return (): void => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return (): void => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   });
 
   function handleMenuClick(action: MenuAction): void {
@@ -57,8 +103,21 @@ export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Ele
     return subItems.map(({ title, keyCombo, action }) => {
       const value = keyCombo ? `${title.padEnd(itemMaxLength + 3, ' ')} ${keyCombo}` : title;
       return (
-        <li key={title} onMouseUp={(_) => handleMenuClick(action)}>
-          <button type="button">{value}</button>
+        <li
+          key={title}
+          onClick={() => handleMenuClick(action)}
+          onMouseUp={() => handleMenuClick(action)}
+        >
+          <button
+            type="button"
+            onBlur={(e) => {
+              if (!containerRef.current?.contains(e.relatedTarget)) {
+                setActiveMenuIndex(null);
+              }
+            }}
+          >
+            {value}
+          </button>
         </li>
       );
     });
@@ -74,6 +133,18 @@ export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Ele
             <li key={title} className={activeMenuIndex === index ? styles.active : undefined}>
               <button
                 type="button"
+                ref={(el) => {
+                  topMenuItemsRef.current[index] = el;
+                }}
+                onClick={() => setActiveMenuIndex(index)}
+                onFocus={() => {
+                  setFocusedMenuIndex(index);
+                  console.log(index);
+
+                  if (activeMenuIndex !== null) {
+                    setActiveMenuIndex(index);
+                  }
+                }}
                 onMouseDown={() => setActiveMenuIndex(activeMenuIndex !== index ? index : null)}
                 onMouseOver={() => {
                   if (activeMenuIndex === null) {
