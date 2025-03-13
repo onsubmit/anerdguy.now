@@ -1,7 +1,7 @@
 import React, { RefObject, useImperativeHandle, useRef } from 'react';
 
 import styles from './editor.module.css';
-import { EditorOperations } from './editor-operation';
+import { EditorOperations, FindParams } from './editor-operation';
 
 export type CursorPosition = {
   line: number;
@@ -135,12 +135,67 @@ export function Editor({ onCursorPositionChange, ref }: EditorParams): React.JSX
       textArea.selectionStart = textArea.selectionEnd = selectionStart;
     };
 
+    const find = ({ value, replaceWith, matchWord, matchCase }: FindParams): void => {
+      const textArea = getTextArea();
+      let currentText = textArea.value;
+      if (!matchCase) {
+        value = value.toLocaleLowerCase();
+        currentText = currentText.toLocaleLowerCase();
+      }
+
+      const currentSelectedText = currentText.substring(
+        textArea.selectionStart,
+        textArea.selectionEnd,
+      );
+
+      let index = -1;
+      if (matchWord) {
+        const r = new RegExp(`\\b${value}\\b`, 'g');
+        const matches = [...currentText.matchAll(r)];
+        let startIndex = 0;
+        for (startIndex = 0; startIndex < matches.length; startIndex++) {
+          if (matches[startIndex].index >= textArea.selectionStart) {
+            break;
+          }
+        }
+
+        for (let i = 0; i < matches.length; i++) {
+          const match = matches[(i + startIndex) % matches.length];
+          if (
+            matches.length > 1 &&
+            match.index === textArea.selectionStart &&
+            match.index + value.length === textArea.selectionEnd
+          ) {
+            continue;
+          }
+
+          index = match.index;
+          break;
+        }
+      } else {
+        const startIndex = textArea.selectionStart + (currentSelectedText === value ? 1 : 0);
+        index = currentText.indexOf(value, startIndex);
+
+        if (index < 0) {
+          index = currentText.indexOf(value);
+        }
+      }
+
+      if (index > -1) {
+        setTimeout(() => {
+          textArea.focus();
+          textArea.setSelectionRange(index, index + value.length);
+        });
+      }
+    };
+
     return {
       focus,
       copy,
       cut,
       paste,
       delete: deleteSelection,
+      find,
     };
   }, []);
 

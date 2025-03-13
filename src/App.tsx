@@ -33,6 +33,7 @@ export function App(): React.JSX.Element {
         setCurrentDialog={setCurrentDialog}
       ></AboutDialog>
       <FindDialog
+        editorRef={editorRef}
         replace={false}
         open={currentDialog === 'find'}
         setCurrentDialog={setCurrentDialog}
