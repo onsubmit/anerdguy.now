@@ -2,7 +2,9 @@
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  margin-bottom: 1rem;
+  margin: 1rem;
+  margin-top: 0;
+  gap: 1rem;
 
   button {
     position: relative;
@@ -13,6 +15,7 @@
     padding: 0.5rem 1rem;
     font: inherit;
     cursor: pointer;
+    white-space: nowrap;
 
     &:focus:not(:focus-visible) {
       outline: none;
