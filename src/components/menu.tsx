@@ -57,7 +57,7 @@ export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Ele
     return subItems.map(({ title, keyCombo, action }) => {
       const value = keyCombo ? `${title.padEnd(itemMaxLength + 3, ' ')} ${keyCombo}` : title;
       return (
-        <li key={title} onClick={(_) => handleMenuClick(action)}>
+        <li key={title} onMouseUp={(_) => handleMenuClick(action)}>
           <button type="button">{value}</button>
         </li>
       );
@@ -74,7 +74,14 @@ export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Ele
             <li key={title} className={activeMenuIndex === index ? styles.active : undefined}>
               <button
                 type="button"
-                onClick={() => setActiveMenuIndex(activeMenuIndex !== index ? index : null)}
+                onMouseDown={() => setActiveMenuIndex(activeMenuIndex !== index ? index : null)}
+                onMouseOver={() => {
+                  if (activeMenuIndex === null) {
+                    return;
+                  }
+
+                  setActiveMenuIndex(index);
+                }}
               >
                 {title}
               </button>
