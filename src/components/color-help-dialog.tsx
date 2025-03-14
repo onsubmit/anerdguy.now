@@ -4,15 +4,12 @@ import { DialogButtons } from './dialog-buttons';
 
 type ColorHelpDialogParams = {
   open: boolean;
-  setCurrentDialog: React.Dispatch<React.SetStateAction<DialogType | null>>;
+  closeDialog: (typeToOpen: DialogType | null) => void;
 };
 
-export function ColorHelpDialog({
-  open,
-  setCurrentDialog,
-}: ColorHelpDialogParams): React.JSX.Element {
+export function ColorHelpDialog({ open, closeDialog }: ColorHelpDialogParams): React.JSX.Element {
   return (
-    <Dialog open={open} title="Colors" setCurrentDialog={setCurrentDialog}>
+    <Dialog open={open} title="Colors" closeDialog={closeDialog}>
       <div className={styles.help}>
         <p>Determines the color of screen elements.</p>
         <ol>
@@ -33,7 +30,7 @@ export function ColorHelpDialog({
           type="button"
           className={styles.active}
           onClick={() => {
-            setCurrentDialog('color');
+            closeDialog('color');
           }}
         >
           OK

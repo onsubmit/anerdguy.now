@@ -11,7 +11,8 @@ import { KnownThemeableItem, knownThemeableItems, themeableItems } from './theme
 
 type ColorDialogParams = {
   open: boolean;
-  setCurrentDialog: React.Dispatch<React.SetStateAction<DialogType | null>>;
+  openDialog: (type: DialogType, opener: HTMLElement) => void;
+  closeDialog: () => void;
 };
 
 export type ChosenColors = Partial<
@@ -53,7 +54,11 @@ const initialColors: ChosenColors = {
   },
 };
 
-export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): React.JSX.Element {
+export function ColorDialog({
+  open,
+  openDialog,
+  closeDialog,
+}: ColorDialogParams): React.JSX.Element {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const foregroundColorRef = useRef<OptionListOperations<KnownColor>>(null);
   const backgroundColorRef = useRef<OptionListOperations<KnownColor>>(null);
@@ -163,7 +168,7 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
   };
 
   return (
-    <Dialog open={open} title="Colors" setCurrentDialog={setCurrentDialog}>
+    <Dialog open={open} title="Colors" closeDialog={closeDialog}>
       <div className={styles.settings}>
         <div>
           <div>Item:</div>
@@ -211,7 +216,7 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
               return newValue;
             });
 
-            setCurrentDialog(null);
+            closeDialog();
           }}
         >
           OK
@@ -236,12 +241,12 @@ export function ColorDialog({ open, setCurrentDialog }: ColorDialogParams): Reac
               }
             }
 
-            setCurrentDialog(null);
+            closeDialog();
           }}
         >
           Cancel
         </button>
-        <button type="button" onClick={() => setCurrentDialog('color-help')}>
+        <button type="button" onClick={(e) => openDialog('color-help', e.currentTarget)}>
           Help
         </button>
       </DialogButtons>

@@ -12,6 +12,7 @@ export type FindDialogOperations = {
 type FindDialogParams = {
   open: boolean;
   replace: boolean;
+  closeDialog: () => void;
   setCurrentDialog: React.Dispatch<React.SetStateAction<DialogType | null>>;
   editorRef: RefObject<EditorOperations | null>;
   ref: RefObject<FindDialogOperations | null>;
@@ -20,7 +21,7 @@ type FindDialogParams = {
 export function FindDialog({
   open,
   replace,
-  setCurrentDialog,
+  closeDialog,
   editorRef,
   ref,
 }: FindDialogParams): React.JSX.Element {
@@ -44,7 +45,7 @@ export function FindDialog({
   }, [editorRef, params]);
 
   return (
-    <Dialog open={open} title="Find" setCurrentDialog={setCurrentDialog}>
+    <Dialog open={open} title="Find" closeDialog={closeDialog}>
       <div className={styles.find}>
         <label>
           <span>Find What:{replace ? '   ' : ''}</span>
@@ -115,7 +116,7 @@ export function FindDialog({
               type="button"
               className={styles.active}
               onClick={() => {
-                setCurrentDialog(null);
+                closeDialog();
                 editorRef.current?.find({
                   ...params,
                   replaceAll: false,
@@ -128,7 +129,7 @@ export function FindDialog({
               type="button"
               className={styles.active}
               onClick={() => {
-                setCurrentDialog(null);
+                closeDialog();
                 editorRef.current?.replace({
                   ...params,
                   replaceAll: true,
@@ -143,7 +144,7 @@ export function FindDialog({
             type="button"
             className={styles.active}
             onClick={() => {
-              setCurrentDialog(null);
+              closeDialog();
               editorRef.current?.find({
                 ...params,
                 replaceWith: null,
@@ -158,7 +159,7 @@ export function FindDialog({
           type="button"
           className={styles.active}
           onClick={() => {
-            setCurrentDialog(null);
+            closeDialog();
           }}
         >
           Cancel

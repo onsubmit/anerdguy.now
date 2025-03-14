@@ -11,14 +11,10 @@ import { isSettingAction } from './setting-action';
 type MenuParams = {
   editorRef: RefObject<EditorOperations | null>;
   findDialogRef: RefObject<FindDialogOperations | null>;
-  setCurrentDialog: React.Dispatch<React.SetStateAction<DialogType | null>>;
+  openDialog: (type: DialogType) => void;
 };
 
-export function Menu({
-  editorRef,
-  findDialogRef,
-  setCurrentDialog,
-}: MenuParams): React.JSX.Element {
+export function Menu({ editorRef, findDialogRef, openDialog }: MenuParams): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
   const topMenuItemsRef = useRef<Array<HTMLButtonElement | null>>([]);
   const subMenuItemsRef = useRef<Record<number, Array<HTMLButtonElement | null>>>({});
@@ -111,7 +107,7 @@ export function Menu({
 
     if (isEditorOperation(action)) {
       if (action === 'find' || action === 'replace') {
-        setCurrentDialog(action);
+        openDialog(action);
       } else {
         editorRef?.current?.[action]();
         editorRef?.current?.focus();
@@ -131,10 +127,10 @@ export function Menu({
     if (isSettingAction(action)) {
       switch (action) {
         case 'open-colors-dialog': {
-          return setCurrentDialog('color');
+          return openDialog('color');
         }
         case 'open-about-dialog': {
-          setCurrentDialog('about');
+          openDialog('about');
         }
       }
     }

@@ -8,22 +8,17 @@ type DialogParams = {
   title: string;
   children: React.ReactNode;
   open: boolean;
-  setCurrentDialog: React.Dispatch<React.SetStateAction<DialogType | null>>;
+  closeDialog: (typeToOpen: DialogType | null) => void;
 };
 
-export function Dialog({
-  title,
-  children,
-  open,
-  setCurrentDialog,
-}: DialogParams): React.JSX.Element {
+export function Dialog({ title, children, open, closeDialog }: DialogParams): React.JSX.Element {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   dialogRef.current?.[open ? 'showModal' : 'close']();
 
   const cancelHandler = useCallback((): void => {
-    setCurrentDialog(null);
-  }, [setCurrentDialog]);
+    closeDialog(null);
+  }, [closeDialog]);
 
   useEffect(() => {
     const dialog = dialogRef.current;

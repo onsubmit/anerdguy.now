@@ -1,15 +1,15 @@
 import styles from './about-dialog.module.css';
-import { Dialog, DialogType } from './dialog';
+import { Dialog } from './dialog';
 import { DialogButtons } from './dialog-buttons';
 
 type AboutDialogParams = {
   open: boolean;
-  setCurrentDialog: React.Dispatch<React.SetStateAction<DialogType | null>>;
+  closeDialog: () => void;
 };
 
-export function AboutDialog({ open, setCurrentDialog }: AboutDialogParams): React.JSX.Element {
+export function AboutDialog({ open, closeDialog }: AboutDialogParams): React.JSX.Element {
   return (
-    <Dialog open={open} title="About" setCurrentDialog={setCurrentDialog}>
+    <Dialog open={open} title="About" closeDialog={closeDialog}>
       <div className={styles.about}>
         <p>Andy Young</p>
         <p>Version 1.0.0</p>
@@ -20,7 +20,7 @@ export function AboutDialog({ open, setCurrentDialog }: AboutDialogParams): Reac
           type="button"
           className={styles.active}
           onClick={() => {
-            setCurrentDialog(null);
+            closeDialog();
           }}
         >
           OK
