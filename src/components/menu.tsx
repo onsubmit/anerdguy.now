@@ -14,12 +14,15 @@ type MenuParams = {
 export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
   const topMenuItemsRef = useRef<Array<HTMLButtonElement | null>>([]);
+  const subMenuItemsRef = useRef<Record<number, Array<HTMLButtonElement | null>>>({});
   const [activeMenuIndex, setActiveMenuIndex] = useState<number | null>(null);
   const [focusedMenuIndex, setFocusedMenuIndex] = useState<number | null>(null);
+  const [focusedSubMenuIndex, setFocusedSubMenuIndex] = useState<number | null>(null);
 
   const handleClickOutside = useCallback((e: MouseEvent): void => {
     if (e.target instanceof Node && !containerRef.current?.contains(e.target)) {
       setActiveMenuIndex(null);
+      setFocusedSubMenuIndex(null);
     }
   }, []);
 
@@ -46,20 +49,44 @@ export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Ele
         return;
       }
 
-      let newIndex = -1;
-      if (e.key === 'ArrowLeft') {
-        newIndex = activeMenuIndex === 0 ? menuItems.length - 1 : activeMenuIndex - 1;
-      } else if (e.key === 'ArrowRight') {
-        newIndex = (activeMenuIndex + 1) % menuItems.length;
-      } else {
-        return;
+      if (e.key === 'Escape') {
+        topMenuItemsRef.current[activeMenuIndex]?.focus();
+        setFocusedMenuIndex(activeMenuIndex);
+
+        setActiveMenuIndex(null);
+        setFocusedSubMenuIndex(null);
       }
 
-      setActiveMenuIndex(newIndex);
-      topMenuItemsRef.current[newIndex]?.focus();
-      setFocusedMenuIndex(newIndex);
+      if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        let newIndex = -1;
+        if (e.key === 'ArrowLeft') {
+          newIndex = activeMenuIndex === 0 ? menuItems.length - 1 : activeMenuIndex - 1;
+        } else if (e.key === 'ArrowRight') {
+          newIndex = (activeMenuIndex + 1) % menuItems.length;
+        }
+
+        setActiveMenuIndex(newIndex);
+        topMenuItemsRef.current[newIndex]?.focus();
+        setFocusedMenuIndex(newIndex);
+      } else if (['ArrowDown', 'ArrowUp'].includes(e.key)) {
+        let newIndex = -1;
+        if (e.key === 'ArrowDown') {
+          newIndex =
+            focusedSubMenuIndex === null
+              ? 0
+              : focusedSubMenuIndex === subMenuItemsRef.current[activeMenuIndex].length - 1
+                ? 0
+                : focusedSubMenuIndex + 1;
+        } else if (e.key === 'ArrowUp') {
+          newIndex = !focusedSubMenuIndex
+            ? subMenuItemsRef.current[activeMenuIndex].length - 1
+            : focusedSubMenuIndex - 1;
+        }
+
+        subMenuItemsRef.current[activeMenuIndex][newIndex]?.focus();
+      }
     },
-    [activeMenuIndex, focusedMenuIndex],
+    [activeMenuIndex, focusedMenuIndex, focusedSubMenuIndex],
   );
 
   useEffect(() => {
@@ -73,6 +100,7 @@ export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Ele
 
   function handleMenuClick(action: MenuAction): void {
     setActiveMenuIndex(null);
+    setFocusedSubMenuIndex(null);
 
     if (isEditorOperation(action)) {
       if (action === 'find' || action === 'replace') {
@@ -97,9 +125,9 @@ export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Ele
     }
   }
 
-  function getSubItems(subItems: Array<MenuItem>): Array<React.JSX.Element> {
+  function getSubItems(subItems: Array<MenuItem>, topMenuIndex: number): Array<React.JSX.Element> {
     const itemMaxLength = Math.max(...subItems.map(({ title }) => title.length));
-    return subItems.map(({ title, keyCombo, action }) => {
+    return subItems.map(({ title, keyCombo, action }, index) => {
       const value = keyCombo ? `${title.padEnd(itemMaxLength + 3, ' ')} ${keyCombo}` : title;
       return (
         <li
@@ -109,9 +137,20 @@ export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Ele
         >
           <button
             type="button"
+            ref={(el) => {
+              if (!subMenuItemsRef.current[topMenuIndex]) {
+                subMenuItemsRef.current[topMenuIndex] = [];
+              }
+
+              subMenuItemsRef.current[topMenuIndex][index] = el;
+            }}
+            onFocus={() => {
+              setFocusedSubMenuIndex(index);
+            }}
             onBlur={(e) => {
               if (!containerRef.current?.contains(e.relatedTarget)) {
                 setActiveMenuIndex(null);
+                setFocusedSubMenuIndex(null);
               }
             }}
           >
@@ -135,29 +174,36 @@ export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Ele
                 ref={(el) => {
                   topMenuItemsRef.current[index] = el;
                 }}
-                onClick={() => setActiveMenuIndex(activeMenuIndex !== index ? null : index)}
-                onFocus={() => {
-                  setFocusedMenuIndex(index);
-                  console.log(index);
-
+                onClick={() => {
+                  setFocusedSubMenuIndex(null);
                   if (activeMenuIndex !== null) {
+                    setActiveMenuIndex(activeMenuIndex === index ? null : index);
+                  } else {
                     setActiveMenuIndex(index);
                   }
                 }}
-                onMouseDown={() => setActiveMenuIndex(activeMenuIndex !== index ? index : null)}
+                onFocus={() => {
+                  setFocusedMenuIndex(index);
+
+                  if (activeMenuIndex !== null) {
+                    setActiveMenuIndex(index);
+                    setFocusedSubMenuIndex(null);
+                  }
+                }}
                 onMouseOver={() => {
                   if (activeMenuIndex === null) {
                     return;
                   }
 
                   setActiveMenuIndex(index);
+                  setFocusedSubMenuIndex(null);
                 }}
               >
                 {title}
               </button>
               {item.action === 'open-sub-menu' && activeMenuIndex === index && item.subItems ? (
                 <div className={styles.subMenu}>
-                  <ul>{getSubItems(item.subItems)}</ul>
+                  <ul>{getSubItems(item.subItems, index)}</ul>
                 </div>
               ) : undefined}
             </li>
