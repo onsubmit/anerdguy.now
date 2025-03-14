@@ -7,17 +7,22 @@ import { ColorHelpDialog } from './components/color-help-dialog';
 import { DialogType } from './components/dialog';
 import { EditorOperations } from './components/editor-operation';
 import { File } from './components/file';
-import { FindDialog } from './components/find-dialog';
+import { FindDialog, FindDialogOperations } from './components/find-dialog';
 import { Menu } from './components/menu';
 
 export function App(): React.JSX.Element {
   const editorRef = useRef<EditorOperations>(null);
+  const findDialogRef = useRef<FindDialogOperations>(null);
   const [currentDialog, setCurrentDialog] = useState<DialogType | null>(null);
 
   return (
     <>
       <div className={styles.container}>
-        <Menu editorRef={editorRef} setCurrentDialog={setCurrentDialog}></Menu>
+        <Menu
+          editorRef={editorRef}
+          findDialogRef={findDialogRef}
+          setCurrentDialog={setCurrentDialog}
+        ></Menu>
         <File editorRef={editorRef}></File>
       </div>
       <ColorDialog
@@ -33,6 +38,7 @@ export function App(): React.JSX.Element {
         setCurrentDialog={setCurrentDialog}
       ></AboutDialog>
       <FindDialog
+        ref={findDialogRef}
         editorRef={editorRef}
         replace={currentDialog === 'replace'}
         open={currentDialog === 'find' || currentDialog === 'replace'}

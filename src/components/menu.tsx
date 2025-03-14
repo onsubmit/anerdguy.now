@@ -2,16 +2,23 @@ import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 
 import { DialogType } from './dialog';
 import { EditorOperations, isEditorOperation } from './editor-operation';
+import { FindDialogOperations } from './find-dialog';
 import styles from './menu.module.css';
 import { MenuAction, MenuItem, menuItems } from './menu-items';
+import { isSearchAction } from './search-action';
 import { isSettingAction } from './setting-action';
 
 type MenuParams = {
   editorRef: RefObject<EditorOperations | null>;
+  findDialogRef: RefObject<FindDialogOperations | null>;
   setCurrentDialog: React.Dispatch<React.SetStateAction<DialogType | null>>;
 };
 
-export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Element {
+export function Menu({
+  editorRef,
+  findDialogRef,
+  setCurrentDialog,
+}: MenuParams): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
   const topMenuItemsRef = useRef<Array<HTMLButtonElement | null>>([]);
   const subMenuItemsRef = useRef<Record<number, Array<HTMLButtonElement | null>>>({});
@@ -111,6 +118,14 @@ export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Ele
       }
 
       return;
+    }
+
+    if (isSearchAction(action)) {
+      switch (action) {
+        case 'find-again': {
+          findDialogRef.current?.findAgain();
+        }
+      }
     }
 
     if (isSettingAction(action)) {

@@ -1,15 +1,20 @@
-import { RefObject, useState } from 'react';
+import { RefObject, useImperativeHandle, useState } from 'react';
 
 import { Dialog, DialogType } from './dialog';
 import { DialogButtons } from './dialog-buttons';
 import { EditorOperations, FindParams } from './editor-operation';
 import styles from './find-dialog.module.css';
 
+export type FindDialogOperations = {
+  findAgain: () => void;
+};
+
 type FindDialogParams = {
   open: boolean;
   replace: boolean;
   setCurrentDialog: React.Dispatch<React.SetStateAction<DialogType | null>>;
   editorRef: RefObject<EditorOperations | null>;
+  ref: RefObject<FindDialogOperations | null>;
 };
 
 export function FindDialog({
@@ -17,6 +22,7 @@ export function FindDialog({
   replace,
   setCurrentDialog,
   editorRef,
+  ref,
 }: FindDialogParams): React.JSX.Element {
   const [params, setParams] = useState<FindParams>({
     value: '',
@@ -24,6 +30,18 @@ export function FindDialog({
     matchCase: false,
     replaceWith: replace ? '' : null,
   });
+
+  useImperativeHandle(ref, () => {
+    return {
+      findAgain: (): void => {
+        editorRef.current?.find({
+          ...params,
+          replaceWith: null,
+          replaceAll: undefined,
+        });
+      },
+    };
+  }, [editorRef, params]);
 
   return (
     <Dialog open={open} title="Find" setCurrentDialog={setCurrentDialog}>

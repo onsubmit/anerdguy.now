@@ -1,7 +1,13 @@
 import { EditorOperationName } from './editor-operation';
+import { SearchAction } from './search-action';
 import { SettingAction } from './setting-action';
 
-export type MenuAction = 'open-sub-menu' | 'none' | EditorOperationName | SettingAction;
+export type MenuAction =
+  | 'open-sub-menu'
+  | 'none'
+  | EditorOperationName
+  | SettingAction
+  | SearchAction;
 
 export type MenuItem = {
   title: string;
@@ -80,7 +86,7 @@ export const menuItems: Array<MenuItem> = [
       {
         title: 'Repeat Last Find',
         keyCombo: 'F3',
-        action: 'none',
+        action: 'find-again',
       },
       {
         title: 'Replace',
