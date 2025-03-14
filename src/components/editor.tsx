@@ -156,7 +156,7 @@ export function Editor({ onCursorPositionChange, ref }: EditorParams): React.JSX
 
       let index = -1;
       if (matchWord) {
-        const r = new RegExp(`\\b${value}\\b`, 'g');
+        const r = new RegExp(`\\b${value}\\b`, matchCase ? 'g' : 'gi');
         const matches = [...currentText.matchAll(r)];
         let startIndex = 0;
         for (startIndex = 0; startIndex < matches.length; startIndex++) {
@@ -190,10 +190,15 @@ export function Editor({ onCursorPositionChange, ref }: EditorParams): React.JSX
       if (index > -1) {
         setTimeout(() => {
           if (replaceWith !== null) {
-            textArea.value =
-              textArea.value.slice(0, index) +
-              replaceWith +
-              textArea.value.slice(index + value.length);
+            if (replaceAll) {
+              const r = new RegExp(matchWord ? `\\b${value}\\b` : value, matchCase ? 'g' : 'gi');
+              textArea.value = textArea.value.replace(r, replaceWith);
+            } else {
+              textArea.value =
+                textArea.value.slice(0, index) +
+                replaceWith +
+                textArea.value.slice(index + value.length);
+            }
           }
 
           textArea.focus();

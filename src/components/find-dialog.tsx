@@ -128,6 +128,8 @@ export function FindDialog({
               setCurrentDialog(null);
               editorRef.current?.find({
                 ...params,
+                replaceWith: null,
+                replaceAll: undefined,
               });
             }}
           >
