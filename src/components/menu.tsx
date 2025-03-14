@@ -31,6 +31,12 @@ export function Menu({ editorRef, findDialogRef, openDialog }: MenuParams): Reac
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent): void => {
+      if (e.key === 'F3') {
+        findDialogRef.current?.findAgain();
+        e.preventDefault();
+        return;
+      }
+
       if (activeMenuIndex === null && focusedMenuIndex !== null) {
         if (containerRef.current?.contains(document.activeElement)) {
           let newIndex = -1;
@@ -89,7 +95,7 @@ export function Menu({ editorRef, findDialogRef, openDialog }: MenuParams): Reac
         subMenuItemsRef.current[activeMenuIndex][newIndex]?.focus();
       }
     },
-    [activeMenuIndex, focusedMenuIndex, focusedSubMenuIndex],
+    [activeMenuIndex, findDialogRef, focusedMenuIndex, focusedSubMenuIndex],
   );
 
   useEffect(() => {
