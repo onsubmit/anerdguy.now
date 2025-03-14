@@ -163,10 +163,14 @@ export function Menu({
               setFocusedSubMenuIndex(index);
             }}
             onBlur={(e) => {
-              if (!containerRef.current?.contains(e.relatedTarget)) {
-                setActiveMenuIndex(null);
-                setFocusedSubMenuIndex(null);
-              }
+              e.preventDefault();
+              // TODO: Track down what's setting the state while the Dialog component renders
+              setTimeout(() => {
+                if (!containerRef.current?.contains(e.relatedTarget)) {
+                  setActiveMenuIndex(null);
+                  setFocusedSubMenuIndex(null);
+                }
+              });
             }}
           >
             {value}
