@@ -189,8 +189,15 @@ export function Editor({ onCursorPositionChange, ref }: EditorParams): React.JSX
 
       if (index > -1) {
         setTimeout(() => {
+          if (replaceWith !== null) {
+            textArea.value =
+              textArea.value.slice(0, index) +
+              replaceWith +
+              textArea.value.slice(index + value.length);
+          }
+
           textArea.focus();
-          textArea.setSelectionRange(index, index + value.length);
+          textArea.setSelectionRange(index, index + (replaceWith ?? value).length);
         });
       }
     };
