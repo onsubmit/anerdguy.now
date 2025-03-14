@@ -135,7 +135,7 @@ export function Menu({ editorRef, setCurrentDialog }: MenuParams): React.JSX.Ele
                 ref={(el) => {
                   topMenuItemsRef.current[index] = el;
                 }}
-                onClick={() => setActiveMenuIndex(index)}
+                onClick={() => setActiveMenuIndex(activeMenuIndex !== index ? null : index)}
                 onFocus={() => {
                   setFocusedMenuIndex(index);
                   console.log(index);
