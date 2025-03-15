@@ -20,7 +20,7 @@ export function OpenFileDialog({
   const [filename, setFilename] = useState('*.*');
   const [selectedFile, setSelectedFile] = useState<string>('');
   const [selectedFolder, setSelectedFolder] = useState<string>('');
-  const [files, setFiles] = useState<Array<string>>(fileSystem['C:\\'].files);
+  const [files, setFiles] = useState<Array<string>>(fileSystem['C:\\'].files.map((f) => f.name));
   const [folders, setFolders] = useState<Array<string>>(
     fileSystem['C:\\'].folders.map((f) => f.name),
   );

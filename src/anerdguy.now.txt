@@ -1,0 +1,7 @@
+Greetings friend 👋
+
+I'm Andy, and I love to build software that makes people lives and jobs easier, including my own. I'm currently a principal software engineer building Tableau's embedded analytics platform and was previously at Microsoft building Microsoft Entra.
+
+I've been making web pages since the 90s aka the late 20th century 😅. The first HTML editor I used was the MS-DOS Editor: edit.com, which you've surely noticed this page takes its design inspiration from.
+
+To learn more, select File > Open.

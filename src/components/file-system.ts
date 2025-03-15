@@ -1,7 +1,12 @@
+type File = {
+  name: string;
+  includeFile: string;
+};
+
 type Folder = {
   name: string;
   folders: Array<Folder>;
-  files: Array<string>;
+  files: Array<File>;
 };
 
 type FileSystem = {
@@ -15,9 +20,9 @@ export const fileSystem: FileSystem = {
       {
         name: 'My Documents',
         folders: [],
-        files: ['test.txt'],
+        files: [],
       },
     ],
-    files: ['AUTOEXEC.BAT', 'SCANDISK.LOG'],
+    files: [{ name: 'anerdguy.now.txt', includeFile: 'anerdguy.now.txt' }],
   },
 };

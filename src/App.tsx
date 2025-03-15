@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 
+import index from './anerdguy.now.txt?raw';
 import styles from './app.module.css';
 import { AboutDialog } from './components/about-dialog';
 import { ColorDialog } from './components/color-dialog';
@@ -18,6 +19,7 @@ export function App(): React.JSX.Element {
   const findDialogRef = useRef<FindDialogOperations>(null);
   const toFocusOnDialogCloseRef = useRef<Array<HTMLElement>>([]);
   const [activeFilename, _setActiveFilename] = useState('anerdguy.now');
+  const [activeFileContents, _setActiveFileContents] = useState(index);
   const [currentDialog, setCurrentDialog] = useState<DialogType | null>(null);
 
   const openDialog = (type: DialogType, toFocusOnClose?: HTMLElement | undefined): void => {
@@ -42,7 +44,7 @@ export function App(): React.JSX.Element {
     <>
       <div className={styles.container}>
         <Menu editorRef={editorRef} findDialogRef={findDialogRef} openDialog={openDialog}></Menu>
-        <File filename={activeFilename} editorRef={editorRef}></File>
+        <File filename={activeFilename} contents={activeFileContents} editorRef={editorRef}></File>
       </div>
       <OpenFileDialog
         open={currentDialog === 'open-file'}
