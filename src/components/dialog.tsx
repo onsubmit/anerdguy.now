@@ -2,7 +2,14 @@ import { useCallback, useEffect, useRef } from 'react';
 
 import styles from './dialog.module.css';
 
-export type DialogType = 'color' | 'color-help' | 'about' | 'find' | 'replace';
+export type DialogType =
+  | 'color'
+  | 'color-help'
+  | 'about'
+  | 'find'
+  | 'find-help'
+  | 'replace'
+  | 'replace-help';
 
 type DialogParams = {
   title: string;

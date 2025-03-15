@@ -12,6 +12,7 @@ export type FindDialogOperations = {
 type FindDialogParams = {
   open: boolean;
   replace: boolean;
+  openDialog: (type: DialogType, opener: HTMLElement) => void;
   closeDialog: () => void;
   setCurrentDialog: React.Dispatch<React.SetStateAction<DialogType | null>>;
   editorRef: RefObject<EditorOperations | null>;
@@ -21,6 +22,7 @@ type FindDialogParams = {
 export function FindDialog({
   open,
   replace,
+  openDialog,
   closeDialog,
   editorRef,
   ref,
@@ -124,7 +126,6 @@ export function FindDialog({
           <>
             <button
               type="button"
-              className={styles.active}
               onClick={() => {
                 closeDialog();
                 const findParams = {
@@ -142,7 +143,6 @@ export function FindDialog({
             </button>
             <button
               type="button"
-              className={styles.active}
               onClick={() => {
                 const findParams = {
                   ...originalParams,
@@ -161,7 +161,6 @@ export function FindDialog({
         ) : (
           <button
             type="button"
-            className={styles.active}
             onClick={() => {
               closeDialog();
               const findParams = {
@@ -182,7 +181,6 @@ export function FindDialog({
         )}
         <button
           type="button"
-          className={styles.active}
           onClick={() => {
             cancelHandler();
             closeDialog();
@@ -190,7 +188,10 @@ export function FindDialog({
         >
           Cancel
         </button>
-        <button type="button" className={styles.active}>
+        <button
+          type="button"
+          onClick={(e) => openDialog(replace ? 'replace-help' : 'find-help', e.currentTarget)}
+        >
           Help
         </button>
       </DialogButtons>

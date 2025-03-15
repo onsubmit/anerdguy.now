@@ -8,7 +8,9 @@ import { DialogType } from './components/dialog';
 import { EditorOperations } from './components/editor-operation';
 import { File } from './components/file';
 import { FindDialog, FindDialogOperations } from './components/find-dialog';
+import { FindHelpDialog } from './components/find-help-dialog';
 import { Menu } from './components/menu';
+import { ReplaceHelpDialog } from './components/replace-help-dialog';
 
 export function App(): React.JSX.Element {
   const editorRef = useRef<EditorOperations>(null);
@@ -55,9 +57,18 @@ export function App(): React.JSX.Element {
         editorRef={editorRef}
         replace={currentDialog === 'replace'}
         open={currentDialog === 'find' || currentDialog === 'replace'}
+        openDialog={openDialog}
         closeDialog={closeDialog}
         setCurrentDialog={setCurrentDialog}
       ></FindDialog>
+      <FindHelpDialog
+        open={currentDialog === 'find-help'}
+        closeDialog={closeDialog}
+      ></FindHelpDialog>
+      <ReplaceHelpDialog
+        open={currentDialog === 'replace-help'}
+        closeDialog={closeDialog}
+      ></ReplaceHelpDialog>
     </>
   );
 }

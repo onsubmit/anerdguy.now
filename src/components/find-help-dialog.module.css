@@ -1,0 +1,12 @@
+.help {
+  margin: 0 1rem;
+
+  ul {
+    padding-left: 2rem;
+    list-style-type: '◆ ';
+
+    li {
+      margin-top: 1rem;
+    }
+  }
+}
