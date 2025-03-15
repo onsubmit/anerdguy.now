@@ -7,7 +7,8 @@
   margin: 0 0.75rem;
   resize: none;
   width: calc(100% - 3.5rem);
-  height: calc(100% - 3.5rem);
+  height: calc(100% - 4.25rem);
+  overflow-y: scroll;
 
   &:focus {
     outline: none !important;
@@ -16,5 +17,24 @@
   &::selection {
     color: var(--selected-text-foreground);
     background-color: var(--selected-text-background);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+  }
+
+  a:link, a:visited {
+    color: var(--normal-text-background);
+    filter: invert(90%);
+  }
+
+  a:hover, a:visited:hover {
+    color: var(--normal-text-background);
+    filter: invert(100%);
+  }
+
+  a:active, a:visited:active {
+    color: var(--normal-text-background);
+    filter: invert(70%);
   }
 }

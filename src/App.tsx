@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 
-import index from './anerdguy.now.txt?raw';
 import styles from './app.module.css';
 import { AboutDialog } from './components/about-dialog';
 import { ColorDialog } from './components/color-dialog';
@@ -13,11 +12,13 @@ import { FindHelpDialog } from './components/find-help-dialog';
 import { Menu } from './components/menu';
 import { OpenFileDialog } from './components/open-file-dialog';
 import { ReplaceHelpDialog } from './components/replace-help-dialog';
+import index from './inc/index.html?raw';
 
 export function App(): React.JSX.Element {
   const editorRef = useRef<EditorOperations>(null);
   const findDialogRef = useRef<FindDialogOperations>(null);
   const toFocusOnDialogCloseRef = useRef<Array<HTMLElement>>([]);
+  const [editorMode, _setEditorMode] = useState<'view' | 'edit'>('view');
   const [activeFilename, _setActiveFilename] = useState('anerdguy.now');
   const [activeFileContents, _setActiveFileContents] = useState(index);
   const [currentDialog, setCurrentDialog] = useState<DialogType | null>(null);
@@ -44,7 +45,12 @@ export function App(): React.JSX.Element {
     <>
       <div className={styles.container}>
         <Menu editorRef={editorRef} findDialogRef={findDialogRef} openDialog={openDialog}></Menu>
-        <File filename={activeFilename} contents={activeFileContents} editorRef={editorRef}></File>
+        <File
+          filename={activeFilename}
+          contents={activeFileContents}
+          editorMode={editorMode}
+          editorRef={editorRef}
+        ></File>
       </div>
       <OpenFileDialog
         open={currentDialog === 'open-file'}

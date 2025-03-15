@@ -23,11 +23,17 @@ type SelectionInfo = {
 
 type EditorParams = {
   contents: string;
+  mode: 'view' | 'edit';
   onCursorPositionChange: (position: CursorPosition) => void;
   ref: RefObject<EditorOperations | null>;
 };
 
-export function Editor({ contents, onCursorPositionChange, ref }: EditorParams): React.JSX.Element {
+export function Editor({
+  contents,
+  mode,
+  onCursorPositionChange,
+  ref,
+}: EditorParams): React.JSX.Element {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const getLineAndColumnNumbers: React.KeyboardEventHandler<HTMLTextAreaElement> = (event) => {
@@ -219,12 +225,14 @@ export function Editor({ contents, onCursorPositionChange, ref }: EditorParams):
     };
   }, []);
 
-  return (
+  return mode === 'edit' ? (
     <textarea
       ref={textAreaRef}
       className={styles.editor}
       defaultValue={contents}
       onKeyUp={getLineAndColumnNumbers}
     ></textarea>
+  ) : (
+    <div className={styles.editor} dangerouslySetInnerHTML={{ __html: contents }}></div>
   );
 }

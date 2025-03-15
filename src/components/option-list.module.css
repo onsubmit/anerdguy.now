@@ -6,6 +6,8 @@
   margin-top: 1rem;
   overflow-y: scroll;
   border: 0.0625rem solid #000;
+  margin: 0;
+  padding: 0;
 
   li {
     cursor: pointer;

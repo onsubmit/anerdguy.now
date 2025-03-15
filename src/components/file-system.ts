@@ -23,6 +23,6 @@ export const fileSystem: FileSystem = {
         files: [],
       },
     ],
-    files: [{ name: 'anerdguy.now.txt', includeFile: 'anerdguy.now.txt' }],
+    files: [{ name: 'index.html', includeFile: 'index.html' }],
   },
 };

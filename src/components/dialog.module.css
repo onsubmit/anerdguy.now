@@ -3,6 +3,8 @@
 }
 
 .dialog {
+  margin: 0;
+  padding: 0;
   top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
@@ -23,5 +25,10 @@
     color: var(--dialog-titlebar-foreground);
     background: var(--dialog-titlebar-background);
     text-align: center;
+  }
+
+  p {
+    margin: 0;
+    padding: 0;
   }
 }

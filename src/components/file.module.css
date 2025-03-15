@@ -1,7 +1,8 @@
 .fileContainer {
   border: 0.0625rem solid var(--window-border-foreground);
   margin: 0.75rem;
-  height: 100%;
+  min-height: calc(100% - 3.25rem);
+  max-height: calc(100% - 3.25rem);
 }
 
 .file {
@@ -31,7 +32,7 @@
   margin-bottom: 0;
   padding: 0.25rem;
   position: relative;
-  top: calc(-0.0625rem - 1.5rem);
+  top: calc(-0.0625rem - 0.5rem);
 
   .cursor {
     display: flex;
