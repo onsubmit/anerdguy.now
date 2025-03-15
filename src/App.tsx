@@ -5,11 +5,12 @@ import { AboutDialog } from './components/about-dialog';
 import { ColorDialog } from './components/color-dialog';
 import { ColorHelpDialog } from './components/color-help-dialog';
 import { DialogType } from './components/dialog';
+import { EditorMode } from './components/editor';
 import { EditorOperations } from './components/editor-operation';
 import { File } from './components/file';
 import { FindDialog, FindDialogOperations } from './components/find-dialog';
 import { FindHelpDialog } from './components/find-help-dialog';
-import { Menu } from './components/menu';
+import { Menu2 } from './components/menu2';
 import { OpenFileDialog } from './components/open-file-dialog';
 import { ReplaceHelpDialog } from './components/replace-help-dialog';
 import index from './inc/index.html?raw';
@@ -18,12 +19,12 @@ export function App(): React.JSX.Element {
   const editorRef = useRef<EditorOperations>(null);
   const findDialogRef = useRef<FindDialogOperations>(null);
   const toFocusOnDialogCloseRef = useRef<Array<HTMLElement>>([]);
-  const [editorMode, _setEditorMode] = useState<'view' | 'edit'>('view');
+  const [editorMode, setEditorMode] = useState<EditorMode>('view');
   const [activeFilename, _setActiveFilename] = useState('anerdguy.now');
   const [activeFileContents, _setActiveFileContents] = useState(index);
   const [currentDialog, setCurrentDialog] = useState<DialogType | null>(null);
 
-  const openDialog = (type: DialogType, toFocusOnClose?: HTMLElement | undefined): void => {
+  const openDialog = (type: DialogType, toFocusOnClose?: HTMLElement | null): void => {
     setCurrentDialog(type);
 
     if (toFocusOnClose) {
@@ -34,21 +35,41 @@ export function App(): React.JSX.Element {
   const closeDialog = (typeToOpen: DialogType | null = null): void => {
     setCurrentDialog(typeToOpen);
 
-    if (toFocusOnDialogCloseRef.current.length) {
-      toFocusOnDialogCloseRef.current.pop()?.focus();
-    } else {
-      setTimeout(() => editorRef.current?.focus());
-    }
+    setTimeout(() => {
+      if (toFocusOnDialogCloseRef.current.length) {
+        toFocusOnDialogCloseRef.current.pop()?.focus();
+      } else {
+        if (editorMode === 'edit') {
+          setTimeout(() => editorRef.current?.focus());
+        }
+      }
+    });
+  };
+
+  const toggleEditorMode = (): void => {
+    setEditorMode((mode) => (mode === 'edit' ? 'view' : 'edit'));
   };
 
   return (
     <>
       <div className={styles.container}>
-        <Menu editorRef={editorRef} findDialogRef={findDialogRef} openDialog={openDialog}></Menu>
+        {/* <Menu
+          toggleEditorMode={toggleEditorMode}
+          editorRef={editorRef}
+          findDialogRef={findDialogRef}
+          openDialog={openDialog}
+        ></Menu> */}
+        <Menu2
+          editorMode={editorMode}
+          toggleEditorMode={toggleEditorMode}
+          openDialog={openDialog}
+          findDialogRef={findDialogRef}
+        ></Menu2>
         <File
           filename={activeFilename}
           contents={activeFileContents}
           editorMode={editorMode}
+          findDialogRef={findDialogRef}
           editorRef={editorRef}
         ></File>
       </div>

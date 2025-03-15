@@ -2,6 +2,7 @@ import { EditorOperationName } from './editor-operation';
 import { FileAction } from './file-action';
 import { SearchAction } from './search-action';
 import { SettingAction } from './setting-action';
+import { ViewAction } from './view-action';
 
 export type MenuAction =
   | 'open-sub-menu'
@@ -9,10 +10,12 @@ export type MenuAction =
   | FileAction
   | EditorOperationName
   | SettingAction
-  | SearchAction;
+  | SearchAction
+  | ViewAction;
 
 export type MenuItem = {
   title: string;
+  toggledTitle?: string;
   keyCombo?: string;
 } & (
   | {
@@ -102,6 +105,11 @@ export const menuItems: Array<MenuItem> = [
     title: 'View',
     action: 'open-sub-menu',
     subItems: [
+      {
+        title: 'Editor',
+        toggledTitle: 'Preview',
+        action: 'toggle-editor',
+      },
       {
         title: 'Split Window',
         keyCombo: 'Ctrl+F6',

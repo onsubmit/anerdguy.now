@@ -3,16 +3,13 @@
   background: var(--menubar-background);
   margin-bottom: 0;
 
-  ul {
-    list-style-type: none;
+  > ul {
     display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
+    list-style-type: none;
     margin: 0;
     padding: 0;
-  }
-
-  > ul {
-    flex-direction: row;
 
     > li {
       position: relative;
@@ -42,38 +39,6 @@
 
     &:focus:not(:focus-visible) {
       outline: none;
-    }
-  }
-
-  .subMenu {
-    position: absolute;
-    top: 2.32rem;
-    left: 0rem;
-    background: var(--menubar-background);
-    z-index: 1;
-    box-shadow: 0.5rem 0.5rem #000;
-
-    > ul {
-      flex-direction: column;
-      margin: 0.25rem;
-      min-width: 10rem;
-      border: 0.0625rem solid #000;
-
-      > li {
-        cursor: pointer;
-        color: var(--menubar-foreground);
-        white-space: pre;
-
-        > button {
-          width: 100%;
-          text-align: left;
-        }
-
-        &:hover {
-          background: var(--menubar-foreground);
-          color: var(--menubar-background);
-        }
-      }
     }
   }
 }

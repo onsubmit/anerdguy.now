@@ -8,14 +8,21 @@ import styles from './menu.module.css';
 import { MenuAction, MenuItem, menuItems } from './menu-items';
 import { isSearchAction } from './search-action';
 import { isSettingAction } from './setting-action';
+import { isViewAction } from './view-action';
 
 type MenuParams = {
+  toggleEditorMode: () => void;
   editorRef: RefObject<EditorOperations | null>;
   findDialogRef: RefObject<FindDialogOperations | null>;
   openDialog: (type: DialogType) => void;
 };
 
-export function Menu({ editorRef, findDialogRef, openDialog }: MenuParams): React.JSX.Element {
+export function Menu({
+  toggleEditorMode,
+  editorRef,
+  findDialogRef,
+  openDialog,
+}: MenuParams): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
   const topMenuItemsRef = useRef<Array<HTMLButtonElement | null>>([]);
   const subMenuItemsRef = useRef<Record<number, Array<HTMLButtonElement | null>>>({});
@@ -152,6 +159,14 @@ export function Menu({ editorRef, findDialogRef, openDialog }: MenuParams): Reac
         }
         case 'open-about-dialog': {
           openDialog('about');
+        }
+      }
+    }
+
+    if (isViewAction(action)) {
+      switch (action) {
+        case 'toggle-editor': {
+          return toggleEditorMode();
         }
       }
     }

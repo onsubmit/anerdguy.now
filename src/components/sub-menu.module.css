@@ -1,0 +1,40 @@
+.subMenu {
+  position: absolute;
+  top: 2.32rem;
+  left: 0rem;
+  background: var(--menubar-background);
+  z-index: 1;
+  box-shadow: 0.5rem 0.5rem #000;
+
+  > ul {
+    flex-direction: column;
+    margin: 0.25rem;
+    padding: 0;
+    min-width: 10rem;
+    border: 0.0625rem solid #000;
+
+    > li {
+      cursor: pointer;
+      color: var(--menubar-foreground);
+      white-space: pre;
+
+      > button {
+        width: 100%;
+        text-align: left;
+
+        &:hover    {
+          background: var(--menubar-foreground);
+          color: var(--menubar-background);
+        }
+      }
+    }
+
+  }
+
+  hr {
+    border: none;
+    margin: 0;
+    background-color: #000;
+    height: 0.0625rem;
+  }
+}

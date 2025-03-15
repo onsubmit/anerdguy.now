@@ -21,9 +21,11 @@ type SelectionInfo = {
   copiedFrom: 'selection' | 'line' | 'empty';
 };
 
+export type EditorMode = 'view' | 'edit';
+
 type EditorParams = {
   contents: string;
-  mode: 'view' | 'edit';
+  mode: EditorMode;
   onCursorPositionChange: (position: CursorPosition) => void;
   ref: RefObject<EditorOperations | null>;
 };
