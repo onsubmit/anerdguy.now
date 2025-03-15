@@ -81,6 +81,7 @@ export const menuItems: Array<MenuItem> = [
     subItems: [
       {
         title: 'Find...',
+        keyCombo: 'Ctrl+F',
         action: 'find',
       },
       {
@@ -91,6 +92,7 @@ export const menuItems: Array<MenuItem> = [
       {
         title: 'Replace',
         action: 'replace',
+        keyCombo: 'Ctrl+R',
       },
     ],
   },

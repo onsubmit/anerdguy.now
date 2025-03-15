@@ -37,6 +37,12 @@ export function Menu({ editorRef, findDialogRef, openDialog }: MenuParams): Reac
         return;
       }
 
+      if (e.ctrlKey && ['f', 'r'].includes(e.key)) {
+        openDialog(e.key === 'f' ? 'find' : 'replace');
+        e.preventDefault();
+        return;
+      }
+
       if (activeMenuIndex === null && focusedMenuIndex !== null) {
         if (containerRef.current?.contains(document.activeElement)) {
           let newIndex = -1;

@@ -50,7 +50,12 @@ export function FindDialog({
   }, [editorRef, originalParams]);
 
   return (
-    <Dialog open={open} title="Find" closeDialog={closeDialog} onCancel={cancelHandler}>
+    <Dialog
+      open={open}
+      title={replace ? 'Replace' : 'Find'}
+      closeDialog={closeDialog}
+      onCancel={cancelHandler}
+    >
       <div className={styles.find}>
         <label>
           <span>Find What:{replace ? '   ' : ''}</span>
