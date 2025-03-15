@@ -1,4 +1,4 @@
-import { RefObject, useImperativeHandle, useState } from 'react';
+import { RefObject, useCallback, useImperativeHandle, useState } from 'react';
 
 import { Dialog, DialogType } from './dialog';
 import { DialogButtons } from './dialog-buttons';
@@ -25,37 +25,42 @@ export function FindDialog({
   editorRef,
   ref,
 }: FindDialogParams): React.JSX.Element {
-  const [params, setParams] = useState<FindParams>({
+  const [originalParams, setOriginalParams] = useState<FindParams>({
     value: '',
     matchWord: false,
     matchCase: false,
     replaceWith: replace ? '' : null,
   });
+  const [pendingParams, setPendingParams] = useState<Partial<FindParams>>({});
+
+  const cancelHandler = useCallback((): void => {
+    setPendingParams({});
+  }, []);
 
   useImperativeHandle(ref, () => {
     return {
       findAgain: (): void => {
         editorRef.current?.find({
-          ...params,
+          ...originalParams,
           replaceWith: null,
           replaceAll: undefined,
         });
       },
     };
-  }, [editorRef, params]);
+  }, [editorRef, originalParams]);
 
   return (
-    <Dialog open={open} title="Find" closeDialog={closeDialog}>
+    <Dialog open={open} title="Find" closeDialog={closeDialog} onCancel={cancelHandler}>
       <div className={styles.find}>
         <label>
           <span>Find What:{replace ? '   ' : ''}</span>
           <input
             type="text"
             autoFocus={true}
-            value={params.value}
+            value={pendingParams.value ?? originalParams.value}
             onChange={(e) => {
               const value = e.currentTarget.value;
-              setParams((x) => ({
+              setPendingParams((x) => ({
                 ...x,
                 value,
               }));
@@ -68,10 +73,10 @@ export function FindDialog({
               <span>Replace With:</span>
               <input
                 type="text"
-                value={params.replaceWith ?? ''}
+                value={pendingParams.replaceWith ?? originalParams.replaceWith ?? ''}
                 onChange={(e) => {
                   const replaceWith = e.currentTarget.value;
-                  setParams((x) => ({
+                  setPendingParams((x) => ({
                     ...x,
                     replaceWith,
                   }));
@@ -83,10 +88,10 @@ export function FindDialog({
         <label>
           <input
             type="checkbox"
-            checked={params.matchWord}
+            checked={pendingParams.matchWord ?? originalParams.matchWord}
             onChange={(e) => {
               const matchWord = e.currentTarget.checked;
-              setParams((x) => ({
+              setPendingParams((x) => ({
                 ...x,
                 matchWord,
               }));
@@ -97,10 +102,10 @@ export function FindDialog({
         <label>
           <input
             type="checkbox"
-            checked={params.matchCase}
+            checked={pendingParams.matchCase ?? originalParams.matchCase}
             onChange={(e) => {
               const matchCase = e.currentTarget.checked;
-              setParams((x) => ({
+              setPendingParams((x) => ({
                 ...x,
                 matchCase,
               }));
@@ -117,8 +122,13 @@ export function FindDialog({
               className={styles.active}
               onClick={() => {
                 closeDialog();
+                const findParams = {
+                  ...originalParams,
+                  ...pendingParams,
+                };
+                setOriginalParams(findParams);
                 editorRef.current?.find({
-                  ...params,
+                  ...findParams,
                   replaceAll: false,
                 });
               }}
@@ -129,9 +139,13 @@ export function FindDialog({
               type="button"
               className={styles.active}
               onClick={() => {
-                closeDialog();
-                editorRef.current?.replace({
-                  ...params,
+                const findParams = {
+                  ...originalParams,
+                  ...pendingParams,
+                };
+                setOriginalParams(findParams);
+                editorRef.current?.find({
+                  ...findParams,
                   replaceAll: true,
                 });
               }}
@@ -145,8 +159,14 @@ export function FindDialog({
             className={styles.active}
             onClick={() => {
               closeDialog();
+              const findParams = {
+                ...originalParams,
+                ...pendingParams,
+              };
+              setOriginalParams(findParams);
+              setPendingParams({});
               editorRef.current?.find({
-                ...params,
+                ...findParams,
                 replaceWith: null,
                 replaceAll: undefined,
               });
@@ -159,6 +179,7 @@ export function FindDialog({
           type="button"
           className={styles.active}
           onClick={() => {
+            cancelHandler();
             closeDialog();
           }}
         >

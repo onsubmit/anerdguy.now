@@ -9,16 +9,24 @@ type DialogParams = {
   children: React.ReactNode;
   open: boolean;
   closeDialog: (typeToOpen: DialogType | null) => void;
+  onCancel?: () => void;
 };
 
-export function Dialog({ title, children, open, closeDialog }: DialogParams): React.JSX.Element {
+export function Dialog({
+  title,
+  children,
+  open,
+  closeDialog,
+  onCancel,
+}: DialogParams): React.JSX.Element {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   dialogRef.current?.[open ? 'showModal' : 'close']();
 
   const cancelHandler = useCallback((): void => {
+    onCancel?.();
     closeDialog(null);
-  }, [closeDialog]);
+  }, [closeDialog, onCancel]);
 
   useEffect(() => {
     const dialog = dialogRef.current;

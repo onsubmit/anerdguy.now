@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import { getCachedItem, setCachedItem } from '../localStorage';
 import styles from './color-dialog.module.css';
@@ -75,6 +75,25 @@ export function ColorDialog({
     foregroundColorRef.current?.refocus(selectedForeground);
     backgroundColorRef.current?.refocus(selectedBackground);
   });
+
+  const cancelHandler = useCallback((): void => {
+    for (const [name, { foreground, background }] of Object.entries(originalColors)) {
+      const item = name as KnownThemeableItem;
+      if (foreground) {
+        setCssVariable('foreground', item, foreground);
+        if (name === selectedItem) {
+          setSelectedForeground(foreground);
+        }
+      }
+
+      if (background) {
+        setCssVariable('background', item, background);
+        if (name === selectedItem) {
+          setSelectedBackground(background);
+        }
+      }
+    }
+  }, [originalColors, selectedItem]);
 
   const onSelectedItemChange = (item: KnownThemeableItem): void => {
     const currentColors = getCurrentItemColors(item);
@@ -168,7 +187,7 @@ export function ColorDialog({
   };
 
   return (
-    <Dialog open={open} title="Colors" closeDialog={closeDialog}>
+    <Dialog open={open} title="Colors" closeDialog={closeDialog} onCancel={cancelHandler}>
       <div className={styles.settings}>
         <div>
           <div>Item:</div>
@@ -224,23 +243,7 @@ export function ColorDialog({
         <button
           type="button"
           onClick={() => {
-            for (const [name, { foreground, background }] of Object.entries(originalColors)) {
-              const item = name as KnownThemeableItem;
-              if (foreground) {
-                setCssVariable('foreground', item, foreground);
-                if (name === selectedItem) {
-                  setSelectedForeground(foreground);
-                }
-              }
-
-              if (background) {
-                setCssVariable('background', item, background);
-                if (name === selectedItem) {
-                  setSelectedBackground(background);
-                }
-              }
-            }
-
+            cancelHandler();
             closeDialog();
           }}
         >
