@@ -2,6 +2,7 @@ import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 
 import { DialogType } from './dialog';
 import { EditorOperations, isEditorOperation } from './editor-operation';
+import { isFileAction } from './file-action';
 import { FindDialogOperations } from './find-dialog';
 import styles from './menu.module.css';
 import { MenuAction, MenuItem, menuItems } from './menu-items';
@@ -101,7 +102,7 @@ export function Menu({ editorRef, findDialogRef, openDialog }: MenuParams): Reac
         subMenuItemsRef.current[activeMenuIndex][newIndex]?.focus();
       }
     },
-    [activeMenuIndex, findDialogRef, focusedMenuIndex, focusedSubMenuIndex],
+    [activeMenuIndex, findDialogRef, focusedMenuIndex, focusedSubMenuIndex, openDialog],
   );
 
   useEffect(() => {
@@ -116,6 +117,14 @@ export function Menu({ editorRef, findDialogRef, openDialog }: MenuParams): Reac
   function handleMenuClick(action: MenuAction): void {
     setActiveMenuIndex(null);
     setFocusedSubMenuIndex(null);
+
+    if (isFileAction(action)) {
+      switch (action) {
+        case 'open': {
+          return openDialog('open-file');
+        }
+      }
+    }
 
     if (isEditorOperation(action)) {
       if (action === 'find' || action === 'replace') {

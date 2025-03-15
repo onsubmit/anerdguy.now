@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import styles from './dialog.module.css';
 
 export type DialogType =
+  | 'open-file'
   | 'color'
   | 'color-help'
   | 'about'

@@ -10,12 +10,14 @@ import { File } from './components/file';
 import { FindDialog, FindDialogOperations } from './components/find-dialog';
 import { FindHelpDialog } from './components/find-help-dialog';
 import { Menu } from './components/menu';
+import { OpenFileDialog } from './components/open-file-dialog';
 import { ReplaceHelpDialog } from './components/replace-help-dialog';
 
 export function App(): React.JSX.Element {
   const editorRef = useRef<EditorOperations>(null);
   const findDialogRef = useRef<FindDialogOperations>(null);
   const toFocusOnDialogCloseRef = useRef<Array<HTMLElement>>([]);
+  const [activeFilename, _setActiveFilename] = useState('anerdguy.now');
   const [currentDialog, setCurrentDialog] = useState<DialogType | null>(null);
 
   const openDialog = (type: DialogType, toFocusOnClose?: HTMLElement | undefined): void => {
@@ -40,8 +42,13 @@ export function App(): React.JSX.Element {
     <>
       <div className={styles.container}>
         <Menu editorRef={editorRef} findDialogRef={findDialogRef} openDialog={openDialog}></Menu>
-        <File editorRef={editorRef}></File>
+        <File filename={activeFilename} editorRef={editorRef}></File>
       </div>
+      <OpenFileDialog
+        open={currentDialog === 'open-file'}
+        openDialog={openDialog}
+        closeDialog={closeDialog}
+      ></OpenFileDialog>
       <ColorDialog
         open={currentDialog === 'color'}
         openDialog={openDialog}

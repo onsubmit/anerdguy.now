@@ -1,0 +1,28 @@
+.open {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0 1rem;
+
+  label {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    white-space: pre;
+  }
+
+  input[type=text] {
+    border: 0.0625rem solid var(--dialogs-foreground);
+    color: var(--dialogs-foreground);
+    background: var(--dialogs-background);
+    padding: 0.25rem;
+  }
+
+  .fileSystem {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    justify-content: space-around;
+  }
+
+}

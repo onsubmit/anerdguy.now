@@ -1,10 +1,12 @@
 import { EditorOperationName } from './editor-operation';
+import { FileAction } from './file-action';
 import { SearchAction } from './search-action';
 import { SettingAction } from './setting-action';
 
 export type MenuAction =
   | 'open-sub-menu'
   | 'none'
+  | FileAction
   | EditorOperationName
   | SettingAction
   | SearchAction;
@@ -33,7 +35,7 @@ export const menuItems: Array<MenuItem> = [
       },
       {
         title: 'Open...',
-        action: 'none',
+        action: 'open',
       },
       {
         title: 'Save',
