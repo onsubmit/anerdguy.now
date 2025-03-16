@@ -88,6 +88,10 @@ export function Menu2({
             newIndex = focusedMenuIndex === 0 ? menus.length - 1 : focusedMenuIndex - 1;
           } else if (e.key === 'ArrowRight') {
             newIndex = (focusedMenuIndex + 1) % menus.length;
+          } else if (['ArrowDown', 'ArrowUp'].includes(e.key)) {
+            if (activeMenuIndex === null) {
+              setActiveMenuIndex(focusedMenuIndex);
+            }
           } else {
             return;
           }
@@ -105,9 +109,7 @@ export function Menu2({
       if (e.key === 'Escape') {
         topMenuItemsRef.current[activeMenuIndex]?.focus();
         setFocusedMenuIndex(activeMenuIndex);
-
         closeMenu();
-        //setFocusedSubMenuIndex(null);
       }
 
       if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
@@ -121,21 +123,6 @@ export function Menu2({
         setActiveMenuIndex(newIndex);
         topMenuItemsRef.current[newIndex]?.focus();
         setFocusedMenuIndex(newIndex);
-      } else if (['ArrowDown', 'ArrowUp'].includes(e.key)) {
-        // let newIndex = -1;
-        // if (e.key === 'ArrowDown') {
-        //   newIndex =
-        //     focusedSubMenuIndex === null
-        //       ? 0
-        //       : focusedSubMenuIndex === subMenuItemsRef.current[activeMenuIndex].length - 1
-        //         ? 0
-        //         : focusedSubMenuIndex + 1;
-        // } else if (e.key === 'ArrowUp') {
-        //   newIndex = !focusedSubMenuIndex
-        //     ? subMenuItemsRef.current[activeMenuIndex].length - 1
-        //     : focusedSubMenuIndex - 1;
-        // }
-        // subMenuItemsRef.current[activeMenuIndex][newIndex]?.focus();
       }
     },
     [activeMenuIndex, findDialogRef, focusedMenuIndex, openDialog, toggleEditorMode],
