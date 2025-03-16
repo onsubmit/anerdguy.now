@@ -18,9 +18,10 @@ export function EditMenu({
   editorMode,
   editorRef,
   openDialog,
+  ref,
 }: EditMenuParams): React.JSX.Element {
   const listRef = useRef<HTMLUListElement>(null);
-  useSubMenuFocusHandler(listRef);
+  const setFocusedIndex = useSubMenuFocusHandler({ ref, listRef, disable: !open });
 
   return (
     <div className={classNames(styles.subMenu, open ? styles.open : undefined)}>
@@ -29,6 +30,7 @@ export function EditMenu({
           <button
             type="button"
             disabled={editorMode === 'view'}
+            onFocus={() => setFocusedIndex(0)}
             onClick={() => {
               closeMenu();
               editorRef.current?.cut();
@@ -40,6 +42,7 @@ export function EditMenu({
         <li>
           <button
             type="button"
+            onFocus={() => setFocusedIndex(1)}
             onClick={async () => {
               closeMenu();
               if (editorMode === 'edit') {
@@ -67,6 +70,7 @@ export function EditMenu({
           <button
             type="button"
             disabled={editorMode === 'view'}
+            onFocus={() => setFocusedIndex(2)}
             onClick={() => {
               closeMenu();
               editorRef.current?.paste();
@@ -79,6 +83,7 @@ export function EditMenu({
           <button
             type="button"
             disabled={editorMode === 'view'}
+            onFocus={() => setFocusedIndex(3)}
             onClick={() => {
               closeMenu();
               editorRef.current?.delete();

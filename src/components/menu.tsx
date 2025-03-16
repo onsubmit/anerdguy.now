@@ -35,11 +35,15 @@ export function Menu2({
   const [focusedMenuIndex, setFocusedMenuIndex] = useState<number | null>(null);
 
   const closeMenu = (): void => {
-    setActiveMenuIndex(null);
+    setActiveMenuIndex((x) => {
+      subMenuRefs.current[x ?? -1]?.reset();
+      return null;
+    });
   };
 
   const getSubMenuParams = useCallback(
     (index: number): SubMenuParams => ({
+      ref: (el) => (subMenuRefs.current[index] = el),
       open: activeMenuIndex === index,
       topMenuButton: topMenuItemsRef.current[index],
       closeMenu,
@@ -50,6 +54,8 @@ export function Menu2({
     }),
     [activeMenuIndex, openDialog],
   );
+
+  const subMenuRefs = useRef<Array<{ reset: () => void } | null>>([]);
 
   const menus = useMemo(
     () => [
@@ -74,7 +80,10 @@ export function Menu2({
           ></SearchMenu>
         ),
       },
-      { title: 'View', component: <ViewMenu {...{ ...getSubMenuParams(3) }}></ViewMenu> },
+      {
+        title: 'View',
+        component: <ViewMenu {...{ ...getSubMenuParams(3) }}></ViewMenu>,
+      },
       {
         title: 'Options',
         component: <OptionsMenu {...{ ...getSubMenuParams(4) }}></OptionsMenu>,
@@ -89,7 +98,10 @@ export function Menu2({
 
   const activate = (title: string): void => {
     const index = menus.findIndex((m) => m.title === title);
-    setActiveMenuIndex(index < 0 ? null : index);
+    setActiveMenuIndex((x) => {
+      subMenuRefs.current[x ?? -1]?.reset();
+      return index < 0 ? null : index;
+    });
   };
 
   const handleClickOutside = useCallback((e: MouseEvent): void => {
@@ -101,9 +113,7 @@ export function Menu2({
   const handleKeyDown = useCallback(
     (e: KeyboardEvent): void => {
       if (e.key === 'Escape') {
-        if (activeMenuIndex === null) {
-          setActiveMenuIndex(null);
-        } else {
+        if (activeMenuIndex !== null) {
           topMenuItemsRef.current[activeMenuIndex]?.focus();
           setFocusedMenuIndex(activeMenuIndex);
           closeMenu();
@@ -145,7 +155,11 @@ export function Menu2({
           newIndex = (activeMenuIndex + 1) % menus.length;
         }
 
-        setActiveMenuIndex(newIndex);
+        setActiveMenuIndex((x) => {
+          subMenuRefs.current[x ?? -1]?.reset();
+          return newIndex;
+        });
+
         topMenuItemsRef.current[newIndex]?.focus();
         setFocusedMenuIndex(newIndex);
       }
@@ -177,6 +191,7 @@ export function Menu2({
                 setFocusedMenuIndex(index);
 
                 if (activeMenuIndex !== null) {
+                  subMenuRefs.current[activeMenuIndex]?.reset();
                   setActiveMenuIndex(index);
                 }
               }}

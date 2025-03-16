@@ -5,21 +5,27 @@ import { useSubMenuFocusHandler } from '../hooks/useSubMenuFocusHandler';
 import { SubMenuParams } from './sub-menu';
 import styles from './sub-menu.module.css';
 
-export function ViewMenu({ open }: SubMenuParams): React.JSX.Element {
+export function ViewMenu({ open, ref }: SubMenuParams): React.JSX.Element {
   const listRef = useRef<HTMLUListElement>(null);
-  useSubMenuFocusHandler(listRef);
+  const setFocusedIndex = useSubMenuFocusHandler({ ref, listRef, disable: !open });
 
   return (
     <div className={classNames(styles.subMenu, open ? styles.open : undefined)}>
       <ul ref={listRef}>
         <li>
-          <button type="button">Split Window{'    '}Ctrl+F6</button>
+          <button type="button" onFocus={() => setFocusedIndex(0)}>
+            Split Window{'    '}Ctrl+F6
+          </button>
         </li>
         <li>
-          <button type="button">Size Window{'     '}Ctrl+F8</button>
+          <button type="button" onFocus={() => setFocusedIndex(1)}>
+            Size Window{'     '}Ctrl+F8
+          </button>
         </li>
         <li>
-          <button type="button">Close Window{'    '}Ctrl+F4</button>
+          <button type="button" onFocus={() => setFocusedIndex(2)}>
+            Close Window{'    '}Ctrl+F4
+          </button>
         </li>
       </ul>
     </div>

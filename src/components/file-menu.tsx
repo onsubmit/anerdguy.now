@@ -19,9 +19,10 @@ export function FileMenu({
   toggleEditorMode,
   closeMenu,
   activeMenuIndex,
+  ref,
 }: FileMenuParams): React.JSX.Element {
   const listRef = useRef<HTMLUListElement>(null);
-  useSubMenuFocusHandler(listRef);
+  const setFocusedIndex = useSubMenuFocusHandler({ ref, listRef, disable: !open });
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent): void => {
@@ -40,19 +41,29 @@ export function FileMenu({
     <div className={classNames(styles.subMenu, open ? styles.open : undefined)}>
       <ul ref={listRef}>
         <li>
-          <button type="button">New</button>
+          <button type="button" onFocus={() => setFocusedIndex(0)}>
+            New
+          </button>
         </li>
         <li>
-          <button type="button">Open...</button>
+          <button type="button" onFocus={() => setFocusedIndex(1)}>
+            Open...
+          </button>
         </li>
         <li>
-          <button type="button">Save</button>
+          <button type="button" onFocus={() => setFocusedIndex(2)}>
+            Save
+          </button>
         </li>
         <li>
-          <button type="button">Save As...</button>
+          <button type="button" onFocus={() => setFocusedIndex(3)}>
+            Save As...
+          </button>
         </li>
         <li>
-          <button type="button">Close</button>
+          <button type="button" onFocus={() => setFocusedIndex(4)}>
+            Close
+          </button>
           <hr />
         </li>
         <li>

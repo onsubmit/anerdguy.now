@@ -1,10 +1,26 @@
-import { RefObject, useCallback, useEffect, useState } from 'react';
+import { RefObject, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 
-export function useSubMenuFocusHandler(listRef: RefObject<HTMLUListElement | null>): void {
+import { SubMenuParams } from '../components/sub-menu';
+
+export function useSubMenuFocusHandler({
+  ref,
+  listRef,
+  disable,
+}: {
+  ref: SubMenuParams['ref'];
+  listRef: RefObject<HTMLUListElement | null>;
+  disable: boolean;
+}): React.Dispatch<React.SetStateAction<number | null>> {
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+
+  const reset = useCallback((): void => setFocusedIndex(null), []);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent): void => {
+      if (disable) {
+        return;
+      }
+
       if (['ArrowDown', 'ArrowUp'].includes(e.key)) {
         const list = listRef.current;
         if (!list) {
@@ -37,7 +53,7 @@ export function useSubMenuFocusHandler(listRef: RefObject<HTMLUListElement | nul
         setFocusedIndex(newIndex);
       }
     },
-    [focusedIndex, listRef],
+    [disable, focusedIndex, listRef],
   );
 
   useEffect(() => {
@@ -46,4 +62,10 @@ export function useSubMenuFocusHandler(listRef: RefObject<HTMLUListElement | nul
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [handleKeyDown]);
+
+  useImperativeHandle(ref, () => {
+    return { reset };
+  });
+
+  return setFocusedIndex;
 }

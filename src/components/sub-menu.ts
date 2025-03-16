@@ -5,4 +5,5 @@ export type SubMenuParams = {
   closeMenu: () => void;
   topMenuButton: HTMLButtonElement | null;
   openDialog: <T extends DialogType>(args: OpenDialogArgs<T>) => void;
+  ref: (el: { reset: () => void }) => void;
 };

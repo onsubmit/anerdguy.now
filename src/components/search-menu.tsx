@@ -22,9 +22,10 @@ export function SearchMenu({
   openDialog,
   closeMenu,
   findDialogRef,
+  ref,
 }: SearchMenuParams): React.JSX.Element {
   const listRef = useRef<HTMLUListElement>(null);
-  useSubMenuFocusHandler(listRef);
+  const setFocusedIndex = useSubMenuFocusHandler({ ref, listRef, disable: !open });
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent): void => {
@@ -56,6 +57,7 @@ export function SearchMenu({
         <li>
           <button
             type="button"
+            onFocus={() => setFocusedIndex(0)}
             onClick={() => openDialog({ type: 'find', toFocusOnClose: topMenuButton })}
           >
             Find...{'             '}Ctrl+F
@@ -64,6 +66,7 @@ export function SearchMenu({
         <li>
           <button
             type="button"
+            onFocus={() => setFocusedIndex(1)}
             onClick={() => {
               findDialogRef.current?.findAgain();
               closeMenu();
@@ -76,6 +79,7 @@ export function SearchMenu({
           <button
             type="button"
             disabled={disableReplace}
+            onFocus={() => setFocusedIndex(2)}
             onClick={() => openDialog({ type: 'replace', toFocusOnClose: topMenuButton })}
           >
             Replace{'             '}Ctrl+R
