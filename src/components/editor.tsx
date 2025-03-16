@@ -39,6 +39,7 @@ export function Editor({
   ref,
 }: EditorParams): React.JSX.Element {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const getLineAndColumnNumbers: React.KeyboardEventHandler<HTMLTextAreaElement> = (event) => {
     const { value, selectionStart } = event.currentTarget;
@@ -146,6 +147,42 @@ export function Editor({
       textArea.selectionStart = textArea.selectionEnd = selectionStart;
     };
 
+    const getTextNodes = (): Array<Node> => {
+      const preview = previewRef.current;
+      if (!preview) return [];
+
+      const treeWalker = document.createTreeWalker(preview, NodeFilter.SHOW_TEXT);
+      const allTextNodes: Array<Node> = [];
+      let currentNode = treeWalker.nextNode();
+      while (currentNode) {
+        allTextNodes.push(currentNode);
+        currentNode = treeWalker.nextNode();
+      }
+
+      return allTextNodes;
+    };
+
+    const getMatchIndices = (text: string, searchValue: string): Array<number> => {
+      const indices: Array<number> = [];
+
+      let startPos = 0;
+      while (startPos < text.length) {
+        const index = text.indexOf(searchValue, startPos);
+        if (index === -1) break;
+        indices.push(index);
+        startPos = index + searchValue.length;
+      }
+
+      return indices;
+    };
+
+    const createRange = (el: Node, index: number, length: number): Range => {
+      const range = new Range();
+      range.setStart(el, index);
+      range.setEnd(el, index + length);
+      return range;
+    };
+
     const find = ({
       value,
       matchWord,
@@ -153,6 +190,30 @@ export function Editor({
       replaceWith,
       replaceAll,
     }: FindParams & { replaceAll?: boolean }): void => {
+      if (mode === 'view') {
+        setTimeout(() => {
+          CSS.highlights.clear();
+
+          if (!matchCase) {
+            value = value.toLocaleLowerCase();
+          }
+
+          const ranges = getTextNodes()
+            .map((node) => ({
+              node,
+              text: (matchCase ? node.textContent : node.textContent?.toLowerCase()) ?? '',
+            }))
+            .flatMap(({ node, text }) =>
+              getMatchIndices(text, value).map((index) => createRange(node, index, value.length)),
+            );
+
+          const highlight = new Highlight(...ranges);
+          CSS.highlights.set('search-results', highlight);
+        });
+
+        return;
+      }
+
       const textArea = getTextArea();
       let currentText = textArea.value;
       if (!matchCase) {
@@ -227,7 +288,7 @@ export function Editor({
       find,
       replace: find,
     };
-  }, []);
+  }, [mode]);
 
   return mode === 'edit' ? (
     <textarea
@@ -238,6 +299,10 @@ export function Editor({
       onChange={(e) => setContents(e.currentTarget.value)}
     ></textarea>
   ) : (
-    <div className={styles.editor} dangerouslySetInnerHTML={{ __html: contents }}></div>
+    <div
+      ref={previewRef}
+      className={styles.editor}
+      dangerouslySetInnerHTML={{ __html: contents }}
+    ></div>
   );
 }
