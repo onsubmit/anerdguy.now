@@ -40,6 +40,7 @@ export function Menu2({
 
   const getSubMenuParams = useCallback(
     (index: number): SubMenuParams => ({
+      open: activeMenuIndex === index,
       topMenuButton: topMenuItemsRef.current[index],
       closeMenu,
       openDialog: <T extends DialogType>(args: OpenDialogArgs<T>): void => {
@@ -47,7 +48,7 @@ export function Menu2({
         openDialog(args);
       },
     }),
-    [openDialog],
+    [activeMenuIndex, openDialog],
   );
 
   const menus = useMemo(
@@ -55,7 +56,9 @@ export function Menu2({
       {
         title: 'File',
         component: (
-          <FileMenu {...{ ...getSubMenuParams(0), editorMode, toggleEditorMode }}></FileMenu>
+          <FileMenu
+            {...{ ...getSubMenuParams(0), editorMode, toggleEditorMode, activeMenuIndex }}
+          ></FileMenu>
         ),
       },
       {
@@ -67,7 +70,7 @@ export function Menu2({
         component: (
           <SearchMenu
             disableReplace={editorMode === 'view'}
-            {...{ ...getSubMenuParams(2), findDialogRef }}
+            {...{ ...getSubMenuParams(2), editorMode, findDialogRef }}
           ></SearchMenu>
         ),
       },
@@ -81,7 +84,7 @@ export function Menu2({
         component: <HelpMenu {...{ ...getSubMenuParams(5) }}></HelpMenu>,
       },
     ],
-    [editorMode, editorRef, findDialogRef, getSubMenuParams, toggleEditorMode],
+    [activeMenuIndex, editorMode, editorRef, findDialogRef, getSubMenuParams, toggleEditorMode],
   );
 
   const activate = (title: string): void => {
@@ -97,29 +100,15 @@ export function Menu2({
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent): void => {
-      if (e.key === 'F3') {
-        findDialogRef.current?.findAgain();
-        e.preventDefault();
-        return;
-      }
-
       if (e.key === 'Escape') {
         if (activeMenuIndex === null) {
-          toggleEditorMode();
-        } else {
           setActiveMenuIndex(null);
-        }
-        return;
-      }
-
-      if (e.ctrlKey && ['f', 'r'].includes(e.key)) {
-        e.preventDefault();
-        if (e.key === 'r' && editorMode === 'view') {
-          // Disable "Replace" in View mode
-          return;
+        } else {
+          topMenuItemsRef.current[activeMenuIndex]?.focus();
+          setFocusedMenuIndex(activeMenuIndex);
+          closeMenu();
         }
 
-        openDialog({ type: e.key === 'f' ? 'find' : 'replace' });
         return;
       }
 
@@ -148,12 +137,6 @@ export function Menu2({
         return;
       }
 
-      if (e.key === 'Escape') {
-        topMenuItemsRef.current[activeMenuIndex]?.focus();
-        setFocusedMenuIndex(activeMenuIndex);
-        closeMenu();
-      }
-
       if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
         let newIndex = -1;
         if (e.key === 'ArrowLeft') {
@@ -167,15 +150,7 @@ export function Menu2({
         setFocusedMenuIndex(newIndex);
       }
     },
-    [
-      activeMenuIndex,
-      editorMode,
-      findDialogRef,
-      focusedMenuIndex,
-      menus.length,
-      openDialog,
-      toggleEditorMode,
-    ],
+    [activeMenuIndex, focusedMenuIndex, menus.length],
   );
 
   useKeyDownHandler(handleKeyDown);
@@ -213,9 +188,7 @@ export function Menu2({
             >
               {title}
             </button>
-            {activeMenuIndex !== null && menus[activeMenuIndex].title === title
-              ? component
-              : undefined}
+            {component}
           </li>
         ))}
       </ul>

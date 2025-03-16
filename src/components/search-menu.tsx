@@ -1,16 +1,22 @@
-import { RefObject, useRef } from 'react';
+import classNames from 'classnames';
+import { RefObject, useCallback, useRef } from 'react';
 
+import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
 import { useSubMenuFocusHandler } from '../hooks/useSubMenuFocusHandler';
+import { EditorMode } from './editor';
 import { FindDialogOperations } from './find-dialog';
 import { SubMenuParams } from './sub-menu';
 import styles from './sub-menu.module.css';
 
 type SearchMenuParams = {
+  editorMode: EditorMode;
   disableReplace: boolean;
   findDialogRef: RefObject<FindDialogOperations | null>;
 } & SubMenuParams;
 
 export function SearchMenu({
+  open,
+  editorMode,
   disableReplace,
   topMenuButton,
   openDialog,
@@ -20,8 +26,32 @@ export function SearchMenu({
   const listRef = useRef<HTMLUListElement>(null);
   useSubMenuFocusHandler(listRef);
 
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent): void => {
+      if (e.key === 'F3') {
+        findDialogRef.current?.findAgain();
+        e.preventDefault();
+        return;
+      }
+
+      if (e.ctrlKey && ['f', 'r'].includes(e.key)) {
+        e.preventDefault();
+        if (e.key === 'r' && editorMode === 'view') {
+          // Disable "Replace" in View mode
+          return;
+        }
+
+        openDialog({ type: e.key === 'f' ? 'find' : 'replace' });
+        return;
+      }
+    },
+    [editorMode, findDialogRef, openDialog],
+  );
+
+  useKeyDownHandler(handleKeyDown);
+
   return (
-    <div className={styles.subMenu}>
+    <div className={classNames(styles.subMenu, open ? styles.open : undefined)}>
       <ul ref={listRef}>
         <li>
           <button

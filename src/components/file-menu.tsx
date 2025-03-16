@@ -1,5 +1,7 @@
-import { useRef } from 'react';
+import classNames from 'classnames';
+import { useCallback, useRef } from 'react';
 
+import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
 import { useSubMenuFocusHandler } from '../hooks/useSubMenuFocusHandler';
 import { EditorMode } from './editor';
 import { SubMenuParams } from './sub-menu';
@@ -8,18 +10,34 @@ import styles from './sub-menu.module.css';
 type FileMenuParams = {
   editorMode: EditorMode;
   toggleEditorMode: () => void;
+  activeMenuIndex: number | null;
 } & SubMenuParams;
 
 export function FileMenu({
+  open,
   editorMode,
   toggleEditorMode,
   closeMenu,
+  activeMenuIndex,
 }: FileMenuParams): React.JSX.Element {
   const listRef = useRef<HTMLUListElement>(null);
   useSubMenuFocusHandler(listRef);
 
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') {
+        if (activeMenuIndex === null) {
+          return toggleEditorMode();
+        }
+      }
+    },
+    [activeMenuIndex, toggleEditorMode],
+  );
+
+  useKeyDownHandler(handleKeyDown);
+
   return (
-    <div className={styles.subMenu}>
+    <div className={classNames(styles.subMenu, open ? styles.open : undefined)}>
       <ul ref={listRef}>
         <li>
           <button type="button">New</button>

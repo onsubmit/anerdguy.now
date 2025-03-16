@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { RefObject, useRef } from 'react';
 
 import { useSubMenuFocusHandler } from '../hooks/useSubMenuFocusHandler';
@@ -12,6 +13,7 @@ type EditMenuParams = {
 } & SubMenuParams;
 
 export function EditMenu({
+  open,
   closeMenu,
   editorMode,
   editorRef,
@@ -21,7 +23,7 @@ export function EditMenu({
   useSubMenuFocusHandler(listRef);
 
   return (
-    <div className={styles.subMenu}>
+    <div className={classNames(styles.subMenu, open ? styles.open : undefined)}>
       <ul ref={listRef}>
         <li>
           <button
