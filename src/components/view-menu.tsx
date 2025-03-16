@@ -1,9 +1,10 @@
 import { useRef } from 'react';
 
 import { useSubMenuFocusHandler } from '../hooks/useSubMenuFocusHandler';
+import { SubMenuParams } from './sub-menu';
 import styles from './sub-menu.module.css';
 
-export function ViewMenu(): React.JSX.Element {
+export function ViewMenu(_: SubMenuParams): React.JSX.Element {
   const listRef = useRef<HTMLUListElement>(null);
   useSubMenuFocusHandler(listRef);
 

@@ -1,4 +1,4 @@
-import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { DialogType } from './dialog';
 import { EditMenu } from './edit-menu';
@@ -9,16 +9,8 @@ import { HelpMenu } from './help-menu';
 import styles from './menu.module.css';
 import { OptionsMenu } from './options-menu';
 import { SearchMenu } from './search-menu';
+import { SubMenuParams } from './sub-menu';
 import { ViewMenu } from './view-menu';
-
-const menus = [
-  { title: 'File', SubMenu: FileMenu },
-  { title: 'Edit', SubMenu: EditMenu },
-  { title: 'Search', SubMenu: SearchMenu },
-  { title: 'View', SubMenu: ViewMenu },
-  { title: 'Options', SubMenu: OptionsMenu },
-  { title: 'Help', SubMenu: HelpMenu },
-] as const;
 
 type MenuParams = {
   editorMode: EditorMode;
@@ -38,18 +30,51 @@ export function Menu2({
   const [activeMenuIndex, setActiveMenuIndex] = useState<number | null>(null);
   const [focusedMenuIndex, setFocusedMenuIndex] = useState<number | null>(null);
 
-  const activate = (title: string): void => {
-    const index = menus.findIndex((m) => m.title === title);
-    setActiveMenuIndex(index < 0 ? null : index);
-  };
-
   const closeMenu = (): void => {
     setActiveMenuIndex(null);
   };
 
-  const closeMenuAndOpenDialog = (type: DialogType, toFocusOnClose?: HTMLElement | null): void => {
-    closeMenu();
-    openDialog(type, toFocusOnClose);
+  const getSubMenuParams = useCallback(
+    (index: number): SubMenuParams => ({
+      topMenuButton: topMenuItemsRef.current[index],
+      closeMenu,
+      openDialog: (type: DialogType, toFocusOnClose?: HTMLElement | null): void => {
+        closeMenu();
+        openDialog(type, toFocusOnClose);
+      },
+    }),
+    [openDialog],
+  );
+
+  const menus = useMemo(
+    () => [
+      {
+        title: 'File',
+        component: (
+          <FileMenu {...{ ...getSubMenuParams(0), editorMode, toggleEditorMode }}></FileMenu>
+        ),
+      },
+      { title: 'Edit', component: <EditMenu {...{ ...getSubMenuParams(1) }}></EditMenu> },
+      {
+        title: 'Search',
+        component: <SearchMenu {...{ ...getSubMenuParams(2) }}></SearchMenu>,
+      },
+      { title: 'View', component: <ViewMenu {...{ ...getSubMenuParams(3) }}></ViewMenu> },
+      {
+        title: 'Options',
+        component: <OptionsMenu {...{ ...getSubMenuParams(4) }}></OptionsMenu>,
+      },
+      {
+        title: 'Help',
+        component: <HelpMenu {...{ ...getSubMenuParams(5) }}></HelpMenu>,
+      },
+    ],
+    [editorMode, getSubMenuParams, toggleEditorMode],
+  );
+
+  const activate = (title: string): void => {
+    const index = menus.findIndex((m) => m.title === title);
+    setActiveMenuIndex(index < 0 ? null : index);
   };
 
   const handleClickOutside = useCallback((e: MouseEvent): void => {
@@ -125,7 +150,7 @@ export function Menu2({
         setFocusedMenuIndex(newIndex);
       }
     },
-    [activeMenuIndex, findDialogRef, focusedMenuIndex, openDialog, toggleEditorMode],
+    [activeMenuIndex, findDialogRef, focusedMenuIndex, menus, openDialog, toggleEditorMode],
   );
 
   useEffect(() => {
@@ -140,8 +165,8 @@ export function Menu2({
   return (
     <div ref={containerRef} className={styles.menu}>
       <ul>
-        {menus.map(({ title, SubMenu }, index) => (
-          <li className={activeMenuIndex === index ? styles.active : undefined}>
+        {menus.map(({ title, component }, index) => (
+          <li key={title} className={activeMenuIndex === index ? styles.active : undefined}>
             <button
               ref={(el) => {
                 topMenuItemsRef.current[index] = el;
@@ -163,15 +188,9 @@ export function Menu2({
             >
               {title}
             </button>
-            {activeMenuIndex !== null && menus[activeMenuIndex].title === title ? (
-              <SubMenu
-                topMenuButton={topMenuItemsRef.current[index]}
-                closeMenu={closeMenu}
-                openDialog={closeMenuAndOpenDialog}
-                editorMode={editorMode}
-                toggleEditorMode={toggleEditorMode}
-              />
-            ) : undefined}
+            {activeMenuIndex !== null && menus[activeMenuIndex].title === title
+              ? component
+              : undefined}
           </li>
         ))}
       </ul>

@@ -37,14 +37,13 @@ export function App(): React.JSX.Element {
 
     setTimeout(() => {
       if (toFocusOnDialogCloseRef.current.length) {
-        console.log(toFocusOnDialogCloseRef.current.pop());
         toFocusOnDialogCloseRef.current.pop()?.focus();
       } else {
         if (editorMode === 'edit') {
           setTimeout(() => editorRef.current?.focus());
         }
       }
-    }, 250);
+    });
   };
 
   const toggleEditorMode = useCallback((): void => {
