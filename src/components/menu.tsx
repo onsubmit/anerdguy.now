@@ -1,5 +1,6 @@
 import { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
 import { DialogType, OpenDialogArgs } from './dialog';
 import { EditMenu } from './edit-menu';
 import { EditorMode } from './editor';
@@ -177,12 +178,12 @@ export function Menu2({
     ],
   );
 
+  useKeyDownHandler(handleKeyDown);
+
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleKeyDown);
     return (): void => {
       document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleKeyDown);
     };
   });
 
