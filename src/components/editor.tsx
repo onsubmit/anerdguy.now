@@ -298,7 +298,6 @@ export function Editor({
     <textarea
       ref={textAreaRef}
       className={styles.editor}
-      defaultValue={contents}
       onKeyUp={getLineAndColumnNumbers}
       value={contents}
       onChange={(e) => setContents(e.currentTarget.value)}
