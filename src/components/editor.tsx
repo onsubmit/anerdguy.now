@@ -230,15 +230,13 @@ export function Editor({
   }, []);
 
   return mode === 'edit' ? (
-    <div className={styles.editor}>
-      <textarea
-        ref={textAreaRef}
-        className={styles.editor}
-        defaultValue={contents}
-        onKeyUp={getLineAndColumnNumbers}
-        onChange={(e) => setContents(e.currentTarget.value)}
-      ></textarea>
-    </div>
+    <textarea
+      ref={textAreaRef}
+      className={styles.editor}
+      defaultValue={contents}
+      onKeyUp={getLineAndColumnNumbers}
+      onChange={(e) => setContents(e.currentTarget.value)}
+    ></textarea>
   ) : (
     <div className={styles.editor} dangerouslySetInnerHTML={{ __html: contents }}></div>
   );
