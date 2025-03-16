@@ -24,9 +24,13 @@
         width: 100%;
         text-align: left;
 
-        &:hover    {
+        &:hover {
           background: var(--menubar-foreground);
           color: var(--menubar-background);
+        }
+
+        &:disabled {
+          color: color-mix(in srgb, var(--menubar-foreground) 60%, var(--menubar-background));
         }
       }
     }

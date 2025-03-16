@@ -57,7 +57,12 @@ export function Menu2({
       { title: 'Edit', component: <EditMenu {...{ ...getSubMenuParams(1) }}></EditMenu> },
       {
         title: 'Search',
-        component: <SearchMenu {...{ ...getSubMenuParams(2) }}></SearchMenu>,
+        component: (
+          <SearchMenu
+            disableReplace={editorMode === 'view'}
+            {...{ ...getSubMenuParams(2) }}
+          ></SearchMenu>
+        ),
       },
       { title: 'View', component: <ViewMenu {...{ ...getSubMenuParams(3) }}></ViewMenu> },
       {
@@ -101,8 +106,13 @@ export function Menu2({
       }
 
       if (e.ctrlKey && ['f', 'r'].includes(e.key)) {
-        openDialog(e.key === 'f' ? 'find' : 'replace');
         e.preventDefault();
+        if (e.key === 'r' && editorMode === 'view') {
+          // Disable "Replace" in View mode
+          return;
+        }
+
+        openDialog(e.key === 'f' ? 'find' : 'replace');
         return;
       }
 

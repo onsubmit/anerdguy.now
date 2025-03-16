@@ -4,7 +4,15 @@ import { useSubMenuFocusHandler } from '../hooks/useSubMenuFocusHandler';
 import { SubMenuParams } from './sub-menu';
 import styles from './sub-menu.module.css';
 
-export function SearchMenu({ topMenuButton, openDialog }: SubMenuParams): React.JSX.Element {
+type SearchMenuParams = {
+  disableReplace: boolean;
+} & SubMenuParams;
+
+export function SearchMenu({
+  disableReplace,
+  topMenuButton,
+  openDialog,
+}: SearchMenuParams): React.JSX.Element {
   const listRef = useRef<HTMLUListElement>(null);
   useSubMenuFocusHandler(listRef);
 
@@ -20,7 +28,11 @@ export function SearchMenu({ topMenuButton, openDialog }: SubMenuParams): React.
           <button type="button">Repeat Last Find{'    '}F3</button>
         </li>
         <li>
-          <button type="button" onClick={() => openDialog('replace', topMenuButton)}>
+          <button
+            type="button"
+            disabled={disableReplace}
+            onClick={() => openDialog('replace', topMenuButton)}
+          >
             Replace{'             '}Ctrl+R
           </button>
         </li>
