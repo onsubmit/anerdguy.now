@@ -30,6 +30,8 @@
       font: inherit;
       cursor: pointer;
       white-space: nowrap;
+      width: 100%;
+      text-align: left;
 
       &:focus:not(:focus-visible) {
         outline: none;
