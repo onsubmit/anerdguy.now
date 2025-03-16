@@ -160,7 +160,15 @@ export function Menu2({
         setFocusedMenuIndex(newIndex);
       }
     },
-    [activeMenuIndex, findDialogRef, focusedMenuIndex, menus, openDialog, toggleEditorMode],
+    [
+      activeMenuIndex,
+      editorMode,
+      findDialogRef,
+      focusedMenuIndex,
+      menus.length,
+      openDialog,
+      toggleEditorMode,
+    ],
   );
 
   useEffect(() => {
