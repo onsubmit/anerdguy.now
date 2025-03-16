@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import styles from './app.module.css';
 import { AboutDialog } from './components/about-dialog';
@@ -47,9 +47,13 @@ export function App(): React.JSX.Element {
     }, 250);
   };
 
-  const toggleEditorMode = (): void => {
+  const toggleEditorMode = useCallback((): void => {
+    if (currentDialog !== null) {
+      return;
+    }
+
     setEditorMode((mode) => (mode === 'edit' ? 'view' : 'edit'));
-  };
+  }, [currentDialog]);
 
   useEffect(() => {
     const openDialogFromEvent = (event: CustomEventInit<OpenDialogEvent>): void => {
@@ -66,7 +70,7 @@ export function App(): React.JSX.Element {
       Object.entries(events).forEach(([name, handler]) =>
         document.removeEventListener(name, handler),
       );
-  }, []);
+  }, [toggleEditorMode]);
 
   return (
     <>

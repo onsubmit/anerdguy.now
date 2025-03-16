@@ -18,7 +18,7 @@ const menus = [
   { title: 'View', SubMenu: ViewMenu },
   { title: 'Options', SubMenu: OptionsMenu },
   { title: 'Help', SubMenu: HelpMenu },
-];
+] as const;
 
 type MenuParams = {
   editorMode: EditorMode;
@@ -63,6 +63,15 @@ export function Menu2({
       if (e.key === 'F3') {
         findDialogRef.current?.findAgain();
         e.preventDefault();
+        return;
+      }
+
+      if (e.key === 'Escape') {
+        if (activeMenuIndex === null) {
+          toggleEditorMode();
+        } else {
+          setActiveMenuIndex(null);
+        }
         return;
       }
 
@@ -129,7 +138,7 @@ export function Menu2({
         // subMenuItemsRef.current[activeMenuIndex][newIndex]?.focus();
       }
     },
-    [activeMenuIndex, findDialogRef, focusedMenuIndex, openDialog],
+    [activeMenuIndex, findDialogRef, focusedMenuIndex, openDialog, toggleEditorMode],
   );
 
   useEffect(() => {
