@@ -69,7 +69,6 @@ export function App(): React.JSX.Element {
           filename={activeFilename}
           contents={activeFileContents}
           editorMode={editorMode}
-          findDialogRef={findDialogRef}
           editorRef={editorRef}
         ></File>
       </div>
