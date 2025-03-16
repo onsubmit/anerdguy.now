@@ -21,7 +21,7 @@ export function App(): React.JSX.Element {
   const toFocusOnDialogCloseRef = useRef<Array<HTMLElement>>([]);
   const [editorMode, setEditorMode] = useState<EditorMode>('view');
   const [activeFilename, _setActiveFilename] = useState('anerdguy.now');
-  const [activeFileContents, _setActiveFileContents] = useState(index);
+  const [activeFileContents, setActiveFileContents] = useState(index);
   const [currentDialog, setCurrentDialog] = useState<DialogType | null>(null);
 
   const openDialog = (type: DialogType, toFocusOnClose?: HTMLElement | null): void => {
@@ -68,6 +68,7 @@ export function App(): React.JSX.Element {
         <File
           filename={activeFilename}
           contents={activeFileContents}
+          setContents={setActiveFileContents}
           editorMode={editorMode}
           editorRef={editorRef}
         ></File>

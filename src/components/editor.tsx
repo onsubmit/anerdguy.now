@@ -25,6 +25,7 @@ export type EditorMode = 'view' | 'edit';
 
 type EditorParams = {
   contents: string;
+  setContents: React.Dispatch<React.SetStateAction<string>>;
   mode: EditorMode;
   onCursorPositionChange: (position: CursorPosition) => void;
   ref: RefObject<EditorOperations | null>;
@@ -32,6 +33,7 @@ type EditorParams = {
 
 export function Editor({
   contents,
+  setContents,
   mode,
   onCursorPositionChange,
   ref,
@@ -233,6 +235,7 @@ export function Editor({
       className={styles.editor}
       defaultValue={contents}
       onKeyUp={getLineAndColumnNumbers}
+      onChange={(e) => setContents(e.currentTarget.value)}
     ></textarea>
   ) : (
     <div className={styles.editor} dangerouslySetInnerHTML={{ __html: contents }}></div>

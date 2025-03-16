@@ -7,11 +7,18 @@ import styles from './file.module.css';
 type FileParams = {
   filename: string;
   contents: string;
+  setContents: React.Dispatch<React.SetStateAction<string>>;
   editorMode: 'view' | 'edit';
   editorRef: RefObject<EditorOperations | null>;
 };
 
-export function File({ filename, editorMode, contents, editorRef }: FileParams): React.JSX.Element {
+export function File({
+  filename,
+  editorMode,
+  contents,
+  setContents,
+  editorRef,
+}: FileParams): React.JSX.Element {
   const [cursorPosition, setCursorPosition] = useState<CursorPosition>({ line: 1, column: 1 });
 
   return (
@@ -24,6 +31,7 @@ export function File({ filename, editorMode, contents, editorRef }: FileParams):
           ref={editorRef}
           mode={editorMode}
           contents={contents}
+          setContents={setContents}
           onCursorPositionChange={setCursorPosition}
         ></Editor>
         <div className={styles.status}>
