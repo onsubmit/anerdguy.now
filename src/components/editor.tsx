@@ -103,16 +103,18 @@ export function Editor({
       switch (copiedFrom) {
         case 'selection': {
           const { selectionStart, selectionEnd } = selection;
-          textArea.value =
-            textArea.value.substring(0, selectionStart) + textArea.value.substring(selectionEnd);
+          setContents((v) => v.substring(0, selectionStart) + v.substring(selectionEnd));
           textArea.selectionStart = textArea.selectionEnd = selectionStart;
           break;
         }
         case 'line': {
-          textArea.value = textArea.value
-            .split('\n')
-            .filter((_l, i) => i !== selection.lineNumber)
-            .join('\n');
+          setContents((v) =>
+            v
+              .split('\n')
+              .filter((_l, i) => i !== selection.lineNumber)
+              .join('\n'),
+          );
+
           break;
         }
       }
@@ -130,8 +132,7 @@ export function Editor({
       const textArea = getTextArea();
       const { selectionStart, selectionEnd } = textArea;
 
-      textArea.value =
-        textArea.value.substring(0, selectionStart) + text + textArea.value.substring(selectionEnd);
+      setContents((v) => v.substring(0, selectionStart) + text + v.substring(selectionEnd));
       textArea.selectionStart = textArea.selectionEnd = selectionEnd + text.length;
     };
 
@@ -142,8 +143,7 @@ export function Editor({
       }
 
       const { textArea, selectionStart, selectionEnd } = selection;
-      textArea.value =
-        textArea.value.substring(0, selectionStart) + textArea.value.substring(selectionEnd);
+      setContents((v) => v.substring(0, selectionStart) + v.substring(selectionEnd));
       textArea.selectionStart = textArea.selectionEnd = selectionStart;
     };
 
@@ -264,12 +264,9 @@ export function Editor({
           if (replaceWith !== null) {
             if (replaceAll) {
               const r = new RegExp(matchWord ? `\\b${value}\\b` : value, matchCase ? 'g' : 'gi');
-              textArea.value = textArea.value.replace(r, replaceWith);
+              setContents((v) => v.replace(r, replaceWith));
             } else {
-              textArea.value =
-                textArea.value.slice(0, index) +
-                replaceWith +
-                textArea.value.slice(index + value.length);
+              setContents((v) => v.slice(0, index) + replaceWith + v.slice(index + value.length));
             }
           }
 
@@ -288,7 +285,7 @@ export function Editor({
       find,
       replace: find,
     };
-  }, [mode]);
+  }, [mode, setContents]);
 
   return mode === 'edit' ? (
     <textarea
@@ -296,6 +293,7 @@ export function Editor({
       className={styles.editor}
       defaultValue={contents}
       onKeyUp={getLineAndColumnNumbers}
+      value={contents}
       onChange={(e) => setContents(e.currentTarget.value)}
     ></textarea>
   ) : (

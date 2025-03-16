@@ -144,6 +144,7 @@ export function FindDialog({
             <button
               type="button"
               onClick={() => {
+                closeDialog();
                 const findParams = {
                   ...originalParams,
                   ...pendingParams,
