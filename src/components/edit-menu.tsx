@@ -1,10 +1,15 @@
 import { useRef } from 'react';
 
 import { useSubMenuFocusHandler } from '../hooks/useSubMenuFocusHandler';
+import { EditorMode } from './editor';
 import { SubMenuParams } from './sub-menu';
 import styles from './sub-menu.module.css';
 
-export function EditMenu(_: SubMenuParams): React.JSX.Element {
+type EditMenuParams = {
+  editorMode: EditorMode;
+} & SubMenuParams;
+
+export function EditMenu({ editorMode }: EditMenuParams): React.JSX.Element {
   const listRef = useRef<HTMLUListElement>(null);
   useSubMenuFocusHandler(listRef);
 
@@ -12,7 +17,9 @@ export function EditMenu(_: SubMenuParams): React.JSX.Element {
     <div className={styles.subMenu}>
       <ul ref={listRef}>
         <li>
-          <button type="button">Cut{'      '}Ctrl+X</button>
+          <button type="button" disabled={editorMode === 'view'}>
+            Cut{'      '}Ctrl+X
+          </button>
         </li>
         <li>
           <button type="button">Copy{'     '}Ctrl+C</button>
@@ -21,7 +28,9 @@ export function EditMenu(_: SubMenuParams): React.JSX.Element {
           <button type="button">Paste{'    '}Ctrl+V</button>
         </li>
         <li>
-          <button type="button">Clear{'    '}Del</button>
+          <button type="button" disabled={editorMode === 'view'}>
+            Clear{'    '}Del
+          </button>
         </li>
       </ul>
     </div>

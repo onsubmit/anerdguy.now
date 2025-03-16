@@ -54,7 +54,10 @@ export function Menu2({
           <FileMenu {...{ ...getSubMenuParams(0), editorMode, toggleEditorMode }}></FileMenu>
         ),
       },
-      { title: 'Edit', component: <EditMenu {...{ ...getSubMenuParams(1) }}></EditMenu> },
+      {
+        title: 'Edit',
+        component: <EditMenu {...{ ...getSubMenuParams(1), editorMode }}></EditMenu>,
+      },
       {
         title: 'Search',
         component: (

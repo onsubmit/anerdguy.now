@@ -24,7 +24,7 @@
         width: 100%;
         text-align: left;
 
-        &:hover {
+        &:hover:not(:disabled) {
           background: var(--menubar-foreground);
           color: var(--menubar-background);
         }
