@@ -15,7 +15,10 @@ export function HelpMenu({ topMenuButton, openDialog }: SubMenuParams): React.JS
           <button type="button">Commands...</button>
         </li>
         <li>
-          <button type="button" onClick={() => openDialog('about', topMenuButton)}>
+          <button
+            type="button"
+            onClick={() => openDialog({ type: 'about', toFocusOnClose: topMenuButton })}
+          >
             About...
           </button>
         </li>

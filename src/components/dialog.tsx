@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 import styles from './dialog.module.css';
+import { OpenErrorDialogParams } from './error-dialog';
 
 export type DialogType =
   | 'open-file'
@@ -10,10 +11,21 @@ export type DialogType =
   | 'find'
   | 'find-help'
   | 'replace'
-  | 'replace-help';
+  | 'replace-help'
+  | 'error';
 
 export type OpenDialogEvent = {
   type: DialogType;
+};
+
+export type OpenDialogParams<T extends DialogType> = T extends 'error'
+  ? OpenErrorDialogParams
+  : never;
+
+export type OpenDialogArgs<T extends DialogType> = {
+  type: T;
+  params?: OpenDialogParams<T>;
+  toFocusOnClose?: HTMLElement | null;
 };
 
 type DialogParams = {

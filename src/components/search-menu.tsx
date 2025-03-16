@@ -24,7 +24,10 @@ export function SearchMenu({
     <div className={styles.subMenu}>
       <ul ref={listRef}>
         <li>
-          <button type="button" onClick={() => openDialog('find', topMenuButton)}>
+          <button
+            type="button"
+            onClick={() => openDialog({ type: 'find', toFocusOnClose: topMenuButton })}
+          >
             Find...{'             '}Ctrl+F
           </button>
         </li>
@@ -43,7 +46,7 @@ export function SearchMenu({
           <button
             type="button"
             disabled={disableReplace}
-            onClick={() => openDialog('replace', topMenuButton)}
+            onClick={() => openDialog({ type: 'replace', toFocusOnClose: topMenuButton })}
           >
             Replace{'             '}Ctrl+R
           </button>

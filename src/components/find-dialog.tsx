@@ -1,6 +1,6 @@
 import { RefObject, useCallback, useImperativeHandle, useState } from 'react';
 
-import { Dialog, DialogType } from './dialog';
+import { Dialog, DialogType, OpenDialogArgs } from './dialog';
 import { DialogButtons } from './dialog-buttons';
 import { EditorOperations, FindParams } from './editor-operation';
 import styles from './find-dialog.module.css';
@@ -12,7 +12,7 @@ export type FindDialogOperations = {
 type FindDialogParams = {
   open: boolean;
   replace: boolean;
-  openDialog: (type: DialogType, opener: HTMLElement) => void;
+  openDialog: <T extends DialogType>({ type, toFocusOnClose }: OpenDialogArgs<T>) => void;
   closeDialog: () => void;
   setCurrentDialog: React.Dispatch<React.SetStateAction<DialogType | null>>;
   editorRef: RefObject<EditorOperations | null>;
@@ -191,7 +191,12 @@ export function FindDialog({
         </button>
         <button
           type="button"
-          onClick={(e) => openDialog(replace ? 'replace-help' : 'find-help', e.currentTarget)}
+          onClick={(e) =>
+            openDialog({
+              type: replace ? 'replace-help' : 'find-help',
+              toFocusOnClose: e.currentTarget,
+            })
+          }
         >
           Help
         </button>

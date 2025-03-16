@@ -1,5 +1,6 @@
 import React, { RefObject, useImperativeHandle, useRef } from 'react';
 
+import { DialogType, OpenDialogArgs } from './dialog';
 import styles from './editor.module.css';
 import { EditorOperations, FindParams } from './editor-operation';
 
@@ -28,6 +29,7 @@ type EditorParams = {
   setContents: React.Dispatch<React.SetStateAction<string>>;
   mode: EditorMode;
   onCursorPositionChange: (position: CursorPosition) => void;
+  openDialog: <T extends DialogType>(args: OpenDialogArgs<T>) => void;
   ref: RefObject<EditorOperations | null>;
 };
 
@@ -36,6 +38,7 @@ export function Editor({
   setContents,
   mode,
   onCursorPositionChange,
+  openDialog,
   ref,
 }: EditorParams): React.JSX.Element {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -124,8 +127,12 @@ export function Editor({
       let text = '';
       try {
         text = await navigator.clipboard.readText();
-      } catch {
-        console.warn('Could not read text from clipboard');
+      } catch (e) {
+        const detail = e instanceof Error ? e.message : `${e}`;
+        openDialog({
+          type: 'error',
+          params: { message: 'Unable to access clipboard.', detail },
+        });
         return;
       }
 
@@ -285,7 +292,7 @@ export function Editor({
       find,
       replace: find,
     };
-  }, [mode, setContents]);
+  }, [mode, openDialog, setContents]);
 
   return mode === 'edit' ? (
     <textarea

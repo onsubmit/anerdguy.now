@@ -1,5 +1,6 @@
 import { RefObject, useState } from 'react';
 
+import { DialogType, OpenDialogArgs } from './dialog';
 import { CursorPosition, Editor } from './editor';
 import { EditorOperations } from './editor-operation';
 import styles from './file.module.css';
@@ -8,6 +9,7 @@ type FileParams = {
   filename: string;
   contents: string;
   setContents: React.Dispatch<React.SetStateAction<string>>;
+  openDialog: <T extends DialogType>(args: OpenDialogArgs<T>) => void;
   editorMode: 'view' | 'edit';
   editorRef: RefObject<EditorOperations | null>;
 };
@@ -17,6 +19,7 @@ export function File({
   editorMode,
   contents,
   setContents,
+  openDialog,
   editorRef,
 }: FileParams): React.JSX.Element {
   const [cursorPosition, setCursorPosition] = useState<CursorPosition>({ line: 1, column: 1 });
@@ -33,6 +36,7 @@ export function File({
           contents={contents}
           setContents={setContents}
           onCursorPositionChange={setCursorPosition}
+          openDialog={openDialog}
         ></Editor>
         <div className={styles.status}>
           <span>F1=Help</span>

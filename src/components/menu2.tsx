@@ -1,8 +1,9 @@
 import { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { DialogType } from './dialog';
+import { DialogType, OpenDialogArgs } from './dialog';
 import { EditMenu } from './edit-menu';
 import { EditorMode } from './editor';
+import { EditorOperations } from './editor-operation';
 import { FileMenu } from './file-menu';
 import { FindDialogOperations } from './find-dialog';
 import { HelpMenu } from './help-menu';
@@ -15,8 +16,9 @@ import { ViewMenu } from './view-menu';
 type MenuParams = {
   editorMode: EditorMode;
   toggleEditorMode: () => void;
-  openDialog: (type: DialogType, toFocusOnClose?: HTMLElement | null) => void;
+  openDialog: <T extends DialogType>(args: OpenDialogArgs<T>) => void;
   findDialogRef: RefObject<FindDialogOperations | null>;
+  editorRef: RefObject<EditorOperations | null>;
 };
 
 export function Menu2({
@@ -24,6 +26,7 @@ export function Menu2({
   toggleEditorMode,
   openDialog,
   findDialogRef,
+  editorRef,
 }: MenuParams): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
   const topMenuItemsRef = useRef<Array<HTMLButtonElement | null>>([]);
@@ -38,9 +41,9 @@ export function Menu2({
     (index: number): SubMenuParams => ({
       topMenuButton: topMenuItemsRef.current[index],
       closeMenu,
-      openDialog: (type: DialogType, toFocusOnClose?: HTMLElement | null): void => {
+      openDialog: <T extends DialogType>(args: OpenDialogArgs<T>): void => {
         closeMenu();
-        openDialog(type, toFocusOnClose);
+        openDialog(args);
       },
     }),
     [openDialog],
@@ -56,7 +59,7 @@ export function Menu2({
       },
       {
         title: 'Edit',
-        component: <EditMenu {...{ ...getSubMenuParams(1), editorMode }}></EditMenu>,
+        component: <EditMenu {...{ ...getSubMenuParams(1), editorMode, editorRef }}></EditMenu>,
       },
       {
         title: 'Search',
@@ -77,7 +80,7 @@ export function Menu2({
         component: <HelpMenu {...{ ...getSubMenuParams(5) }}></HelpMenu>,
       },
     ],
-    [editorMode, findDialogRef, getSubMenuParams, toggleEditorMode],
+    [editorMode, editorRef, findDialogRef, getSubMenuParams, toggleEditorMode],
   );
 
   const activate = (title: string): void => {
@@ -115,7 +118,7 @@ export function Menu2({
           return;
         }
 
-        openDialog(e.key === 'f' ? 'find' : 'replace');
+        openDialog({ type: e.key === 'f' ? 'find' : 'replace' });
         return;
       }
 

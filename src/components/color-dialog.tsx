@@ -4,14 +4,14 @@ import { getCachedItem, setCachedItem } from '../localStorage';
 import styles from './color-dialog.module.css';
 import { ColorOptionList } from './color-option-list';
 import { colors, getKnownColor, KnownColor } from './colors';
-import { Dialog, DialogType } from './dialog';
+import { Dialog, DialogType, OpenDialogArgs } from './dialog';
 import { DialogButtons } from './dialog-buttons';
 import { OptionListOperations, OptionsList } from './option-list';
 import { KnownThemeableItem, knownThemeableItems, themeableItems } from './themeable-items';
 
 type ColorDialogParams = {
   open: boolean;
-  openDialog: (type: DialogType, opener: HTMLElement) => void;
+  openDialog: <T extends DialogType>({ type, toFocusOnClose }: OpenDialogArgs<T>) => void;
   closeDialog: () => void;
 };
 
@@ -249,7 +249,10 @@ export function ColorDialog({
         >
           Cancel
         </button>
-        <button type="button" onClick={(e) => openDialog('color-help', e.currentTarget)}>
+        <button
+          type="button"
+          onClick={(e) => openDialog({ type: 'color-help', toFocusOnClose: e.currentTarget })}
+        >
           Help
         </button>
       </DialogButtons>

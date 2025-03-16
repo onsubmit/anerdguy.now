@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Dialog, DialogType } from './dialog';
+import { Dialog, DialogType, OpenDialogArgs } from './dialog';
 import { DialogButtons } from './dialog-buttons';
 import { fileSystem } from './file-system';
 import styles from './open-file-dialog.module.css';
@@ -8,20 +8,16 @@ import { OptionsList } from './option-list';
 
 type OpenFileDialogParams = {
   open: boolean;
-  openDialog: (type: DialogType, opener: HTMLElement) => void;
+  openDialog: <T extends DialogType>({ type, toFocusOnClose }: OpenDialogArgs<T>) => void;
   closeDialog: () => void;
 };
 
-export function OpenFileDialog({
-  open,
-  openDialog,
-  closeDialog,
-}: OpenFileDialogParams): React.JSX.Element {
-  const [filename, setFilename] = useState('*.*');
+export function OpenFileDialog({ open, closeDialog }: OpenFileDialogParams): React.JSX.Element {
+  const [filename, _setFilename] = useState('*.*');
   const [selectedFile, setSelectedFile] = useState<string>('');
   const [selectedFolder, setSelectedFolder] = useState<string>('');
-  const [files, setFiles] = useState<Array<string>>(fileSystem['C:\\'].files.map((f) => f.name));
-  const [folders, setFolders] = useState<Array<string>>(
+  const [files, _setFiles] = useState<Array<string>>(fileSystem['C:\\'].files.map((f) => f.name));
+  const [folders, _setFolders] = useState<Array<string>>(
     fileSystem['C:\\'].folders.map((f) => f.name),
   );
 

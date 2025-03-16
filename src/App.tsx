@@ -4,9 +4,10 @@ import styles from './app.module.css';
 import { AboutDialog } from './components/about-dialog';
 import { ColorDialog } from './components/color-dialog';
 import { ColorHelpDialog } from './components/color-help-dialog';
-import { DialogType, OpenDialogEvent } from './components/dialog';
+import { DialogType, OpenDialogArgs, OpenDialogEvent } from './components/dialog';
 import { EditorMode } from './components/editor';
 import { EditorOperations } from './components/editor-operation';
+import { ErrorDialog, OpenErrorDialogParams } from './components/error-dialog';
 import { File } from './components/file';
 import { FindDialog, FindDialogOperations } from './components/find-dialog';
 import { FindHelpDialog } from './components/find-help-dialog';
@@ -23,8 +24,25 @@ export function App(): React.JSX.Element {
   const [activeFilename, _setActiveFilename] = useState('anerdguy.now');
   const [activeFileContents, setActiveFileContents] = useState(index);
   const [currentDialog, setCurrentDialog] = useState<DialogType | null>(null);
+  const [errorDialogArgs, setErrorDialogArgs] = useState<OpenErrorDialogParams>({
+    message: '',
+    detail: '',
+  });
 
-  const openDialog = (type: DialogType, toFocusOnClose?: HTMLElement | null): void => {
+  const openDialog = <T extends DialogType>({
+    type,
+    params,
+    toFocusOnClose,
+  }: OpenDialogArgs<T>): void => {
+    if (type === 'error') {
+      setErrorDialogArgs(
+        params ?? {
+          message: '',
+          detail: '',
+        },
+      );
+    }
+
     setCurrentDialog(type);
 
     if (toFocusOnClose) {
@@ -60,7 +78,7 @@ export function App(): React.JSX.Element {
         return;
       }
 
-      openDialog(event.detail.type);
+      openDialog({ type: event.detail.type });
     };
 
     const events = { 'toggle-edit': toggleEditorMode, 'open-dialog': openDialogFromEvent };
@@ -85,11 +103,13 @@ export function App(): React.JSX.Element {
           toggleEditorMode={toggleEditorMode}
           openDialog={openDialog}
           findDialogRef={findDialogRef}
+          editorRef={editorRef}
         ></Menu2>
         <File
           filename={activeFilename}
           contents={activeFileContents}
           setContents={setActiveFileContents}
+          openDialog={openDialog}
           editorMode={editorMode}
           editorRef={editorRef}
         ></File>
@@ -126,6 +146,10 @@ export function App(): React.JSX.Element {
         open={currentDialog === 'replace-help'}
         closeDialog={closeDialog}
       ></ReplaceHelpDialog>
+      <ErrorDialog
+        open={currentDialog === 'error'}
+        {...{ ...errorDialogArgs, closeDialog }}
+      ></ErrorDialog>
     </>
   );
 }

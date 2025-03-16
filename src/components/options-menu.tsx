@@ -15,7 +15,10 @@ export function OptionsMenu({ topMenuButton, openDialog }: SubMenuParams): React
           <button type="button">Settings...</button>
         </li>
         <li>
-          <button type="button" onClick={() => openDialog('color', topMenuButton)}>
+          <button
+            type="button"
+            onClick={() => openDialog({ type: 'color', toFocusOnClose: topMenuButton })}
+          >
             Colors...
           </button>
         </li>
