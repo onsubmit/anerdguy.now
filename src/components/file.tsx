@@ -36,10 +36,12 @@ export function File({
         ></Editor>
         <div className={styles.status}>
           <span>F1=Help</span>
-          <div className={styles.cursor}>
-            <span>Line:{cursorPosition.line}</span>
-            <span>Col:{cursorPosition.column}</span>
-          </div>
+          {editorMode === 'edit' ? (
+            <div className={styles.cursor}>
+              <span>Line:{cursorPosition.line}</span>
+              <span>Col:{cursorPosition.column}</span>
+            </div>
+          ) : undefined}
         </div>
       </div>
     </div>
