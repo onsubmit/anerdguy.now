@@ -63,7 +63,7 @@ export function Menu2({
         component: (
           <SearchMenu
             disableReplace={editorMode === 'view'}
-            {...{ ...getSubMenuParams(2) }}
+            {...{ ...getSubMenuParams(2), findDialogRef }}
           ></SearchMenu>
         ),
       },
@@ -77,7 +77,7 @@ export function Menu2({
         component: <HelpMenu {...{ ...getSubMenuParams(5) }}></HelpMenu>,
       },
     ],
-    [editorMode, getSubMenuParams, toggleEditorMode],
+    [editorMode, findDialogRef, getSubMenuParams, toggleEditorMode],
   );
 
   const activate = (title: string): void => {
