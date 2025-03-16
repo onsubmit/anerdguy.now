@@ -1,39 +1,96 @@
-import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { DialogType } from './dialog';
-import { EditorOperations, isEditorOperation } from './editor-operation';
-import { isFileAction } from './file-action';
+import { DialogType, OpenDialogArgs } from './dialog';
+import { EditMenu } from './edit-menu';
+import { EditorMode } from './editor';
+import { EditorOperations } from './editor-operation';
+import { FileMenu } from './file-menu';
 import { FindDialogOperations } from './find-dialog';
+import { HelpMenu } from './help-menu';
 import styles from './menu.module.css';
-import { MenuAction, MenuItem, menuItems } from './menu-items';
-import { isSearchAction } from './search-action';
-import { isSettingAction } from './setting-action';
-import { isViewAction } from './view-action';
+import { OptionsMenu } from './options-menu';
+import { SearchMenu } from './search-menu';
+import { SubMenuParams } from './sub-menu';
+import { ViewMenu } from './view-menu';
 
 type MenuParams = {
+  editorMode: EditorMode;
   toggleEditorMode: () => void;
-  editorRef: RefObject<EditorOperations | null>;
+  openDialog: <T extends DialogType>(args: OpenDialogArgs<T>) => void;
   findDialogRef: RefObject<FindDialogOperations | null>;
-  openDialog: (type: DialogType) => void;
+  editorRef: RefObject<EditorOperations | null>;
 };
 
-export function Menu({
+export function Menu2({
+  editorMode,
   toggleEditorMode,
-  editorRef,
-  findDialogRef,
   openDialog,
+  findDialogRef,
+  editorRef,
 }: MenuParams): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
   const topMenuItemsRef = useRef<Array<HTMLButtonElement | null>>([]);
-  const subMenuItemsRef = useRef<Record<number, Array<HTMLButtonElement | null>>>({});
   const [activeMenuIndex, setActiveMenuIndex] = useState<number | null>(null);
   const [focusedMenuIndex, setFocusedMenuIndex] = useState<number | null>(null);
-  const [focusedSubMenuIndex, setFocusedSubMenuIndex] = useState<number | null>(null);
+
+  const closeMenu = (): void => {
+    setActiveMenuIndex(null);
+  };
+
+  const getSubMenuParams = useCallback(
+    (index: number): SubMenuParams => ({
+      topMenuButton: topMenuItemsRef.current[index],
+      closeMenu,
+      openDialog: <T extends DialogType>(args: OpenDialogArgs<T>): void => {
+        closeMenu();
+        openDialog(args);
+      },
+    }),
+    [openDialog],
+  );
+
+  const menus = useMemo(
+    () => [
+      {
+        title: 'File',
+        component: (
+          <FileMenu {...{ ...getSubMenuParams(0), editorMode, toggleEditorMode }}></FileMenu>
+        ),
+      },
+      {
+        title: 'Edit',
+        component: <EditMenu {...{ ...getSubMenuParams(1), editorMode, editorRef }}></EditMenu>,
+      },
+      {
+        title: 'Search',
+        component: (
+          <SearchMenu
+            disableReplace={editorMode === 'view'}
+            {...{ ...getSubMenuParams(2), findDialogRef }}
+          ></SearchMenu>
+        ),
+      },
+      { title: 'View', component: <ViewMenu {...{ ...getSubMenuParams(3) }}></ViewMenu> },
+      {
+        title: 'Options',
+        component: <OptionsMenu {...{ ...getSubMenuParams(4) }}></OptionsMenu>,
+      },
+      {
+        title: 'Help',
+        component: <HelpMenu {...{ ...getSubMenuParams(5) }}></HelpMenu>,
+      },
+    ],
+    [editorMode, editorRef, findDialogRef, getSubMenuParams, toggleEditorMode],
+  );
+
+  const activate = (title: string): void => {
+    const index = menus.findIndex((m) => m.title === title);
+    setActiveMenuIndex(index < 0 ? null : index);
+  };
 
   const handleClickOutside = useCallback((e: MouseEvent): void => {
     if (e.target instanceof Node && !containerRef.current?.contains(e.target)) {
-      setActiveMenuIndex(null);
-      setFocusedSubMenuIndex(null);
+      closeMenu();
     }
   }, []);
 
@@ -45,9 +102,23 @@ export function Menu({
         return;
       }
 
+      if (e.key === 'Escape') {
+        if (activeMenuIndex === null) {
+          toggleEditorMode();
+        } else {
+          setActiveMenuIndex(null);
+        }
+        return;
+      }
+
       if (e.ctrlKey && ['f', 'r'].includes(e.key)) {
-        openDialog(e.key === 'f' ? 'find' : 'replace');
         e.preventDefault();
+        if (e.key === 'r' && editorMode === 'view') {
+          // Disable "Replace" in View mode
+          return;
+        }
+
+        openDialog({ type: e.key === 'f' ? 'find' : 'replace' });
         return;
       }
 
@@ -55,9 +126,13 @@ export function Menu({
         if (containerRef.current?.contains(document.activeElement)) {
           let newIndex = -1;
           if (e.key === 'ArrowLeft') {
-            newIndex = focusedMenuIndex === 0 ? menuItems.length - 1 : focusedMenuIndex - 1;
+            newIndex = focusedMenuIndex === 0 ? menus.length - 1 : focusedMenuIndex - 1;
           } else if (e.key === 'ArrowRight') {
-            newIndex = (focusedMenuIndex + 1) % menuItems.length;
+            newIndex = (focusedMenuIndex + 1) % menus.length;
+          } else if (['ArrowDown', 'ArrowUp'].includes(e.key)) {
+            if (activeMenuIndex === null) {
+              setActiveMenuIndex(focusedMenuIndex);
+            }
           } else {
             return;
           }
@@ -75,41 +150,31 @@ export function Menu({
       if (e.key === 'Escape') {
         topMenuItemsRef.current[activeMenuIndex]?.focus();
         setFocusedMenuIndex(activeMenuIndex);
-
-        setActiveMenuIndex(null);
-        setFocusedSubMenuIndex(null);
+        closeMenu();
       }
 
       if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
         let newIndex = -1;
         if (e.key === 'ArrowLeft') {
-          newIndex = activeMenuIndex === 0 ? menuItems.length - 1 : activeMenuIndex - 1;
+          newIndex = activeMenuIndex === 0 ? menus.length - 1 : activeMenuIndex - 1;
         } else if (e.key === 'ArrowRight') {
-          newIndex = (activeMenuIndex + 1) % menuItems.length;
+          newIndex = (activeMenuIndex + 1) % menus.length;
         }
 
         setActiveMenuIndex(newIndex);
         topMenuItemsRef.current[newIndex]?.focus();
         setFocusedMenuIndex(newIndex);
-      } else if (['ArrowDown', 'ArrowUp'].includes(e.key)) {
-        let newIndex = -1;
-        if (e.key === 'ArrowDown') {
-          newIndex =
-            focusedSubMenuIndex === null
-              ? 0
-              : focusedSubMenuIndex === subMenuItemsRef.current[activeMenuIndex].length - 1
-                ? 0
-                : focusedSubMenuIndex + 1;
-        } else if (e.key === 'ArrowUp') {
-          newIndex = !focusedSubMenuIndex
-            ? subMenuItemsRef.current[activeMenuIndex].length - 1
-            : focusedSubMenuIndex - 1;
-        }
-
-        subMenuItemsRef.current[activeMenuIndex][newIndex]?.focus();
       }
     },
-    [activeMenuIndex, findDialogRef, focusedMenuIndex, focusedSubMenuIndex, openDialog],
+    [
+      activeMenuIndex,
+      editorMode,
+      findDialogRef,
+      focusedMenuIndex,
+      menus.length,
+      openDialog,
+      toggleEditorMode,
+    ],
   );
 
   useEffect(() => {
@@ -121,145 +186,37 @@ export function Menu({
     };
   });
 
-  function handleMenuClick(action: MenuAction): void {
-    setActiveMenuIndex(null);
-    setFocusedSubMenuIndex(null);
-
-    if (isFileAction(action)) {
-      switch (action) {
-        case 'open': {
-          return openDialog('open-file');
-        }
-      }
-    }
-
-    if (isEditorOperation(action)) {
-      if (action === 'find' || action === 'replace') {
-        openDialog(action);
-      } else {
-        editorRef?.current?.[action]();
-        editorRef?.current?.focus();
-      }
-
-      return;
-    }
-
-    if (isSearchAction(action)) {
-      switch (action) {
-        case 'find-again': {
-          findDialogRef.current?.findAgain();
-        }
-      }
-    }
-
-    if (isSettingAction(action)) {
-      switch (action) {
-        case 'open-colors-dialog': {
-          return openDialog('color');
-        }
-        case 'open-about-dialog': {
-          openDialog('about');
-        }
-      }
-    }
-
-    if (isViewAction(action)) {
-      switch (action) {
-        case 'toggle-editor': {
-          return toggleEditorMode();
-        }
-      }
-    }
-  }
-
-  function getSubItems(subItems: Array<MenuItem>, topMenuIndex: number): Array<React.JSX.Element> {
-    const itemMaxLength = Math.max(...subItems.map(({ title }) => title.length));
-    return subItems.map(({ title, keyCombo, action }, index) => {
-      const value = keyCombo ? `${title.padEnd(itemMaxLength + 3, ' ')} ${keyCombo}` : title;
-      return (
-        <li
-          key={title}
-          onClick={() => handleMenuClick(action)}
-          onMouseUp={() => handleMenuClick(action)}
-        >
-          <button
-            type="button"
-            ref={(el) => {
-              if (!subMenuItemsRef.current[topMenuIndex]) {
-                subMenuItemsRef.current[topMenuIndex] = [];
-              }
-
-              subMenuItemsRef.current[topMenuIndex][index] = el;
-            }}
-            onFocus={() => {
-              setFocusedSubMenuIndex(index);
-            }}
-            onBlur={(e) => {
-              e.preventDefault();
-              // TODO: Track down what's setting the state while the Dialog component renders
-              setTimeout(() => {
-                if (!containerRef.current?.contains(e.relatedTarget)) {
-                  setActiveMenuIndex(null);
-                  setFocusedSubMenuIndex(null);
-                }
-              });
-            }}
-          >
-            {value}
-          </button>
-        </li>
-      );
-    });
-  }
-
   return (
     <div ref={containerRef} className={styles.menu}>
       <ul>
-        {menuItems.map((item, index) => {
-          const { title } = item;
+        {menus.map(({ title, component }, index) => (
+          <li key={title} className={activeMenuIndex === index ? styles.active : undefined}>
+            <button
+              ref={(el) => {
+                topMenuItemsRef.current[index] = el;
+              }}
+              type="button"
+              onClick={() => activate(title)}
+              onFocus={() => {
+                setFocusedMenuIndex(index);
 
-          return (
-            <li key={title} className={activeMenuIndex === index ? styles.active : undefined}>
-              <button
-                type="button"
-                ref={(el) => {
-                  topMenuItemsRef.current[index] = el;
-                }}
-                onClick={() => {
-                  setFocusedSubMenuIndex(null);
-                  if (activeMenuIndex !== null) {
-                    setActiveMenuIndex(activeMenuIndex === index ? null : index);
-                  } else {
-                    setActiveMenuIndex(index);
-                  }
-                }}
-                onFocus={() => {
-                  setFocusedMenuIndex(index);
-
-                  if (activeMenuIndex !== null) {
-                    setActiveMenuIndex(index);
-                    setFocusedSubMenuIndex(null);
-                  }
-                }}
-                onMouseOver={() => {
-                  if (activeMenuIndex === null) {
-                    return;
-                  }
-
+                if (activeMenuIndex !== null) {
                   setActiveMenuIndex(index);
-                  setFocusedSubMenuIndex(null);
-                }}
-              >
-                {title}
-              </button>
-              {item.action === 'open-sub-menu' && activeMenuIndex === index && item.subItems ? (
-                <div className={styles.subMenu}>
-                  <ul>{getSubItems(item.subItems, index)}</ul>
-                </div>
-              ) : undefined}
-            </li>
-          );
-        })}
+                }
+              }}
+              onMouseOver={() => {
+                if (activeMenuIndex !== null && menus[activeMenuIndex].title !== title) {
+                  activate(title);
+                }
+              }}
+            >
+              {title}
+            </button>
+            {activeMenuIndex !== null && menus[activeMenuIndex].title === title
+              ? component
+              : undefined}
+          </li>
+        ))}
       </ul>
     </div>
   );
