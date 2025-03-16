@@ -12,15 +12,22 @@ export function useSubMenuFocusHandler(listRef: RefObject<HTMLUListElement | nul
         }
 
         const amount = e.key === 'ArrowDown' ? 1 : -1;
+        const enabledChildrenIndices = [...list.children]
+          .map((e, i) => (e.firstElementChild?.getAttribute('disabled') === '' ? undefined : i))
+          .filter((i) => i !== undefined);
+        const enabledChildren = enabledChildrenIndices.length;
 
         let newIndex = null;
         if (focusedIndex === null) {
-          newIndex = amount === 1 ? 0 : list.childElementCount - 1;
+          newIndex =
+            amount === 1 ? enabledChildrenIndices[0] : enabledChildrenIndices[enabledChildren - 1];
         } else {
-          newIndex = (focusedIndex + amount) % list.childElementCount;
-          if (newIndex < 0) {
-            newIndex = list.childElementCount - 1;
+          let enabledIndex = enabledChildrenIndices.findIndex((i) => i === focusedIndex);
+          enabledIndex = (enabledIndex + amount) % enabledChildren;
+          if (enabledIndex < 0) {
+            enabledIndex = enabledChildren - 1;
           }
+          newIndex = enabledChildrenIndices[enabledIndex];
         }
 
         const child = list.children[newIndex];
