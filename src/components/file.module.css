@@ -1,8 +1,8 @@
 .fileContainer {
   border: 0.0625rem solid var(--window-border-foreground);
   margin: 0.75rem;
-  min-height: calc(100% - 3.25rem);
-  max-height: calc(100% - 3.25rem);
+  min-height: calc(100% - 3.35rem);
+  max-height: calc(100% - 3.35rem);
 }
 
 .file {

@@ -1,12 +1,29 @@
 <h1>Andy Young</h1>
 
-<p>Greetings friend 👋. I'm Andy, and you can edit this web page.</p>
+<p>Greetings friend 👋. I'm Andy, and I'm glad you're here.</p>
 
-<p>Switch to <strong>Edit</strong> mode from the File menu.</p>
+<p>To learn more about me, select <b>File</b> &gt; <b>Open...</b> and choose your file.</p>
+
+<p>
+  Feel like modifying this page? Switch to Edit mode by selecting
+  <button type="button" onclick="document.dispatchEvent(new Event('toggle-edit'))">
+    <b>File</b> &gt; <b>Edit</b>
+  </button>
+</p>
+
+<p>
+  Not a fan of the color scheme? Change the colors by selecting
+  <button
+    type="button"
+    onclick="document.dispatchEvent(new CustomEvent('open-dialog', { detail: { type: 'color' } }))"
+  >
+    <b>Options</b> &gt; <b>Colors</b>
+  </button>
+</p>
 
 <hr />
 
-<h2>Bio</h2>
+<h2>Bio tl;dr</h2>
 <p>
   I'm currently a principal software engineer building
   <a href="https://www.tableau.com/" target="_blank">Tableau</a>'s embedded analytics platform and
@@ -24,5 +41,3 @@
 </p>
 
 <hr />
-
-<p>To learn more, select File > Open.</p>

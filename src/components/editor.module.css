@@ -23,6 +23,37 @@
     margin-top: 0;
   }
 
+  button {
+    position: relative;
+    color: var(--selected-text-foreground);
+    background: var(--selected-text-background);
+    box-shadow: 0.5rem 0.5rem #000;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    font: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    &:hover {
+      &::before {
+        position: absolute;
+        content: '▶';
+        left: 0.1rem;
+      }
+
+      &::after {
+        position: absolute;
+        content: '◀';
+        float: right;
+        right: 0.1rem;
+      }
+    }
+  }
+
   hr {
     border: none;
     margin: 0;

@@ -1,10 +1,10 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import styles from './app.module.css';
 import { AboutDialog } from './components/about-dialog';
 import { ColorDialog } from './components/color-dialog';
 import { ColorHelpDialog } from './components/color-help-dialog';
-import { DialogType } from './components/dialog';
+import { DialogType, OpenDialogEvent } from './components/dialog';
 import { EditorMode } from './components/editor';
 import { EditorOperations } from './components/editor-operation';
 import { File } from './components/file';
@@ -37,18 +37,36 @@ export function App(): React.JSX.Element {
 
     setTimeout(() => {
       if (toFocusOnDialogCloseRef.current.length) {
+        console.log(toFocusOnDialogCloseRef.current.pop());
         toFocusOnDialogCloseRef.current.pop()?.focus();
       } else {
         if (editorMode === 'edit') {
           setTimeout(() => editorRef.current?.focus());
         }
       }
-    });
+    }, 250);
   };
 
   const toggleEditorMode = (): void => {
     setEditorMode((mode) => (mode === 'edit' ? 'view' : 'edit'));
   };
+
+  useEffect(() => {
+    const openDialogFromEvent = (event: CustomEventInit<OpenDialogEvent>): void => {
+      if (!event.detail) {
+        return;
+      }
+
+      openDialog(event.detail.type);
+    };
+
+    const events = { 'toggle-edit': toggleEditorMode, 'open-dialog': openDialogFromEvent };
+    Object.entries(events).forEach(([name, handler]) => document.addEventListener(name, handler));
+    return (): void =>
+      Object.entries(events).forEach(([name, handler]) =>
+        document.removeEventListener(name, handler),
+      );
+  }, []);
 
   return (
     <>

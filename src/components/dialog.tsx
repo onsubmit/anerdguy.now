@@ -12,6 +12,10 @@ export type DialogType =
   | 'replace'
   | 'replace-help';
 
+export type OpenDialogEvent = {
+  type: DialogType;
+};
+
 type DialogParams = {
   title: string;
   children: React.ReactNode;
