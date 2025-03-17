@@ -37,7 +37,7 @@ export function OpenFileDialog({
         <OptionsList
           selectedOption={selectedFile}
           setSelectedOption={setSelectedFile}
-          options={files}
+          options={files.toSorted((a, b) => a.localeCompare(b))}
           filter={convertFilterToRegex(filter)}
         ></OptionsList>
       </div>

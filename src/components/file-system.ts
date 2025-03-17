@@ -1,1 +1,1 @@
-export const fileSystem: Array<string> = ['index.html', 'bio.html'];
+export const fileSystem: Array<string> = ['index.html', 'bio.html', 'resume.html', 'socials.html'];
