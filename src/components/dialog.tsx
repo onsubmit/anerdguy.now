@@ -14,8 +14,9 @@ export type DialogType =
   | 'replace-help'
   | 'error';
 
-export type OpenDialogEvent = {
-  type: DialogType;
+export type OpenDialogEvent<T extends DialogType> = {
+  type: T;
+  params: OpenDialogParams<T>;
 };
 
 export type OpenDialogParams<T extends DialogType> = T extends 'error'

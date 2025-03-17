@@ -1,5 +1,6 @@
 import { RefObject, useCallback, useImperativeHandle, useState } from 'react';
 
+import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
 import { Dialog, DialogType, OpenDialogArgs } from './dialog';
 import { DialogButtons } from './dialog-buttons';
 import { EditorOperations, FindParams } from './editor-operation';
@@ -34,6 +35,45 @@ export function FindDialog({
     replaceWith: replace ? '' : null,
   });
   const [pendingParams, setPendingParams] = useState<Partial<FindParams>>({});
+
+  const okayHandler = useCallback(() => {
+    closeDialog();
+    const findParams = {
+      ...originalParams,
+      ...pendingParams,
+    };
+    setOriginalParams(findParams);
+
+    if (replace) {
+      editorRef.current?.find({
+        ...findParams,
+        replaceAll: false,
+      });
+    } else {
+      setPendingParams({});
+      editorRef.current?.find({
+        ...findParams,
+        replaceWith: null,
+        replaceAll: undefined,
+      });
+    }
+  }, [closeDialog, editorRef, originalParams, pendingParams, replace]);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent): void => {
+      if (!open) {
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        okayHandler();
+        e.preventDefault();
+      }
+    },
+    [okayHandler, open],
+  );
+
+  useKeyDownHandler(handleKeyDown);
 
   const cancelHandler = useCallback((): void => {
     setPendingParams({});
@@ -124,21 +164,7 @@ export function FindDialog({
       <DialogButtons>
         {replace ? (
           <>
-            <button
-              type="button"
-              onClick={() => {
-                closeDialog();
-                const findParams = {
-                  ...originalParams,
-                  ...pendingParams,
-                };
-                setOriginalParams(findParams);
-                editorRef.current?.find({
-                  ...findParams,
-                  replaceAll: false,
-                });
-              }}
-            >
+            <button type="button" onClick={okayHandler}>
               Replace
             </button>
             <button
@@ -160,23 +186,7 @@ export function FindDialog({
             </button>
           </>
         ) : (
-          <button
-            type="button"
-            onClick={() => {
-              closeDialog();
-              const findParams = {
-                ...originalParams,
-                ...pendingParams,
-              };
-              setOriginalParams(findParams);
-              setPendingParams({});
-              editorRef.current?.find({
-                ...findParams,
-                replaceWith: null,
-                replaceAll: undefined,
-              });
-            }}
-          >
+          <button type="button" onClick={okayHandler}>
             Find
           </button>
         )}

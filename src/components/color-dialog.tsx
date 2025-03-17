@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 
+import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
 import { getCachedItem, setCachedItem } from '../localStorage';
 import styles from './color-dialog.module.css';
 import { ColorOptionList } from './color-option-list';
@@ -75,6 +76,36 @@ export function ColorDialog({
     foregroundColorRef.current?.refocus(selectedForeground);
     backgroundColorRef.current?.refocus(selectedBackground);
   });
+
+  const okayHandler = useCallback(() => {
+    setOriginalColors((x) => {
+      const newValue = {
+        ...x,
+        ...pendingColors,
+      };
+
+      setCachedItem('theme', newValue);
+      return newValue;
+    });
+
+    closeDialog();
+  }, [closeDialog, pendingColors]);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent): void => {
+      if (!open) {
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        okayHandler();
+        e.preventDefault();
+      }
+    },
+    [okayHandler, open],
+  );
+
+  useKeyDownHandler(handleKeyDown);
 
   const cancelHandler = useCallback((): void => {
     for (const [name, { foreground, background }] of Object.entries(originalColors)) {
@@ -221,23 +252,7 @@ export function ColorDialog({
         <button type="button" onClick={setDefaults}>
           Default
         </button>
-        <button
-          type="button"
-          className={styles.active}
-          onClick={() => {
-            setOriginalColors((x) => {
-              const newValue = {
-                ...x,
-                ...pendingColors,
-              };
-
-              setCachedItem('theme', newValue);
-              return newValue;
-            });
-
-            closeDialog();
-          }}
-        >
+        <button type="button" className={styles.active} onClick={okayHandler}>
           OK
         </button>
         <button

@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 
-export function useKeyDownHandler(hander: (e: KeyboardEvent) => void): void {
+export function useKeyDownHandler(handler: (e: KeyboardEvent) => void): void {
   useEffect(() => {
-    document.addEventListener('keydown', hander);
+    document.addEventListener('keydown', handler);
     return (): void => {
-      document.removeEventListener('keydown', hander);
+      document.removeEventListener('keydown', handler);
     };
   });
 }

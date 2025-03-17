@@ -73,12 +73,17 @@ export function App(): React.JSX.Element {
   }, [currentDialog]);
 
   useEffect(() => {
-    const openDialogFromEvent = (event: CustomEventInit<OpenDialogEvent>): void => {
+    const openDialogFromEvent = (event: CustomEventInit<OpenDialogEvent<DialogType>>): void => {
       if (!event.detail) {
         return;
       }
 
-      openDialog({ type: event.detail.type });
+      const { type } = event.detail;
+      if (type === 'error') {
+        openDialog({ type, params: event.detail.params });
+      } else {
+        openDialog({ type });
+      }
     };
 
     const events = { 'toggle-edit': toggleEditorMode, 'open-dialog': openDialogFromEvent };
