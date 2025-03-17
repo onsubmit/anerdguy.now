@@ -103,7 +103,7 @@ export function App(): React.JSX.Element {
 
   useEffect(() => {
     openFile('index.html');
-  });
+  }, []);
 
   return (
     <>
