@@ -8,49 +8,48 @@ import { OptionsList } from './option-list';
 
 type OpenFileDialogParams = {
   open: boolean;
+  openFile: (filename: string) => Promise<void>;
   openDialog: <T extends DialogType>({ type, toFocusOnClose }: OpenDialogArgs<T>) => void;
   closeDialog: () => void;
 };
 
-export function OpenFileDialog({ open, closeDialog }: OpenFileDialogParams): React.JSX.Element {
-  const [filename, _setFilename] = useState('*.*');
+export function OpenFileDialog({
+  open,
+  openFile,
+  closeDialog,
+}: OpenFileDialogParams): React.JSX.Element {
+  const [filter, setFilter] = useState('*.*');
   const [selectedFile, setSelectedFile] = useState<string>('');
-  const [selectedFolder, setSelectedFolder] = useState<string>('');
-  const [files, _setFiles] = useState<Array<string>>(fileSystem['C:\\'].files.map((f) => f.name));
-  const [folders, _setFolders] = useState<Array<string>>(
-    fileSystem['C:\\'].folders.map((f) => f.name),
-  );
+  const [files, _setFiles] = useState<Array<string>>(fileSystem);
 
   return (
     <Dialog open={open} title="Open" closeDialog={closeDialog}>
       <div className={styles.open}>
         <label>
-          <span>File Name:</span>
-          <input type="text" autoFocus={true} defaultValue={filename}></input>
+          <span>Filter:</span>
+          <input
+            type="text"
+            defaultValue={filter}
+            onChange={(e) => setFilter(e.currentTarget.value)}
+          ></input>
         </label>
-        <p>C:\WINDOWS</p>
-        <div className={styles.fileSystem}>
-          <div>
-            <div>Files:</div>
-            <OptionsList
-              selectedOption={selectedFile}
-              setSelectedOption={setSelectedFile}
-              options={files}
-            ></OptionsList>
-          </div>
-          <div>
-            <div>Directories:</div>
-            <OptionsList
-              selectedOption={selectedFolder}
-              setSelectedOption={setSelectedFolder}
-              options={folders}
-            ></OptionsList>
-          </div>
-        </div>
+        <div>Files:</div>
+        <OptionsList
+          selectedOption={selectedFile}
+          setSelectedOption={setSelectedFile}
+          options={files}
+          filter={convertFilterToRegex(filter)}
+        ></OptionsList>
       </div>
 
       <DialogButtons>
-        <button type="button" onClick={() => closeDialog()}>
+        <button
+          type="button"
+          onClick={() => {
+            closeDialog();
+            openFile(selectedFile);
+          }}
+        >
           OK
         </button>
         <button type="button" onClick={() => closeDialog()}>
@@ -60,4 +59,40 @@ export function OpenFileDialog({ open, closeDialog }: OpenFileDialogParams): Rea
       </DialogButtons>
     </Dialog>
   );
+}
+
+function convertFilterToRegex(pattern: string): RegExp {
+  let regex = '';
+  for (const c of [...pattern]) {
+    switch (c) {
+      case '*':
+        regex += '.*';
+        break;
+      case '?':
+        regex += '.';
+        break;
+      case '^': // escape character in cmd.exe
+        regex += '\\';
+        break;
+      // escape special regexp-characters
+      case '(':
+      case ')':
+      case '[':
+      case ']':
+      case '$':
+      case '.':
+      case '{':
+      case '}':
+      case '|':
+      case '\\':
+        regex += '\\';
+        regex += c;
+        break;
+      default:
+        regex += c;
+        break;
+    }
+  }
+
+  return new RegExp(regex);
 }

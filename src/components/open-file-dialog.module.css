@@ -17,12 +17,4 @@
     background: var(--dialogs-background);
     padding: 0.25rem;
   }
-
-  .fileSystem {
-    display: flex;
-    flex-direction: row;
-    gap: 2rem;
-    justify-content: space-around;
-  }
-
 }

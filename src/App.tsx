@@ -15,21 +15,26 @@ import { FindHelpDialog } from './components/find-help-dialog';
 import { Menu } from './components/menu';
 import { OpenFileDialog } from './components/open-file-dialog';
 import { ReplaceHelpDialog } from './components/replace-help-dialog';
-// eslint-disable-next-line import/no-unresolved
-import index from './inc/index.html?raw';
+import { rawFiles } from './importRawFiles';
 
 export function App(): React.JSX.Element {
   const editorRef = useRef<EditorOperations>(null);
   const findDialogRef = useRef<FindDialogOperations>(null);
   const toFocusOnDialogCloseRef = useRef<Array<HTMLElement>>([]);
   const [editorMode, setEditorMode] = useState<EditorMode>('view');
-  const [activeFilename, _setActiveFilename] = useState('anerdguy.now');
-  const [activeFileContents, setActiveFileContents] = useState(index);
+  const [activeFilename, setActiveFilename] = useState('index.html');
+  const [activeFileContents, setActiveFileContents] = useState('');
   const [currentDialog, setCurrentDialog] = useState<DialogType | null>(null);
   const [errorDialogArgs, setErrorDialogArgs] = useState<OpenErrorDialogParams>({
     message: '',
     detail: '',
   });
+
+  const openFile = async (filename: string): Promise<void> => {
+    const contents = await rawFiles[`/src/inc/${filename}`]();
+    setActiveFilename(filename);
+    setActiveFileContents(contents);
+  };
 
   const openDialog = <T extends DialogType>({
     type,
@@ -96,6 +101,10 @@ export function App(): React.JSX.Element {
       );
   }, [toggleEditorMode]);
 
+  useEffect(() => {
+    openFile('index.html');
+  });
+
   return (
     <>
       <div className={styles.container}>
@@ -117,6 +126,7 @@ export function App(): React.JSX.Element {
       </div>
       <OpenFileDialog
         open={currentDialog === 'open-file'}
+        openFile={openFile}
         openDialog={openDialog}
         closeDialog={closeDialog}
       ></OpenFileDialog>

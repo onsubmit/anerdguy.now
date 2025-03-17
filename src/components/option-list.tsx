@@ -7,6 +7,7 @@ export type OptionListParams<T extends string> = {
   selectedOption: T;
   setSelectedOption: React.Dispatch<React.SetStateAction<T>>;
   onSelectionChange?: (color: T) => void;
+  filter?: RegExp;
   ref?: RefObject<OptionListOperations<T> | null>;
 };
 
@@ -19,6 +20,7 @@ export function OptionsList<T extends string>({
   selectedOption,
   setSelectedOption,
   onSelectionChange,
+  filter,
   ref,
 }: OptionListParams<T>): React.JSX.Element {
   const ulRef = useRef<HTMLUListElement>(null);
@@ -35,19 +37,25 @@ export function OptionsList<T extends string>({
 
   return (
     <ul ref={ulRef} className={styles.optionList}>
-      {options.map((option) => (
-        <li
-          key={option}
-          data-value={option}
-          className={option === selectedOption ? styles.active : undefined}
-          onClick={() => {
-            setSelectedOption(option);
-            onSelectionChange?.(option);
-          }}
-        >
-          <button type="button">{option}</button>
-        </li>
-      ))}
+      {options.map((option) => {
+        if (filter && !filter.exec(option)) {
+          return;
+        }
+
+        return (
+          <li
+            key={option}
+            data-value={option}
+            className={option === selectedOption ? styles.active : undefined}
+            onClick={() => {
+              setSelectedOption(option);
+              onSelectionChange?.(option);
+            }}
+          >
+            <button type="button">{option}</button>
+          </li>
+        );
+      })}
     </ul>
   );
 }

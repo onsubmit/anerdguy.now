@@ -19,6 +19,7 @@ export function FileMenu({
   toggleEditorMode,
   closeMenu,
   activeMenuIndex,
+  openDialog,
   ref,
 }: FileMenuParams): React.JSX.Element {
   const listRef = useRef<HTMLUListElement>(null);
@@ -46,7 +47,11 @@ export function FileMenu({
           </button>
         </li>
         <li>
-          <button type="button" onFocus={() => setFocusedIndex(1)}>
+          <button
+            type="button"
+            onFocus={() => setFocusedIndex(1)}
+            onClick={() => openDialog({ type: 'open-file' })}
+          >
             Open...
           </button>
         </li>
