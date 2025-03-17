@@ -61,6 +61,7 @@ export function ColorDialog({
   closeDialog,
 }: ColorDialogParams): React.JSX.Element {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const itemRef = useRef<OptionListOperations<KnownThemeableItem>>(null);
   const foregroundColorRef = useRef<OptionListOperations<KnownColor>>(null);
   const backgroundColorRef = useRef<OptionListOperations<KnownColor>>(null);
 
@@ -73,8 +74,8 @@ export function ColorDialog({
   dialogRef.current?.[open ? 'showModal' : 'close']();
   // TODO: Remove this hack and figure out how to scroll the selected colors after the dialog loads
   setTimeout(() => {
-    foregroundColorRef.current?.refocus(selectedForeground);
-    backgroundColorRef.current?.refocus(selectedBackground);
+    foregroundColorRef.current?.reselect(selectedForeground);
+    backgroundColorRef.current?.reselect(selectedBackground);
   });
 
   const okayHandler = useCallback(() => {
@@ -100,9 +101,28 @@ export function ColorDialog({
       if (e.key === 'Enter') {
         okayHandler();
         e.preventDefault();
+        return;
+      }
+
+      if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        const order = [itemRef.current, foregroundColorRef.current, backgroundColorRef.current];
+        const current = order.findIndex((r) => r?.hasActiveElement());
+        const amount = e.key === 'ArrowLeft' ? -1 : 1;
+        let newIndex = (current + amount) % order.length;
+        if (newIndex < 0) {
+          newIndex = order.length - 1;
+        }
+
+        if (newIndex === 0) {
+          itemRef.current?.focus(selectedItem);
+        } else if (newIndex === 1) {
+          foregroundColorRef.current?.focus(selectedForeground);
+        } else {
+          backgroundColorRef.current?.focus(selectedBackground);
+        }
       }
     },
-    [okayHandler, open],
+    [okayHandler, open, selectedBackground, selectedForeground, selectedItem],
   );
 
   useKeyDownHandler(handleKeyDown);
@@ -131,10 +151,10 @@ export function ColorDialog({
     const { foreground, background } = currentColors;
 
     setSelectedForeground(foreground);
-    foregroundColorRef.current?.refocus(foreground);
+    foregroundColorRef.current?.reselect(foreground);
 
     setSelectedBackground(background);
-    backgroundColorRef.current?.refocus(background);
+    backgroundColorRef.current?.reselect(background);
 
     if (!originalColors[item]?.foreground || !originalColors[item]?.background) {
       setOriginalColors((x) => ({
@@ -208,9 +228,9 @@ export function ColorDialog({
 
       if (selectedItem === item) {
         setSelectedForeground(foreground);
-        foregroundColorRef.current?.refocus(foreground);
+        foregroundColorRef.current?.reselect(foreground);
         setSelectedBackground(background);
-        backgroundColorRef.current?.refocus(background);
+        backgroundColorRef.current?.reselect(background);
       }
     }
 
@@ -223,6 +243,7 @@ export function ColorDialog({
         <div>
           <div>Item:</div>
           <OptionsList
+            ref={itemRef}
             selectedOption={selectedItem}
             setSelectedOption={setSelectedItem}
             options={knownThemeableItems}
