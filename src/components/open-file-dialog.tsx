@@ -38,6 +38,10 @@ export function OpenFileDialog({
           selectedOption={selectedFile}
           setSelectedOption={setSelectedFile}
           options={files.toSorted((a, b) => a.localeCompare(b))}
+          onDoubleClick={(option) => {
+            closeDialog();
+            openFile(option);
+          }}
           filter={convertFilterToRegex(filter)}
         ></OptionsList>
       </div>

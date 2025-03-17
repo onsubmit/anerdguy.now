@@ -6,7 +6,8 @@ export type OptionListParams<T extends string> = {
   options: ReadonlyArray<T>;
   selectedOption: T;
   setSelectedOption: React.Dispatch<React.SetStateAction<T>>;
-  onSelectionChange?: (color: T) => void;
+  onSelectionChange?: (option: T) => void;
+  onDoubleClick?: (option: T) => void;
   filter?: RegExp;
   ref?: RefObject<OptionListOperations<T> | null>;
 };
@@ -20,6 +21,7 @@ export function OptionsList<T extends string>({
   selectedOption,
   setSelectedOption,
   onSelectionChange,
+  onDoubleClick,
   filter,
   ref,
 }: OptionListParams<T>): React.JSX.Element {
@@ -51,6 +53,7 @@ export function OptionsList<T extends string>({
               setSelectedOption(option);
               onSelectionChange?.(option);
             }}
+            onDoubleClick={() => onDoubleClick?.(option)}
           >
             <button type="button">{option}</button>
           </li>
