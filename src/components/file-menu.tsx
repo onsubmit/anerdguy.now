@@ -32,8 +32,20 @@ export function FileMenu({
           return toggleEditorMode();
         }
       }
+
+      if (e.ctrlKey && ['n', 'o', 's'].includes(e.key)) {
+        e.preventDefault();
+        switch (e.key) {
+          case 'n':
+            return;
+          case 'o':
+            return openDialog({ type: 'open-file' });
+          case 's':
+            return;
+        }
+      }
     },
-    [activeMenuIndex, toggleEditorMode],
+    [activeMenuIndex, openDialog, toggleEditorMode],
   );
 
   useKeyDownHandler(handleKeyDown);

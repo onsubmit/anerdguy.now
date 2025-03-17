@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
+import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
 import { Dialog, DialogType, OpenDialogArgs } from './dialog';
 import { DialogButtons } from './dialog-buttons';
 import { fileSystem } from './file-system';
@@ -22,6 +23,27 @@ export function OpenFileDialog({
   const [selectedFile, setSelectedFile] = useState<string>('');
   const [files, _setFiles] = useState<Array<string>>(fileSystem);
 
+  const okayHandler = useCallback(() => {
+    closeDialog();
+    openFile(selectedFile);
+  }, [closeDialog, openFile, selectedFile]);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent): void => {
+      if (!open) {
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        okayHandler();
+        e.preventDefault();
+      }
+    },
+    [okayHandler, open],
+  );
+
+  useKeyDownHandler(handleKeyDown);
+
   return (
     <Dialog open={open} title="Open" closeDialog={closeDialog}>
       <div className={styles.open}>
@@ -38,22 +60,13 @@ export function OpenFileDialog({
           selectedOption={selectedFile}
           setSelectedOption={setSelectedFile}
           options={files.toSorted((a, b) => a.localeCompare(b))}
-          onDoubleClick={(option) => {
-            closeDialog();
-            openFile(option);
-          }}
+          onDoubleClick={okayHandler}
           filter={convertFilterToRegex(filter)}
         ></OptionsList>
       </div>
 
       <DialogButtons>
-        <button
-          type="button"
-          onClick={() => {
-            closeDialog();
-            openFile(selectedFile);
-          }}
-        >
+        <button type="button" onClick={okayHandler}>
           OK
         </button>
         <button type="button" onClick={() => closeDialog()}>
