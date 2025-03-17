@@ -8,12 +8,14 @@ import { DialogType, OpenDialogArgs, OpenDialogEvent } from './components/dialog
 import { EditorMode } from './components/editor';
 import { EditorOperations } from './components/editor-operation';
 import { ErrorDialog, OpenErrorDialogParams } from './components/error-dialog';
+import { EventsDialog } from './components/events-dialog';
 import { File } from './components/file';
 import { FindDialog, FindDialogOperations } from './components/find-dialog';
 import { FindHelpDialog } from './components/find-help-dialog';
-import { Menu2 } from './components/menu';
+import { Menu } from './components/menu';
 import { OpenFileDialog } from './components/open-file-dialog';
 import { ReplaceHelpDialog } from './components/replace-help-dialog';
+// eslint-disable-next-line import/no-unresolved
 import index from './inc/index.html?raw';
 
 export function App(): React.JSX.Element {
@@ -97,13 +99,13 @@ export function App(): React.JSX.Element {
   return (
     <>
       <div className={styles.container}>
-        <Menu2
+        <Menu
           editorMode={editorMode}
           toggleEditorMode={toggleEditorMode}
           openDialog={openDialog}
           findDialogRef={findDialogRef}
           editorRef={editorRef}
-        ></Menu2>
+        ></Menu>
         <File
           filename={activeFilename}
           contents={activeFileContents}
@@ -127,6 +129,7 @@ export function App(): React.JSX.Element {
         open={currentDialog === 'color-help'}
         closeDialog={closeDialog}
       ></ColorHelpDialog>
+      <EventsDialog open={currentDialog === 'events'} closeDialog={closeDialog}></EventsDialog>
       <AboutDialog open={currentDialog === 'about'} closeDialog={closeDialog}></AboutDialog>
       <FindDialog
         ref={findDialogRef}

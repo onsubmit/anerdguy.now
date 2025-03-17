@@ -18,8 +18,12 @@ export function HelpMenu({
     <div className={classNames(styles.subMenu, open ? styles.open : undefined)}>
       <ul ref={listRef}>
         <li>
-          <button type="button" onFocus={() => setFocusedIndex(0)}>
-            Commands...
+          <button
+            type="button"
+            onFocus={() => setFocusedIndex(0)}
+            onClick={() => openDialog({ type: 'events', toFocusOnClose: topMenuButton })}
+          >
+            Events...
           </button>
         </li>
         <li>

@@ -1,18 +1,10 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 import styles from './dialog.module.css';
+import { dialogTypes } from './dialogTypes';
 import { OpenErrorDialogParams } from './error-dialog';
 
-export type DialogType =
-  | 'open-file'
-  | 'color'
-  | 'color-help'
-  | 'about'
-  | 'find'
-  | 'find-help'
-  | 'replace'
-  | 'replace-help'
-  | 'error';
+export type DialogType = (typeof dialogTypes)[number];
 
 export type OpenDialogEvent<T extends DialogType> = {
   type: T;

@@ -1,0 +1,13 @@
+.events {
+  padding: 0 1rem;
+
+  ol,
+  ul {
+    margin-bottom: 0;
+    padding-left: 2rem;
+  }
+
+  ul {
+    list-style-type: '◆ ';
+  }
+}

@@ -22,7 +22,7 @@ type MenuParams = {
   editorRef: RefObject<EditorOperations | null>;
 };
 
-export function Menu2({
+export function Menu({
   editorMode,
   toggleEditorMode,
   openDialog,
@@ -34,12 +34,13 @@ export function Menu2({
   const [activeMenuIndex, setActiveMenuIndex] = useState<number | null>(null);
   const [focusedMenuIndex, setFocusedMenuIndex] = useState<number | null>(null);
 
-  const closeMenu = (): void => {
-    setActiveMenuIndex((x) => {
-      subMenuRefs.current[x ?? -1]?.reset();
-      return null;
-    });
-  };
+  const closeMenu = useCallback((): void => {
+    if (activeMenuIndex) {
+      subMenuRefs.current[activeMenuIndex]?.reset();
+    }
+
+    setActiveMenuIndex(null);
+  }, [activeMenuIndex]);
 
   const getSubMenuParams = useCallback(
     (index: number): SubMenuParams => ({
@@ -52,7 +53,7 @@ export function Menu2({
         openDialog(args);
       },
     }),
-    [activeMenuIndex, openDialog],
+    [activeMenuIndex, closeMenu, openDialog],
   );
 
   const subMenuRefs = useRef<Array<{ reset: () => void } | null>>([]);
@@ -98,17 +99,20 @@ export function Menu2({
 
   const activate = (title: string): void => {
     const index = menus.findIndex((m) => m.title === title);
-    setActiveMenuIndex((x) => {
-      subMenuRefs.current[x ?? -1]?.reset();
-      return index < 0 ? null : index;
-    });
+    if (activeMenuIndex) {
+      subMenuRefs.current[activeMenuIndex]?.reset();
+    }
+    setActiveMenuIndex(index < 0 ? null : index);
   };
 
-  const handleClickOutside = useCallback((e: MouseEvent): void => {
-    if (e.target instanceof Node && !containerRef.current?.contains(e.target)) {
-      closeMenu();
-    }
-  }, []);
+  const handleClickOutside = useCallback(
+    (e: MouseEvent): void => {
+      if (e.target instanceof Node && !containerRef.current?.contains(e.target)) {
+        closeMenu();
+      }
+    },
+    [closeMenu],
+  );
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent): void => {
@@ -155,16 +159,16 @@ export function Menu2({
           newIndex = (activeMenuIndex + 1) % menus.length;
         }
 
-        setActiveMenuIndex((x) => {
-          subMenuRefs.current[x ?? -1]?.reset();
-          return newIndex;
-        });
+        if (activeMenuIndex) {
+          subMenuRefs.current[activeMenuIndex]?.reset();
+        }
 
+        setActiveMenuIndex(newIndex);
         topMenuItemsRef.current[newIndex]?.focus();
         setFocusedMenuIndex(newIndex);
       }
     },
-    [activeMenuIndex, focusedMenuIndex, menus.length],
+    [activeMenuIndex, closeMenu, focusedMenuIndex, menus.length],
   );
 
   useKeyDownHandler(handleKeyDown);
