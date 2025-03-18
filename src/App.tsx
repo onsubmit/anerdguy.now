@@ -52,6 +52,15 @@ export function App(): React.JSX.Element {
     writeFileToDisk(fileName, openFileContents[fileName]);
   };
 
+  const revertFile = async (): Promise<void> => {
+    const contents = await getRawFileContents(fileName);
+    setOpenFileContents((x) => ({
+      ...x,
+      [fileName]: contents,
+    }));
+    writeFileToDisk(fileName, contents);
+  };
+
   const loadFileContents = useCallback(
     async (filename: string): Promise<void> => {
       const openFiles = getCachedItem('openFiles');
@@ -148,6 +157,7 @@ export function App(): React.JSX.Element {
           toggleEditorMode={toggleEditorMode}
           openFile={openFile}
           saveFile={saveFile}
+          revertFile={revertFile}
           openFiles={openFiles}
           openDialog={openDialog}
           findDialogRef={findDialogRef}

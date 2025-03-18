@@ -9,6 +9,7 @@ import styles from './sub-menu.module.css';
 
 type FileMenuParams = {
   saveFile: () => void;
+  revertFile: () => void;
   editorMode: EditorMode;
   toggleEditorMode: () => void;
   activeMenuIndex: number | null;
@@ -17,6 +18,7 @@ type FileMenuParams = {
 export function FileMenu({
   open,
   saveFile,
+  revertFile,
   editorMode,
   toggleEditorMode,
   closeMenu,
@@ -31,6 +33,11 @@ export function FileMenu({
     saveFile();
     closeMenu();
   }, [closeMenu, saveFile]);
+
+  const revertHandler = useCallback(() => {
+    revertFile();
+    closeMenu();
+  }, [closeMenu, revertFile]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent): void => {
@@ -48,7 +55,7 @@ export function FileMenu({
           case 'o':
             return openDialog({ type: 'open-file' });
           case 'r':
-            return;
+            return revertHandler();
           case 's':
             return saveHandler();
           case 'w':
@@ -56,7 +63,7 @@ export function FileMenu({
         }
       }
     },
-    [activeMenuIndex, openDialog, saveHandler, toggleEditorMode],
+    [activeMenuIndex, openDialog, revertHandler, saveHandler, toggleEditorMode],
   );
 
   useKeyDownHandler(handleKeyDown);
@@ -95,7 +102,7 @@ export function FileMenu({
           <hr />
         </li>
         <li>
-          <button type="button" onFocus={() => setFocusedIndex(5)}>
+          <button type="button" onFocus={() => setFocusedIndex(5)} onClick={revertHandler}>
             {`Revert       Ctrl+R`}
           </button>
         </li>
