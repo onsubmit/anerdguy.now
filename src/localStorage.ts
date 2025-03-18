@@ -11,7 +11,6 @@ type Cache = {
       string,
       {
         contentsOnDisk: string;
-        contentsInMemory: string;
       }
     >;
   }>;
@@ -39,27 +38,6 @@ export const setTheme = (theme: ChosenColors): void => {
   setCachedItem('theme', theme);
 };
 
-export const writeFileToMemory = (filename: string, contents: string): void => {
-  const cache = getCache();
-  let { openFiles } = cache[currentVersion];
-  if (!openFiles) {
-    openFiles = {};
-  }
-
-  cache[currentVersion].openFiles = openFiles;
-
-  if (!openFiles[filename]) {
-    openFiles[filename] = {
-      contentsInMemory: contents,
-      contentsOnDisk: contents,
-    };
-  } else {
-    openFiles[filename].contentsInMemory = contents;
-  }
-
-  writeCache(cache);
-};
-
 export const writeFileToDisk = (filename: string, contents: string): void => {
   const cache = getCache();
   let { openFiles } = cache[currentVersion];
@@ -71,7 +49,6 @@ export const writeFileToDisk = (filename: string, contents: string): void => {
 
   if (!openFiles[filename]) {
     openFiles[filename] = {
-      contentsInMemory: contents,
       contentsOnDisk: contents,
     };
   } else {
