@@ -6,4 +6,13 @@ function importRawFiles(): Record<string, () => Promise<string>> {
   return modules;
 }
 
-export const rawFiles = importRawFiles();
+const rawFiles = importRawFiles();
+export const rawFileExists = (filename: string): boolean => !!rawFiles[`/src/inc/${filename}`];
+
+export const getRawFileContents = async (filename: string): Promise<string> => {
+  if (!rawFileExists(filename)) {
+    throw new Error(`${filename} does not exist.`);
+  }
+
+  return await rawFiles[`/src/inc/${filename}`]();
+};

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 
 import styles from './app.module.css';
 import { AboutDialog } from './components/about-dialog';
@@ -15,14 +16,18 @@ import { FindHelpDialog } from './components/find-help-dialog';
 import { Menu } from './components/menu';
 import { OpenFileDialog } from './components/open-file-dialog';
 import { ReplaceHelpDialog } from './components/replace-help-dialog';
-import { rawFiles } from './importRawFiles';
+import { getRawFileContents, rawFileExists } from './importRawFiles';
 
 export function App(): React.JSX.Element {
+  const { file } = useParams();
+  const navigate = useNavigate();
+  const fileName = file && rawFileExists(file) ? file : 'index.html';
+
   const editorRef = useRef<EditorOperations>(null);
   const findDialogRef = useRef<FindDialogOperations>(null);
   const toFocusOnDialogCloseRef = useRef<Array<HTMLElement>>([]);
+
   const [editorMode, setEditorMode] = useState<EditorMode>('view');
-  const [activeFilename, setActiveFilename] = useState('index.html');
   const [activeFileContents, setActiveFileContents] = useState('');
   const [currentDialog, setCurrentDialog] = useState<DialogType | null>(null);
   const [errorDialogArgs, setErrorDialogArgs] = useState<OpenErrorDialogParams>({
@@ -30,9 +35,12 @@ export function App(): React.JSX.Element {
     detail: '',
   });
 
-  const openFile = async (filename: string): Promise<void> => {
-    const contents = await rawFiles[`/src/inc/${filename}`]();
-    setActiveFilename(filename);
+  const openFile = async (filename: string | undefined): Promise<void> => {
+    navigate(`/${filename}`);
+  };
+
+  const loadFileContents = async (filename: string): Promise<void> => {
+    const contents = await getRawFileContents(filename);
     setActiveFileContents(contents);
   };
 
@@ -102,8 +110,8 @@ export function App(): React.JSX.Element {
   }, [toggleEditorMode]);
 
   useEffect(() => {
-    openFile('index.html');
-  }, []);
+    loadFileContents(fileName);
+  }, [fileName]);
 
   return (
     <>
@@ -116,7 +124,7 @@ export function App(): React.JSX.Element {
           editorRef={editorRef}
         ></Menu>
         <File
-          filename={activeFilename}
+          filename={fileName}
           contents={activeFileContents}
           setContents={setActiveFileContents}
           openDialog={openDialog}
