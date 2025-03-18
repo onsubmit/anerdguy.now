@@ -17,6 +17,8 @@ import { ViewMenu } from './view-menu';
 type MenuParams = {
   editorMode: EditorMode;
   toggleEditorMode: () => void;
+  openFile: (filename: string) => void;
+  openFiles: Array<string>;
   openDialog: <T extends DialogType>(args: OpenDialogArgs<T>) => void;
   findDialogRef: RefObject<FindDialogOperations | null>;
   editorRef: RefObject<EditorOperations | null>;
@@ -25,6 +27,8 @@ type MenuParams = {
 export function Menu({
   editorMode,
   toggleEditorMode,
+  openFile,
+  openFiles,
   openDialog,
   findDialogRef,
   editorRef,
@@ -83,7 +87,7 @@ export function Menu({
       },
       {
         title: 'View',
-        component: <ViewMenu {...{ ...getSubMenuParams(3) }}></ViewMenu>,
+        component: <ViewMenu {...{ ...getSubMenuParams(3), openFile, openFiles }}></ViewMenu>,
       },
       {
         title: 'Options',
@@ -94,7 +98,16 @@ export function Menu({
         component: <HelpMenu {...{ ...getSubMenuParams(5) }}></HelpMenu>,
       },
     ],
-    [activeMenuIndex, editorMode, editorRef, findDialogRef, getSubMenuParams, toggleEditorMode],
+    [
+      activeMenuIndex,
+      editorMode,
+      editorRef,
+      findDialogRef,
+      getSubMenuParams,
+      openFile,
+      openFiles,
+      toggleEditorMode,
+    ],
   );
 
   const activate = (title: string): void => {

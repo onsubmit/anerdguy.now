@@ -33,7 +33,7 @@ export function FileMenu({
         }
       }
 
-      if (e.ctrlKey && ['n', 'o', 's'].includes(e.key)) {
+      if (e.ctrlKey && ['n', 'o', 's', 'w'].includes(e.key)) {
         e.preventDefault();
         switch (e.key) {
           case 'n':
@@ -41,6 +41,8 @@ export function FileMenu({
           case 'o':
             return openDialog({ type: 'open-file' });
           case 's':
+            return;
+          case 'w':
             return;
         }
       }
@@ -55,7 +57,7 @@ export function FileMenu({
       <ul ref={listRef}>
         <li>
           <button type="button" onFocus={() => setFocusedIndex(0)}>
-            New
+            {`New          Ctrl+N`}
           </button>
         </li>
         <li>
@@ -64,22 +66,22 @@ export function FileMenu({
             onFocus={() => setFocusedIndex(1)}
             onClick={() => openDialog({ type: 'open-file' })}
           >
-            Open...
+            {`Open...      Ctrl+O`}
           </button>
         </li>
         <li>
           <button type="button" onFocus={() => setFocusedIndex(2)}>
-            Save
+            {`Save         Ctrl+S`}
           </button>
         </li>
         <li>
           <button type="button" onFocus={() => setFocusedIndex(3)}>
-            Save As...
+            {`Save As...   Ctrl+Alt+S`}
           </button>
         </li>
         <li>
           <button type="button" onFocus={() => setFocusedIndex(4)}>
-            Close
+            {`Close        Ctrl+W`}
           </button>
           <hr />
         </li>

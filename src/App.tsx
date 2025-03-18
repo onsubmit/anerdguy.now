@@ -28,6 +28,7 @@ export function App(): React.JSX.Element {
   const toFocusOnDialogCloseRef = useRef<Array<HTMLElement>>([]);
 
   const [editorMode, setEditorMode] = useState<EditorMode>('view');
+  const [openFiles, setOpenFiles] = useState<Array<string>>([fileName]);
   const [activeFileContents, setActiveFileContents] = useState('');
   const [currentDialog, setCurrentDialog] = useState<DialogType | null>(null);
   const [errorDialogArgs, setErrorDialogArgs] = useState<OpenErrorDialogParams>({
@@ -35,7 +36,10 @@ export function App(): React.JSX.Element {
     detail: '',
   });
 
-  const openFile = async (filename: string | undefined): Promise<void> => {
+  const openFile = async (filename: string): Promise<void> => {
+    if (!openFiles.includes(filename)) {
+      setOpenFiles((x) => [...x, filename]);
+    }
     navigate(`/${filename}`);
   };
 
@@ -119,6 +123,8 @@ export function App(): React.JSX.Element {
         <Menu
           editorMode={editorMode}
           toggleEditorMode={toggleEditorMode}
+          openFile={openFile}
+          openFiles={openFiles}
           openDialog={openDialog}
           findDialogRef={findDialogRef}
           editorRef={editorRef}
