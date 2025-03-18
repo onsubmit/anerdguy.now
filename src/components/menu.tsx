@@ -18,6 +18,7 @@ type MenuParams = {
   editorMode: EditorMode;
   toggleEditorMode: () => void;
   openFile: (filename: string) => void;
+  closeFile: () => void;
   saveFile: () => void;
   revertFile: () => void;
   openFiles: Array<string>;
@@ -30,6 +31,7 @@ export function Menu({
   editorMode,
   toggleEditorMode,
   openFile,
+  closeFile,
   saveFile,
   revertFile,
   openFiles,
@@ -74,6 +76,7 @@ export function Menu({
           <FileMenu
             {...{
               ...getSubMenuParams(0),
+              closeFile,
               saveFile,
               revertFile,
               editorMode,
@@ -111,6 +114,7 @@ export function Menu({
     ],
     [
       activeMenuIndex,
+      closeFile,
       editorMode,
       editorRef,
       findDialogRef,

@@ -7,7 +7,7 @@
   margin: 0 0.75rem;
   min-height: calc(100vh - 8rem);
   max-height: calc(100vh - 8rem);
-  overflow-y: scroll;
+  overflow-y: auto;
   resize: none;
 
   &:focus {
@@ -66,17 +66,20 @@
     height: 0.0625rem;
   }
 
-  a:link, a:visited {
+  a:link,
+  a:visited {
     color: var(--normal-text-background);
     filter: invert(90%);
   }
 
-  a:hover, a:visited:hover {
+  a:hover,
+  a:visited:hover {
     color: var(--normal-text-background);
     filter: invert(100%);
   }
 
-  a:active, a:visited:active {
+  a:active,
+  a:visited:active {
     color: var(--normal-text-background);
     filter: invert(70%);
   }

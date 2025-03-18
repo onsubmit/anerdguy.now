@@ -24,7 +24,7 @@ export function App(): React.JSX.Element {
   const { file } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const fileName = file && rawFileExists(file) ? file : 'index.html';
+  const fileName = file ?? 'index.html';
 
   const editorRef = useRef<EditorOperations>(null);
   const findDialogRef = useRef<FindDialogOperations>(null);
@@ -51,6 +51,25 @@ export function App(): React.JSX.Element {
     writeFileToDisk(fileName, openFileContents[fileName]);
   };
 
+  const closeFile = (): void => {
+    const index = openFiles.indexOf(fileName);
+    const newOpenedFiles = openFiles.toSpliced(index, 1);
+
+    if (newOpenedFiles.length === 0) {
+      newOpenedFiles.push('untitled.html');
+
+      const newOpenFileContents = {
+        ...openFileContents,
+      };
+      delete newOpenFileContents[fileName];
+      newOpenFileContents['untitled.html'] = '';
+      setOpenFileContents(newOpenFileContents);
+    }
+
+    setOpenFiles(newOpenedFiles);
+    navigate(`/${newOpenedFiles[index]}?${searchParams}`);
+  };
+
   const revertFile = async (): Promise<void> => {
     const contents = await getRawFileContents(fileName);
     setOpenFileContents((x) => ({
@@ -60,24 +79,22 @@ export function App(): React.JSX.Element {
     writeFileToDisk(fileName, contents);
   };
 
-  const loadFileContents = useCallback(
-    async (filename: string): Promise<void> => {
-      const openFiles = getCachedItem('openFiles');
+  const loadFileContents = useCallback(async (filename: string): Promise<void> => {
+    const openFiles = getCachedItem('openFiles');
 
-      const contents =
-        openFiles?.[filename]?.contentsOnDisk ?? (await getRawFileContents(filename));
+    const contents =
+      openFiles?.[filename]?.contentsOnDisk ??
+      (rawFileExists(filename) ? await getRawFileContents(filename) : '<p>New file</p>');
 
-      if (!doesFileExistOnDisk(fileName)) {
-        writeFileToDisk(fileName, contents);
-      }
+    if (!doesFileExistOnDisk(filename)) {
+      writeFileToDisk(filename, contents);
+    }
 
-      setOpenFileContents((x) => ({
-        ...x,
-        [fileName]: contents,
-      }));
-    },
-    [fileName],
-  );
+    setOpenFileContents((x) => ({
+      ...x,
+      [filename]: contents,
+    }));
+  }, []);
 
   const openDialog = <T extends DialogType>({
     type,
@@ -160,6 +177,7 @@ export function App(): React.JSX.Element {
           editorMode={searchParams.get('edit') ? 'edit' : 'view'}
           toggleEditorMode={toggleEditorMode}
           openFile={openFile}
+          closeFile={closeFile}
           saveFile={saveFile}
           revertFile={revertFile}
           openFiles={openFiles}

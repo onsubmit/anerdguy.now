@@ -8,6 +8,7 @@ import { SubMenuParams } from './sub-menu';
 import styles from './sub-menu.module.css';
 
 type FileMenuParams = {
+  closeFile: () => void;
   saveFile: () => void;
   revertFile: () => void;
   editorMode: EditorMode;
@@ -17,6 +18,7 @@ type FileMenuParams = {
 
 export function FileMenu({
   open,
+  closeFile,
   saveFile,
   revertFile,
   editorMode,
@@ -33,6 +35,11 @@ export function FileMenu({
     saveFile();
     closeMenu();
   }, [closeMenu, saveFile]);
+
+  const closeHandler = useCallback(() => {
+    closeFile();
+    closeMenu();
+  }, [closeMenu, closeFile]);
 
   const revertHandler = useCallback(() => {
     revertFile();
@@ -59,11 +66,11 @@ export function FileMenu({
           case 's':
             return saveHandler();
           case 'w':
-            return;
+            return closeHandler();
         }
       }
     },
-    [activeMenuIndex, openDialog, revertHandler, saveHandler, toggleEditorMode],
+    [activeMenuIndex, closeHandler, openDialog, revertHandler, saveHandler, toggleEditorMode],
   );
 
   useKeyDownHandler(handleKeyDown);
@@ -96,7 +103,7 @@ export function FileMenu({
           </button>
         </li>
         <li>
-          <button type="button" onFocus={() => setFocusedIndex(4)}>
+          <button type="button" onFocus={() => setFocusedIndex(4)} onClick={closeHandler}>
             {`Close        Ctrl+W`}
           </button>
           <hr />
