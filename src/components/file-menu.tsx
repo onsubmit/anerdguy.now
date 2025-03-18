@@ -33,13 +33,15 @@ export function FileMenu({
         }
       }
 
-      if (e.ctrlKey && ['n', 'o', 's', 'w'].includes(e.key)) {
+      if (e.ctrlKey && ['n', 'o', 'r', 's', 'w'].includes(e.key)) {
         e.preventDefault();
         switch (e.key) {
           case 'n':
             return;
           case 'o':
             return openDialog({ type: 'open-file' });
+          case 'r':
+            return;
           case 's':
             return;
           case 'w':
@@ -86,8 +88,14 @@ export function FileMenu({
           <hr />
         </li>
         <li>
+          <button type="button" onFocus={() => setFocusedIndex(5)}>
+            {`Revert       Ctrl+R`}
+          </button>
+        </li>
+        <li>
           <button
             type="button"
+            onFocus={() => setFocusedIndex(6)}
             onClick={() => {
               closeMenu();
               toggleEditorMode();

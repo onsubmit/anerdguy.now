@@ -26,7 +26,7 @@ export type EditorMode = 'view' | 'edit';
 
 type EditorParams = {
   contents: string;
-  setContents: React.Dispatch<React.SetStateAction<string>>;
+  setContents: (contents: string) => void;
   mode: EditorMode;
   onCursorPositionChange: (position: CursorPosition) => void;
   openDialog: <T extends DialogType>(args: OpenDialogArgs<T>) => void;
@@ -106,13 +106,13 @@ export function Editor({
       switch (copiedFrom) {
         case 'selection': {
           const { selectionStart, selectionEnd } = selection;
-          setContents((v) => v.substring(0, selectionStart) + v.substring(selectionEnd));
+          setContents(contents.substring(0, selectionStart) + contents.substring(selectionEnd));
           textArea.selectionStart = textArea.selectionEnd = selectionStart;
           break;
         }
         case 'line': {
-          setContents((v) =>
-            v
+          setContents(
+            contents
               .split('\n')
               .filter((_l, i) => i !== selection.lineNumber)
               .join('\n'),
@@ -139,7 +139,7 @@ export function Editor({
       const textArea = getTextArea();
       const { selectionStart, selectionEnd } = textArea;
 
-      setContents((v) => v.substring(0, selectionStart) + text + v.substring(selectionEnd));
+      setContents(contents.substring(0, selectionStart) + text + contents.substring(selectionEnd));
       textArea.selectionStart = textArea.selectionEnd = selectionEnd + text.length;
     };
 
@@ -150,7 +150,7 @@ export function Editor({
       }
 
       const { textArea, selectionStart, selectionEnd } = selection;
-      setContents((v) => v.substring(0, selectionStart) + v.substring(selectionEnd));
+      setContents(contents.substring(0, selectionStart) + contents.substring(selectionEnd));
       textArea.selectionStart = textArea.selectionEnd = selectionStart;
     };
 
@@ -271,9 +271,11 @@ export function Editor({
           if (replaceWith !== null) {
             if (replaceAll) {
               const r = new RegExp(matchWord ? `\\b${value}\\b` : value, matchCase ? 'g' : 'gi');
-              setContents((v) => v.replace(r, replaceWith));
+              setContents(contents.replace(r, replaceWith));
             } else {
-              setContents((v) => v.slice(0, index) + replaceWith + v.slice(index + value.length));
+              setContents(
+                contents.slice(0, index) + replaceWith + contents.slice(index + value.length),
+              );
             }
           }
 
@@ -292,7 +294,7 @@ export function Editor({
       find,
       replace: find,
     };
-  }, [mode, openDialog, setContents]);
+  }, [contents, mode, openDialog, setContents]);
 
   return mode === 'edit' ? (
     <textarea

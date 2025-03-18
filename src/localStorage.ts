@@ -7,6 +7,13 @@ type CurrentVersion = typeof currentVersion;
 type Cache = {
   1: Partial<{
     theme: ChosenColors;
+    openFiles: Record<
+      string,
+      {
+        contentsOnDisk: string;
+        contentsInMemory: string;
+      }
+    >;
   }>;
 };
 
@@ -25,25 +32,58 @@ export const setCachedItem = <K extends keyof Cache[CurrentVersion]>(
 ): void => {
   const cache = getCache();
   cache[currentVersion][item] = value;
-
-  try {
-    const cacheStr = JSON.stringify(cache);
-    localStorage.setItem(LOCAL_STORAGE_KEY, cacheStr);
-  } catch (e) {
-    console.error(e);
-  }
+  writeCache(cache);
 };
 
 export const setTheme = (theme: ChosenColors): void => {
-  const cache = getCache();
-  cache[currentVersion].theme = theme;
+  setCachedItem('theme', theme);
+};
 
-  try {
-    const cacheStr = JSON.stringify(cache);
-    localStorage.setItem(LOCAL_STORAGE_KEY, cacheStr);
-  } catch (e) {
-    console.error(e);
+export const writeFileToMemory = (filename: string, contents: string): void => {
+  const cache = getCache();
+  let { openFiles } = cache[currentVersion];
+  if (!openFiles) {
+    openFiles = {};
   }
+
+  cache[currentVersion].openFiles = openFiles;
+
+  if (!openFiles[filename]) {
+    openFiles[filename] = {
+      contentsInMemory: contents,
+      contentsOnDisk: contents,
+    };
+  } else {
+    openFiles[filename].contentsInMemory = contents;
+  }
+
+  writeCache(cache);
+};
+
+export const writeFileToDisk = (filename: string, contents: string): void => {
+  const cache = getCache();
+  let { openFiles } = cache[currentVersion];
+  if (!openFiles) {
+    openFiles = {};
+  }
+
+  cache[currentVersion].openFiles = openFiles;
+
+  if (!openFiles[filename]) {
+    openFiles[filename] = {
+      contentsInMemory: contents,
+      contentsOnDisk: contents,
+    };
+  } else {
+    openFiles[filename].contentsOnDisk = contents;
+  }
+
+  writeCache(cache);
+};
+
+export const doesFileExistOnDisk = (filename: string): boolean => {
+  const cache = getCache();
+  return cache[currentVersion].openFiles?.[filename]?.contentsOnDisk !== undefined;
 };
 
 const getCache = (): Cache => {
@@ -57,5 +97,14 @@ const getCache = (): Cache => {
     return (JSON.parse(cacheStr) ?? {}) as Cache;
   } catch {
     return { [currentVersion]: {} };
+  }
+};
+
+export const writeCache = (cache: Cache): void => {
+  try {
+    const cacheStr = JSON.stringify(cache);
+    localStorage.setItem(LOCAL_STORAGE_KEY, cacheStr);
+  } catch (e) {
+    console.error(e);
   }
 };

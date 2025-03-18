@@ -8,7 +8,7 @@ import styles from './file.module.css';
 type FileParams = {
   filename: string;
   contents: string;
-  setContents: React.Dispatch<React.SetStateAction<string>>;
+  setContents: (contents: string) => void;
   openDialog: <T extends DialogType>(args: OpenDialogArgs<T>) => void;
   editorMode: 'view' | 'edit';
   editorRef: RefObject<EditorOperations | null>;

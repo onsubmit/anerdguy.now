@@ -35,9 +35,9 @@ export function SearchMenu({
         return;
       }
 
-      if (e.ctrlKey && ['f', 'r'].includes(e.key)) {
+      if (e.ctrlKey && ['f', 'h'].includes(e.key)) {
         e.preventDefault();
-        if (e.key === 'r' && editorMode === 'view') {
+        if (e.key === 'h' && editorMode === 'view') {
           // Disable "Replace" in View mode
           return;
         }
@@ -82,7 +82,7 @@ export function SearchMenu({
             onFocus={() => setFocusedIndex(2)}
             onClick={() => openDialog({ type: 'replace', toFocusOnClose: topMenuButton })}
           >
-            Replace{'             '}Ctrl+R
+            Replace{'             '}Ctrl+H
           </button>
         </li>
       </ul>

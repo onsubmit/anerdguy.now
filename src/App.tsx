@@ -17,6 +17,14 @@ import { Menu } from './components/menu';
 import { OpenFileDialog } from './components/open-file-dialog';
 import { ReplaceHelpDialog } from './components/replace-help-dialog';
 import { getRawFileContents, rawFileExists } from './importRawFiles';
+import {
+  doesFileExistOnDisk,
+  getCachedItem,
+  writeFileToDisk,
+  writeFileToMemory,
+} from './localStorage';
+
+const cachedOpenFiles = getCachedItem('openFiles');
 
 export function App(): React.JSX.Element {
   const { file } = useParams();
@@ -28,7 +36,9 @@ export function App(): React.JSX.Element {
   const toFocusOnDialogCloseRef = useRef<Array<HTMLElement>>([]);
 
   const [editorMode, setEditorMode] = useState<EditorMode>('view');
-  const [openFiles, setOpenFiles] = useState<Array<string>>([fileName]);
+  const [openFiles, setOpenFiles] = useState<Array<string>>(
+    cachedOpenFiles ? Object.keys(cachedOpenFiles) : [fileName],
+  );
   const [activeFileContents, setActiveFileContents] = useState('');
   const [currentDialog, setCurrentDialog] = useState<DialogType | null>(null);
   const [errorDialogArgs, setErrorDialogArgs] = useState<OpenErrorDialogParams>({
@@ -43,10 +53,31 @@ export function App(): React.JSX.Element {
     navigate(`/${filename}`);
   };
 
-  const loadFileContents = async (filename: string): Promise<void> => {
-    const contents = await getRawFileContents(filename);
-    setActiveFileContents(contents);
-  };
+  const writeActiveFileToMemory = useCallback(
+    (contents: string): void => {
+      writeFileToMemory(fileName, contents);
+      setActiveFileContents(contents);
+    },
+    [fileName],
+  );
+
+  const loadFileContents = useCallback(
+    async (filename: string): Promise<void> => {
+      const openFiles = getCachedItem('openFiles');
+
+      const contents =
+        openFiles?.[filename]?.contentsInMemory ??
+        openFiles?.[filename]?.contentsOnDisk ??
+        (await getRawFileContents(filename));
+
+      if (!doesFileExistOnDisk(fileName)) {
+        writeFileToDisk(fileName, contents);
+      }
+
+      writeActiveFileToMemory(contents);
+    },
+    [fileName, writeActiveFileToMemory],
+  );
 
   const openDialog = <T extends DialogType>({
     type,
@@ -115,7 +146,7 @@ export function App(): React.JSX.Element {
 
   useEffect(() => {
     loadFileContents(fileName);
-  }, [fileName]);
+  }, [fileName, loadFileContents]);
 
   return (
     <>
@@ -132,7 +163,7 @@ export function App(): React.JSX.Element {
         <File
           filename={fileName}
           contents={activeFileContents}
-          setContents={setActiveFileContents}
+          setContents={writeActiveFileToMemory}
           openDialog={openDialog}
           editorMode={editorMode}
           editorRef={editorRef}
