@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams, useSearchParams } from 'react-router';
 
 import styles from './app.module.css';
 import { AboutDialog } from './components/about-dialog';
 import { ColorDialog } from './components/color-dialog';
 import { ColorHelpDialog } from './components/color-help-dialog';
 import { DialogType, OpenDialogArgs, OpenDialogEvent } from './components/dialog';
-import { EditorMode } from './components/editor';
 import { EditorOperations } from './components/editor-operation';
 import { ErrorDialog, OpenErrorDialogParams } from './components/error-dialog';
 import { EventsDialog } from './components/events-dialog';
@@ -23,6 +22,7 @@ const cachedOpenFiles = getCachedItem('openFiles');
 
 export function App(): React.JSX.Element {
   const { file } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const fileName = file && rawFileExists(file) ? file : 'index.html';
 
@@ -30,7 +30,6 @@ export function App(): React.JSX.Element {
   const findDialogRef = useRef<FindDialogOperations>(null);
   const toFocusOnDialogCloseRef = useRef<Array<HTMLElement>>([]);
 
-  const [editorMode, setEditorMode] = useState<EditorMode>('view');
   const [openFiles, setOpenFiles] = useState<Array<string>>(
     cachedOpenFiles ? Object.keys(cachedOpenFiles) : [fileName],
   );
@@ -45,7 +44,7 @@ export function App(): React.JSX.Element {
     if (!openFiles.includes(filename)) {
       setOpenFiles((x) => [...x, filename]);
     }
-    navigate(`/${filename}`);
+    navigate(`/${filename}?${searchParams}`);
   };
 
   const saveFile = (): void => {
@@ -108,7 +107,7 @@ export function App(): React.JSX.Element {
       if (toFocusOnDialogCloseRef.current.length) {
         toFocusOnDialogCloseRef.current.pop()?.focus();
       } else {
-        if (editorMode === 'edit') {
+        if (searchParams.get('edit')) {
           setTimeout(() => editorRef.current?.focus());
         }
       }
@@ -120,8 +119,13 @@ export function App(): React.JSX.Element {
       return;
     }
 
-    setEditorMode((mode) => (mode === 'edit' ? 'view' : 'edit'));
-  }, [currentDialog]);
+    if (searchParams.get('edit')) {
+      searchParams.delete('edit');
+    } else {
+      searchParams.set('edit', '1');
+    }
+    setSearchParams(searchParams);
+  }, [currentDialog, searchParams, setSearchParams]);
 
   useEffect(() => {
     const openDialogFromEvent = (event: CustomEventInit<OpenDialogEvent<DialogType>>): void => {
@@ -153,7 +157,7 @@ export function App(): React.JSX.Element {
     <>
       <div className={styles.container}>
         <Menu
-          editorMode={editorMode}
+          editorMode={searchParams.get('edit') ? 'edit' : 'view'}
           toggleEditorMode={toggleEditorMode}
           openFile={openFile}
           saveFile={saveFile}
@@ -173,7 +177,7 @@ export function App(): React.JSX.Element {
             }));
           }}
           openDialog={openDialog}
-          editorMode={editorMode}
+          editorMode={searchParams.get('edit') ? 'edit' : 'view'}
           editorRef={editorRef}
         ></File>
       </div>
