@@ -8,6 +8,7 @@ import { SubMenuParams } from './sub-menu';
 import styles from './sub-menu.module.css';
 
 type FileMenuParams = {
+  saveFile: () => void;
   editorMode: EditorMode;
   toggleEditorMode: () => void;
   activeMenuIndex: number | null;
@@ -15,6 +16,7 @@ type FileMenuParams = {
 
 export function FileMenu({
   open,
+  saveFile,
   editorMode,
   toggleEditorMode,
   closeMenu,
@@ -24,6 +26,11 @@ export function FileMenu({
 }: FileMenuParams): React.JSX.Element {
   const listRef = useRef<HTMLUListElement>(null);
   const setFocusedIndex = useSubMenuFocusHandler({ ref, listRef, disable: !open });
+
+  const saveHandler = useCallback(() => {
+    saveFile();
+    closeMenu();
+  }, [closeMenu, saveFile]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent): void => {
@@ -43,13 +50,13 @@ export function FileMenu({
           case 'r':
             return;
           case 's':
-            return;
+            return saveHandler();
           case 'w':
             return;
         }
       }
     },
-    [activeMenuIndex, openDialog, toggleEditorMode],
+    [activeMenuIndex, openDialog, saveHandler, toggleEditorMode],
   );
 
   useKeyDownHandler(handleKeyDown);
@@ -72,7 +79,7 @@ export function FileMenu({
           </button>
         </li>
         <li>
-          <button type="button" onFocus={() => setFocusedIndex(2)}>
+          <button type="button" onFocus={() => setFocusedIndex(2)} onClick={saveHandler}>
             {`Save         Ctrl+S`}
           </button>
         </li>

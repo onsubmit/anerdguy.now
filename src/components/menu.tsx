@@ -18,6 +18,7 @@ type MenuParams = {
   editorMode: EditorMode;
   toggleEditorMode: () => void;
   openFile: (filename: string) => void;
+  saveFile: () => void;
   openFiles: Array<string>;
   openDialog: <T extends DialogType>(args: OpenDialogArgs<T>) => void;
   findDialogRef: RefObject<FindDialogOperations | null>;
@@ -28,6 +29,7 @@ export function Menu({
   editorMode,
   toggleEditorMode,
   openFile,
+  saveFile,
   openFiles,
   openDialog,
   findDialogRef,
@@ -68,7 +70,7 @@ export function Menu({
         title: 'File',
         component: (
           <FileMenu
-            {...{ ...getSubMenuParams(0), editorMode, toggleEditorMode, activeMenuIndex }}
+            {...{ ...getSubMenuParams(0), saveFile, editorMode, toggleEditorMode, activeMenuIndex }}
           ></FileMenu>
         ),
       },
@@ -106,6 +108,7 @@ export function Menu({
       getSubMenuParams,
       openFile,
       openFiles,
+      saveFile,
       toggleEditorMode,
     ],
   );

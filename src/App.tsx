@@ -48,6 +48,10 @@ export function App(): React.JSX.Element {
     navigate(`/${filename}`);
   };
 
+  const saveFile = (): void => {
+    writeFileToDisk(fileName, openFileContents[fileName]);
+  };
+
   const loadFileContents = useCallback(
     async (filename: string): Promise<void> => {
       const openFiles = getCachedItem('openFiles');
@@ -143,6 +147,7 @@ export function App(): React.JSX.Element {
           editorMode={editorMode}
           toggleEditorMode={toggleEditorMode}
           openFile={openFile}
+          saveFile={saveFile}
           openFiles={openFiles}
           openDialog={openDialog}
           findDialogRef={findDialogRef}
