@@ -7,7 +7,7 @@ type CurrentVersion = typeof currentVersion;
 type Cache = {
   1: Partial<{
     theme: ChosenColors;
-    openFiles: Record<
+    files: Record<
       string,
       {
         contentsOnDisk: string;
@@ -40,19 +40,19 @@ export const setTheme = (theme: ChosenColors): void => {
 
 export const writeFileToDisk = (filename: string, contents: string): void => {
   const cache = getCache();
-  let { openFiles } = cache[currentVersion];
-  if (!openFiles) {
-    openFiles = {};
+  let { files } = cache[currentVersion];
+  if (!files) {
+    files = {};
   }
 
-  cache[currentVersion].openFiles = openFiles;
+  cache[currentVersion].files = files;
 
-  if (!openFiles[filename]) {
-    openFiles[filename] = {
+  if (!files[filename]) {
+    files[filename] = {
       contentsOnDisk: contents,
     };
   } else {
-    openFiles[filename].contentsOnDisk = contents;
+    files[filename].contentsOnDisk = contents;
   }
 
   writeCache(cache);
@@ -60,7 +60,7 @@ export const writeFileToDisk = (filename: string, contents: string): void => {
 
 export const doesFileExistOnDisk = (filename: string): boolean => {
   const cache = getCache();
-  return cache[currentVersion].openFiles?.[filename]?.contentsOnDisk !== undefined;
+  return cache[currentVersion].files?.[filename]?.contentsOnDisk !== undefined;
 };
 
 const getCache = (): Cache => {

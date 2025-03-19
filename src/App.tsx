@@ -18,7 +18,7 @@ import { ReplaceHelpDialog } from './components/replace-help-dialog';
 import { getRawFileContents, rawFileExists } from './importRawFiles';
 import { doesFileExistOnDisk, getCachedItem, writeFileToDisk } from './localStorage';
 
-const cachedOpenFiles = getCachedItem('openFiles');
+const cachedOpenFiles = getCachedItem('files');
 
 export function App(): React.JSX.Element {
   const { file } = useParams();
@@ -54,20 +54,19 @@ export function App(): React.JSX.Element {
   const closeFile = (): void => {
     const index = openFiles.indexOf(fileName);
     const newOpenedFiles = openFiles.toSpliced(index, 1);
+    const newOpenFileContents = {
+      ...openFileContents,
+    };
+    delete newOpenFileContents[fileName];
+    setOpenFileContents(newOpenFileContents);
 
     if (newOpenedFiles.length === 0) {
-      newOpenedFiles.push('untitled.html');
-
-      const newOpenFileContents = {
-        ...openFileContents,
-      };
-      delete newOpenFileContents[fileName];
-      newOpenFileContents['untitled.html'] = '';
-      setOpenFileContents(newOpenFileContents);
+      setOpenFiles(['untitled.html']);
+      navigate(`/untitled.html?${searchParams}`);
+    } else {
+      setOpenFiles(newOpenedFiles);
+      navigate(`/${newOpenedFiles[index] ?? newOpenedFiles[index - 1]}?${searchParams}`);
     }
-
-    setOpenFiles(newOpenedFiles);
-    navigate(`/${newOpenedFiles[index]}?${searchParams}`);
   };
 
   const revertFile = async (): Promise<void> => {
@@ -80,10 +79,10 @@ export function App(): React.JSX.Element {
   };
 
   const loadFileContents = useCallback(async (filename: string): Promise<void> => {
-    const openFiles = getCachedItem('openFiles');
+    const files = getCachedItem('files');
 
     const contents =
-      openFiles?.[filename]?.contentsOnDisk ??
+      files?.[filename]?.contentsOnDisk ??
       (rawFileExists(filename) ? await getRawFileContents(filename) : '<p>New file</p>');
 
     if (!doesFileExistOnDisk(filename)) {
