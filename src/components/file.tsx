@@ -39,7 +39,7 @@ export function File({
           openDialog={openDialog}
         ></Editor>
         <div className={styles.status}>
-          <span>F1=Help</span>
+          <span>F1=About</span>
           {editorMode === 'edit' ? (
             <div className={styles.cursor}>
               <span>Line:{cursorPosition.line}</span>
