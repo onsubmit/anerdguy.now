@@ -61,25 +61,7 @@ export function ViewMenu({
 
   return (
     <div className={classNames(styles.subMenu, open ? styles.open : undefined)}>
-      <ul ref={listRef}>
-        <li>
-          <button type="button" onFocus={() => setFocusedIndex(0)}>
-            {`Split Window    Ctrl+F6`}
-          </button>
-        </li>
-        <li>
-          <button type="button" onFocus={() => setFocusedIndex(1)}>
-            {`Size Window     Ctrl+F8`}
-          </button>
-        </li>
-        <li>
-          <button type="button" onFocus={() => setFocusedIndex(2)}>
-            {`Close Window    Ctrl+F4`}
-          </button>
-          {openFiles.length ? <hr /> : undefined}
-        </li>
-        {getOpenFilesMenuItems()}
-      </ul>
+      <ul ref={listRef}>{getOpenFilesMenuItems()}</ul>
     </div>
   );
 }
