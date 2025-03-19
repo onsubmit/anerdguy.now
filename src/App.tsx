@@ -17,17 +17,14 @@ import { OpenFileDialog } from './components/open-file-dialog';
 import { ReplaceHelpDialog } from './components/replace-help-dialog';
 import { getRawFileContents, rawFileExists } from './importRawFiles';
 import {
-  closeCachedFile,
   doesFileExistOnDisk,
   getCachedItem,
-  openCachedFile,
+  getOpenCachedFiles,
+  markCachedFile,
   writeFileToDisk,
 } from './localStorage';
 
-const cachedFiles = getCachedItem('files');
-const openCachedFiles = cachedFiles
-  ? Object.keys(cachedFiles).filter((f) => cachedFiles[f].isOpen)
-  : [];
+const openCachedFiles = getOpenCachedFiles();
 
 export function App(): React.JSX.Element {
   const { file } = useParams();
@@ -53,7 +50,7 @@ export function App(): React.JSX.Element {
     if (!openFiles.includes(filename)) {
       setOpenFiles((x) => [...x, filename]);
     }
-    openCachedFile(filename);
+    markCachedFile(filename, 'isOpen', true);
     navigate(`/${filename}?${searchParams}`);
   };
 
@@ -69,19 +66,16 @@ export function App(): React.JSX.Element {
     };
     delete newOpenFileContents[fileName];
     setOpenFileContents(newOpenFileContents);
-    closeCachedFile(fileName);
+    markCachedFile(fileName, 'isOpen', false);
 
-    if (newOpenedFiles.length === 0) {
-      setOpenFiles(['untitled.html']);
-      navigate(`/untitled.html?${searchParams}`);
-    } else {
-      setOpenFiles(newOpenedFiles);
-      navigate(`/${newOpenedFiles[index] ?? newOpenedFiles[index - 1]}?${searchParams}`);
-    }
+    setOpenFiles(newOpenedFiles);
+    navigate(`/${newOpenedFiles[index] ?? newOpenedFiles[index - 1]}?${searchParams}`);
   };
 
   const revertFile = async (): Promise<void> => {
-    const contents = await getRawFileContents(fileName);
+    const contents = rawFileExists(fileName)
+      ? await getRawFileContents(fileName)
+      : (getCachedItem('files')?.[fileName]?.contentsOnDisk ?? '');
     setOpenFileContents((x) => ({
       ...x,
       [fileName]: contents,
@@ -94,10 +88,10 @@ export function App(): React.JSX.Element {
 
     const contents =
       files?.[filename]?.contentsOnDisk ??
-      (rawFileExists(filename) ? await getRawFileContents(filename) : '<p>New file</p>');
+      (rawFileExists(filename) ? await getRawFileContents(filename) : '');
 
     if (doesFileExistOnDisk(filename)) {
-      openCachedFile(filename);
+      markCachedFile(filename, 'isOpen', true);
     } else {
       writeFileToDisk(filename, contents);
     }

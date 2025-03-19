@@ -79,6 +79,7 @@ export function Menu({
               closeFile,
               saveFile,
               revertFile,
+              disableClose: openFiles.length === 1,
               editorMode,
               toggleEditorMode,
               activeMenuIndex,

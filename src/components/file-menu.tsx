@@ -11,6 +11,7 @@ type FileMenuParams = {
   closeFile: () => void;
   saveFile: () => void;
   revertFile: () => void;
+  disableClose: boolean;
   editorMode: EditorMode;
   toggleEditorMode: () => void;
   activeMenuIndex: number | null;
@@ -21,6 +22,7 @@ export function FileMenu({
   closeFile,
   saveFile,
   revertFile,
+  disableClose,
   editorMode,
   toggleEditorMode,
   closeMenu,
@@ -65,12 +67,23 @@ export function FileMenu({
             return revertHandler();
           case 's':
             return saveHandler();
-          case 'w':
-            return closeHandler();
+          case 'w': {
+            if (!disableClose) {
+              return closeHandler();
+            }
+          }
         }
       }
     },
-    [activeMenuIndex, closeHandler, openDialog, revertHandler, saveHandler, toggleEditorMode],
+    [
+      activeMenuIndex,
+      closeHandler,
+      disableClose,
+      openDialog,
+      revertHandler,
+      saveHandler,
+      toggleEditorMode,
+    ],
   );
 
   useKeyDownHandler(handleKeyDown);
@@ -79,44 +92,39 @@ export function FileMenu({
     <div className={classNames(styles.subMenu, open ? styles.open : undefined)}>
       <ul ref={listRef}>
         <li>
-          <button type="button" onFocus={() => setFocusedIndex(0)}>
-            {`New          Ctrl+N`}
-          </button>
-        </li>
-        <li>
           <button
             type="button"
-            onFocus={() => setFocusedIndex(1)}
+            onFocus={() => setFocusedIndex(0)}
             onClick={() => openDialog({ type: 'open-file' })}
           >
             {`Open...      Ctrl+O`}
           </button>
         </li>
         <li>
-          <button type="button" onFocus={() => setFocusedIndex(2)} onClick={saveHandler}>
+          <button type="button" onFocus={() => setFocusedIndex(1)} onClick={saveHandler}>
             {`Save         Ctrl+S`}
           </button>
         </li>
         <li>
-          <button type="button" onFocus={() => setFocusedIndex(3)}>
-            {`Save As...   Ctrl+Alt+S`}
-          </button>
-        </li>
-        <li>
-          <button type="button" onFocus={() => setFocusedIndex(4)} onClick={closeHandler}>
+          <button
+            type="button"
+            disabled={disableClose}
+            onFocus={() => setFocusedIndex(2)}
+            onClick={closeHandler}
+          >
             {`Close        Ctrl+Alt+W`}
           </button>
           <hr />
         </li>
         <li>
-          <button type="button" onFocus={() => setFocusedIndex(5)} onClick={revertHandler}>
+          <button type="button" onFocus={() => setFocusedIndex(3)} onClick={revertHandler}>
             {`Revert       Ctrl+R`}
           </button>
         </li>
         <li>
           <button
             type="button"
-            onFocus={() => setFocusedIndex(6)}
+            onFocus={() => setFocusedIndex(4)}
             onClick={() => {
               closeMenu();
               toggleEditorMode();

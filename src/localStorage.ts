@@ -4,16 +4,15 @@ type CacheVersion = 1;
 const currentVersion: CacheVersion = 1 as const;
 type CurrentVersion = typeof currentVersion;
 
+type File = {
+  isOpen: boolean;
+  contentsOnDisk: string;
+};
+
 type Cache = {
   1: Partial<{
     theme: ChosenColors;
-    files: Record<
-      string,
-      {
-        isOpen: boolean;
-        contentsOnDisk: string;
-      }
-    >;
+    files: Record<string, File>;
   }>;
 };
 
@@ -60,20 +59,15 @@ export const writeFileToDisk = (filename: string, contents: string): void => {
   writeCache(cache);
 };
 
-export const openCachedFile = (filename: string): void => {
+export const markCachedFile = <K extends keyof File>(
+  filename: string,
+  key: K,
+  value: File[K],
+): void => {
   const cache = getCache();
   const file = cache[currentVersion].files?.[filename];
   if (file) {
-    file.isOpen = true;
-    writeCache(cache);
-  }
-};
-
-export const closeCachedFile = (filename: string): void => {
-  const cache = getCache();
-  const file = cache[currentVersion].files?.[filename];
-  if (file) {
-    file.isOpen = false;
+    file[key] = value;
     writeCache(cache);
   }
 };
@@ -104,4 +98,12 @@ export const writeCache = (cache: Cache): void => {
   } catch (e) {
     console.error(e);
   }
+};
+
+export const getOpenCachedFiles = (): Array<string> => {
+  const cachedFiles = getCachedItem('files');
+  const openCachedFiles = cachedFiles
+    ? Object.keys(cachedFiles).filter((f) => cachedFiles[f].isOpen)
+    : [];
+  return openCachedFiles;
 };
