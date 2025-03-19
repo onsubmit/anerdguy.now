@@ -23,7 +23,7 @@ export function ViewMenu({
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent): void => {
-      if (e.altKey) {
+      if (openFiles.length > 1 && e.altKey) {
         const number = parseInt(e.key, 10);
         if (number >= 1 && number <= 9 && openFiles[number - 1]) {
           e.preventDefault();
@@ -52,7 +52,8 @@ export function ViewMenu({
             openFile(openFiles[i]);
           }}
         >
-          {f.padEnd(maxNameLength, ' ') + '    ' + (i < 9 ? `Alt+${i + 1}` : '')}
+          {f.padEnd(maxNameLength, ' ') +
+            (openFiles.length > 1 ? '    ' + (i < 9 ? `Alt+${i + 1}` : '') : '')}
         </button>
       </li>
     ));
