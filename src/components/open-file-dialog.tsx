@@ -3,7 +3,6 @@ import { useCallback, useState } from 'react';
 import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
 import { Dialog, DialogType, OpenDialogArgs } from './dialog';
 import { DialogButtons } from './dialog-buttons';
-import { fileSystem } from './file-system';
 import styles from './open-file-dialog.module.css';
 import { OptionsList } from './option-list';
 
@@ -14,6 +13,8 @@ type OpenFileDialogParams = {
   closeDialog: () => void;
 };
 
+const defaultFiles: Array<string> = ['index.html', 'bio.html', 'resume.html', 'socials.html'];
+
 export function OpenFileDialog({
   open,
   openFile,
@@ -21,7 +22,7 @@ export function OpenFileDialog({
 }: OpenFileDialogParams): React.JSX.Element {
   const [filter, setFilter] = useState('*.*');
   const [selectedFile, setSelectedFile] = useState<string>('');
-  const [files, _setFiles] = useState<Array<string>>(fileSystem);
+  const [files, _setFiles] = useState<Array<string>>(defaultFiles);
 
   const okayHandler = useCallback(() => {
     closeDialog();

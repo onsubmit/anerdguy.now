@@ -54,7 +54,7 @@ export function FileMenu({
         }
       }
 
-      if (e.ctrlKey && ['n', 'o', 'r', 's', 'w'].includes(e.key)) {
+      if (e.ctrlKey && (['n', 'o', 'r', 's'].includes(e.key) || (e.altKey && e.key === 'w'))) {
         e.preventDefault();
         switch (e.key) {
           case 'n':
@@ -104,7 +104,7 @@ export function FileMenu({
         </li>
         <li>
           <button type="button" onFocus={() => setFocusedIndex(4)} onClick={closeHandler}>
-            {`Close        Ctrl+W`}
+            {`Close        Ctrl+Alt+W`}
           </button>
           <hr />
         </li>

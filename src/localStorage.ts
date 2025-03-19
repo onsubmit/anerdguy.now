@@ -10,6 +10,7 @@ type Cache = {
     files: Record<
       string,
       {
+        isOpen: boolean;
         contentsOnDisk: string;
       }
     >;
@@ -49,6 +50,7 @@ export const writeFileToDisk = (filename: string, contents: string): void => {
 
   if (!files[filename]) {
     files[filename] = {
+      isOpen: true,
       contentsOnDisk: contents,
     };
   } else {
@@ -56,6 +58,24 @@ export const writeFileToDisk = (filename: string, contents: string): void => {
   }
 
   writeCache(cache);
+};
+
+export const openCachedFile = (filename: string): void => {
+  const cache = getCache();
+  const file = cache[currentVersion].files?.[filename];
+  if (file) {
+    file.isOpen = true;
+    writeCache(cache);
+  }
+};
+
+export const closeCachedFile = (filename: string): void => {
+  const cache = getCache();
+  const file = cache[currentVersion].files?.[filename];
+  if (file) {
+    file.isOpen = false;
+    writeCache(cache);
+  }
 };
 
 export const doesFileExistOnDisk = (filename: string): boolean => {

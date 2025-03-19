@@ -16,9 +16,18 @@ import { Menu } from './components/menu';
 import { OpenFileDialog } from './components/open-file-dialog';
 import { ReplaceHelpDialog } from './components/replace-help-dialog';
 import { getRawFileContents, rawFileExists } from './importRawFiles';
-import { doesFileExistOnDisk, getCachedItem, writeFileToDisk } from './localStorage';
+import {
+  closeCachedFile,
+  doesFileExistOnDisk,
+  getCachedItem,
+  openCachedFile,
+  writeFileToDisk,
+} from './localStorage';
 
-const cachedOpenFiles = getCachedItem('files');
+const cachedFiles = getCachedItem('files');
+const openCachedFiles = cachedFiles
+  ? Object.keys(cachedFiles).filter((f) => cachedFiles[f].isOpen)
+  : [];
 
 export function App(): React.JSX.Element {
   const { file } = useParams();
@@ -31,7 +40,7 @@ export function App(): React.JSX.Element {
   const toFocusOnDialogCloseRef = useRef<Array<HTMLElement>>([]);
 
   const [openFiles, setOpenFiles] = useState<Array<string>>(
-    cachedOpenFiles ? Object.keys(cachedOpenFiles) : [fileName],
+    openCachedFiles.length ? [...new Set([...openCachedFiles, fileName])] : [fileName],
   );
   const [openFileContents, setOpenFileContents] = useState<Record<string, string>>({});
   const [currentDialog, setCurrentDialog] = useState<DialogType | null>(null);
@@ -44,6 +53,7 @@ export function App(): React.JSX.Element {
     if (!openFiles.includes(filename)) {
       setOpenFiles((x) => [...x, filename]);
     }
+    openCachedFile(filename);
     navigate(`/${filename}?${searchParams}`);
   };
 
@@ -59,6 +69,7 @@ export function App(): React.JSX.Element {
     };
     delete newOpenFileContents[fileName];
     setOpenFileContents(newOpenFileContents);
+    closeCachedFile(fileName);
 
     if (newOpenedFiles.length === 0) {
       setOpenFiles(['untitled.html']);
@@ -85,7 +96,9 @@ export function App(): React.JSX.Element {
       files?.[filename]?.contentsOnDisk ??
       (rawFileExists(filename) ? await getRawFileContents(filename) : '<p>New file</p>');
 
-    if (!doesFileExistOnDisk(filename)) {
+    if (doesFileExistOnDisk(filename)) {
+      openCachedFile(filename);
+    } else {
       writeFileToDisk(filename, contents);
     }
 
