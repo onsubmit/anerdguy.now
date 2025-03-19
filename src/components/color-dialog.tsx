@@ -72,11 +72,6 @@ export function ColorDialog({
   const [pendingColors, setPendingColors] = useState<ChosenColors>({});
 
   dialogRef.current?.[open ? 'showModal' : 'close']();
-  // TODO: Remove this hack and figure out how to scroll the selected colors after the dialog loads
-  setTimeout(() => {
-    foregroundColorRef.current?.reselect(selectedForeground);
-    backgroundColorRef.current?.reselect(selectedBackground);
-  });
 
   const okayHandler = useCallback(() => {
     setOriginalColors((x) => {

@@ -89,7 +89,7 @@ export function OptionsList<T extends string>({
 
   return (
     <ul ref={ulRef} className={styles.optionList}>
-      {options.map((option) => {
+      {options.map((option, i) => {
         if (filter && !filter.exec(option)) {
           return;
         }
@@ -101,6 +101,7 @@ export function OptionsList<T extends string>({
             className={option === selectedOption ? styles.active : undefined}
             onClick={() => {
               setSelectedOption(option);
+              setFocusedIndex(i);
               onSelectionChange?.(option);
             }}
             onDoubleClick={() => onDoubleClick?.(option)}
