@@ -25,5 +25,6 @@
     color: var(--dialog-titlebar-foreground);
     background: var(--dialog-titlebar-background);
     text-align: center;
+    padding: 0.25rem;
   }
 }
