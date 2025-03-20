@@ -1,9 +1,15 @@
 import { useCallback, useRef, useState } from 'react';
 
-import { colors, getKnownColor, KnownColor } from '../colors';
+import { getKnownColor, KnownColor } from '../colors';
 import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
 import { getCachedItem, setCachedItem } from '../localStorage';
-import { cssVariableNames, KnownThemeableItem, knownThemeableItems, themes } from '../themes';
+import {
+  cssVariableNames,
+  KnownThemeableItem,
+  knownThemeableItems,
+  setCssVariable,
+  themes,
+} from '../themes';
 import styles from './color-dialog.module.css';
 import { ColorOptionList } from './color-option-list';
 import { Dialog, DialogType, OpenDialogArgs } from './dialog';
@@ -19,17 +25,6 @@ type ColorDialogParams = {
 export type ChosenColors = Partial<
   Record<KnownThemeableItem, Partial<{ foreground: KnownColor; background: KnownColor }>>
 >;
-
-const setCssVariable = (
-  layer: 'foreground' | 'background',
-  item: KnownThemeableItem,
-  color: KnownColor,
-): void => {
-  document.documentElement.style.setProperty(
-    `${cssVariableNames[item]}-${layer}`,
-    `var(${colors[color].cssVariableName})`,
-  );
-};
 
 const cachedTheme = getCachedItem('theme');
 if (cachedTheme) {
@@ -84,6 +79,7 @@ export function ColorDialog({
       return newValue;
     });
 
+    setCachedItem('selectedTheme', 'Custom');
     closeDialog();
   }, [closeDialog, pendingColors]);
 
@@ -208,7 +204,7 @@ export function ColorDialog({
   const setDefaults = (): void => {
     const defaults: ChosenColors = {};
     for (const item of knownThemeableItems) {
-      const { foreground, background } = (defaults[item] = themes.default[item]);
+      const { foreground, background } = (defaults[item] = themes.Default[item]);
 
       if (!originalColors[item]?.foreground || !originalColors[item]?.background) {
         const currentColors = getCurrentItemColors(item);

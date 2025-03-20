@@ -1,4 +1,4 @@
-import { KnownColor } from './colors';
+import { colors, KnownColor } from './colors';
 
 export const knownThemeableItems = [
   'Normal Text',
@@ -30,6 +30,17 @@ export const cssVariableNames: Record<KnownThemeableItem, string> = {
   'Dialog Buttons': '--dialog-buttons',
 };
 
+export const setCssVariable = (
+  layer: 'foreground' | 'background',
+  item: KnownThemeableItem,
+  color: KnownColor,
+): void => {
+  document.documentElement.style.setProperty(
+    `${cssVariableNames[item]}-${layer}`,
+    `var(${colors[color].cssVariableName})`,
+  );
+};
+
 type Theme = {
   [T in KnownThemeableItem]: {
     foreground: KnownColor;
@@ -37,12 +48,12 @@ type Theme = {
   };
 };
 
-export const themeNames = ['default'] as const;
+export const themeNames = ['Default', 'Hotdog Stand'] as const;
 export type ThemeName = (typeof themeNames)[number];
 export type Themes = Record<ThemeName, Theme>;
 
 export const themes = {
-  default: {
+  Default: {
     'Normal Text': {
       foreground: 'White',
       background: 'Blue',
@@ -74,6 +85,40 @@ export const themes = {
     'Dialog Buttons': {
       foreground: 'Black',
       background: 'BrWhite',
+    },
+  },
+  'Hotdog Stand': {
+    'Normal Text': {
+      foreground: 'Black',
+      background: 'Yellow',
+    },
+    'Selected Text': {
+      foreground: 'BrWhite',
+      background: 'Black',
+    },
+    'Window Border': {
+      foreground: 'Yellow',
+      background: 'Red',
+    },
+    Menubar: {
+      foreground: 'Black',
+      background: 'BrWhite',
+    },
+    'Status Line': {
+      foreground: 'Black',
+      background: 'White',
+    },
+    Dialogs: {
+      foreground: 'Black',
+      background: 'Yellow',
+    },
+    'Dialog Titlebar': {
+      foreground: 'Yellow',
+      background: 'Red',
+    },
+    'Dialog Buttons': {
+      foreground: 'Yellow',
+      background: 'Red',
     },
   },
 } as const satisfies Themes;
