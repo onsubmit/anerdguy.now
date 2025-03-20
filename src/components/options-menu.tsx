@@ -18,17 +18,21 @@ export function OptionsMenu({
     <div className={classNames(styles.subMenu, open ? styles.open : undefined)}>
       <ul ref={listRef}>
         <li>
-          <button type="button" onFocus={() => setFocusedIndex(0)}>
-            Settings...
+          <button
+            type="button"
+            onFocus={() => setFocusedIndex(0)}
+            onClick={() => openDialog({ type: 'color', toFocusOnClose: topMenuButton })}
+          >
+            Colors...
           </button>
         </li>
         <li>
           <button
             type="button"
             onFocus={() => setFocusedIndex(1)}
-            onClick={() => openDialog({ type: 'color', toFocusOnClose: topMenuButton })}
+            onClick={() => openDialog({ type: 'themes', toFocusOnClose: topMenuButton })}
           >
-            Colors...
+            Themes...
           </button>
         </li>
       </ul>

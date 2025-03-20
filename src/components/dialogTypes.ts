@@ -1,5 +1,6 @@
 export const dialogTypes = [
   'open-file',
+  'themes',
   'color',
   'color-help',
   'events',

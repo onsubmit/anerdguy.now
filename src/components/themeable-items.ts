@@ -1,83 +1,47 @@
-import { KnownColor } from './colors';
+// import { KnownColor } from './colors';
 
-export const knownThemeableItems = [
-  'Normal Text',
-  'Selected Text',
-  'Window Border',
-  'Menubar',
-  'Status Line',
-  'Dialogs',
-  'Dialog Titlebar',
-  'Dialog Buttons',
-] as const;
+// export const knownThemeableItems = [
+//   'Normal Text',
+//   'Selected Text',
+//   'Window Border',
+//   'Menubar',
+//   'Status Line',
+//   'Dialogs',
+//   'Dialog Titlebar',
+//   'Dialog Buttons',
+// ] as const;
 
-export type KnownThemeableItem = (typeof knownThemeableItems)[number];
+// export type KnownThemeableItem = (typeof knownThemeableItems)[number];
 
-type ThemeableItems = {
-  [T in KnownThemeableItem]: {
-    cssVariableName: `--${string}`;
-    defaults: {
-      foreground: KnownColor;
-      background: KnownColor;
-    };
-  };
-};
+// type ThemeableItems = {
+//   [T in KnownThemeableItem]: {
+//     cssVariableName: `--${string}`;
+//   };
+// };
 
-export const themeableItems: ThemeableItems = {
-  'Normal Text': {
-    cssVariableName: '--normal-text',
-    defaults: {
-      foreground: 'White',
-      background: 'Blue',
-    },
-  },
-  'Selected Text': {
-    cssVariableName: '--selected-text',
-    defaults: {
-      foreground: 'Black',
-      background: 'White',
-    },
-  },
-  'Window Border': {
-    cssVariableName: '--window-border',
-    defaults: {
-      foreground: 'White',
-      background: 'Black',
-    },
-  },
-  Menubar: {
-    cssVariableName: '--menubar',
-    defaults: {
-      foreground: 'Black',
-      background: 'White',
-    },
-  },
-  'Status Line': {
-    cssVariableName: '--status-line',
-    defaults: {
-      foreground: 'Black',
-      background: 'White',
-    },
-  },
-  Dialogs: {
-    cssVariableName: '--dialogs',
-    defaults: {
-      foreground: 'Black',
-      background: 'White',
-    },
-  },
-  'Dialog Titlebar': {
-    cssVariableName: '--dialog-titlebar',
-    defaults: {
-      foreground: 'Black',
-      background: 'BrWhite',
-    },
-  },
-  'Dialog Buttons': {
-    cssVariableName: '--dialog-buttons',
-    defaults: {
-      foreground: 'Black',
-      background: 'BrWhite',
-    },
-  },
-};
+// export const themeableItems: ThemeableItems = {
+//   'Normal Text': {
+//     cssVariableName: '--normal-text',
+//   },
+//   'Selected Text': {
+//     cssVariableName: '--selected-text',
+//   },
+//   'Window Border': {
+//     cssVariableName: '--window-border',
+//   },
+//   Menubar: {
+//     cssVariableName: '--menubar',
+//   },
+//   'Status Line': {
+//     cssVariableName: '--status-line',
+//   },
+//   Dialogs: {
+//     cssVariableName: '--dialogs',
+//   },
+//   'Dialog Titlebar': {
+//     cssVariableName: '--dialog-titlebar',
+//   },
+//   'Dialog Buttons': {
+//     cssVariableName: '--dialog-buttons',
+//   },
+// };

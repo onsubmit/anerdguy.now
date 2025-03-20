@@ -15,6 +15,7 @@ import { FindHelpDialog } from './components/find-help-dialog';
 import { Menu } from './components/menu';
 import { OpenFileDialog } from './components/open-file-dialog';
 import { ReplaceHelpDialog } from './components/replace-help-dialog';
+import { ThemesDialog } from './components/themes-dialog';
 import { getRawFileContents, rawFileExists } from './importRawFiles';
 import {
   doesFileExistOnDisk,
@@ -211,6 +212,7 @@ export function App(): React.JSX.Element {
         openDialog={openDialog}
         closeDialog={closeDialog}
       ></OpenFileDialog>
+      <ThemesDialog open={currentDialog === 'themes'} closeDialog={closeDialog}></ThemesDialog>
       <ColorDialog
         open={currentDialog === 'color'}
         openDialog={openDialog}

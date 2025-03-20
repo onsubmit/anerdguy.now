@@ -1,6 +1,6 @@
 import { RefObject } from 'react';
 
-import { KnownColor, knownColors } from './colors';
+import { KnownColor, knownColors } from '../colors';
 import { OptionListOperations, OptionsList } from './option-list';
 
 type ColorOptionListParams = {

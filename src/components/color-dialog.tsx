@@ -1,14 +1,14 @@
 import { useCallback, useRef, useState } from 'react';
 
+import { colors, getKnownColor, KnownColor } from '../colors';
 import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
 import { getCachedItem, setCachedItem } from '../localStorage';
+import { cssVariableNames, KnownThemeableItem, knownThemeableItems, themes } from '../themes';
 import styles from './color-dialog.module.css';
 import { ColorOptionList } from './color-option-list';
-import { colors, getKnownColor, KnownColor } from './colors';
 import { Dialog, DialogType, OpenDialogArgs } from './dialog';
 import { DialogButtons } from './dialog-buttons';
 import { OptionListOperations, OptionsList } from './option-list';
-import { KnownThemeableItem, knownThemeableItems, themeableItems } from './themeable-items';
 
 type ColorDialogParams = {
   open: boolean;
@@ -26,7 +26,7 @@ const setCssVariable = (
   color: KnownColor,
 ): void => {
   document.documentElement.style.setProperty(
-    `${themeableItems[item].cssVariableName}-${layer}`,
+    `${cssVariableNames[item]}-${layer}`,
     `var(${colors[color].cssVariableName})`,
   );
 };
@@ -191,12 +191,12 @@ export function ColorDialog({
   ): { foreground: KnownColor; background: KnownColor } => {
     const cssForegroundColor = window
       .getComputedStyle(document.body)
-      .getPropertyValue(`${themeableItems[item].cssVariableName}-foreground`)
+      .getPropertyValue(`${cssVariableNames[item]}-foreground`)
       .toLocaleLowerCase();
 
     const cssBackgroundColor = window
       .getComputedStyle(document.body)
-      .getPropertyValue(`${themeableItems[item].cssVariableName}-background`)
+      .getPropertyValue(`${cssVariableNames[item]}-background`)
       .toLocaleLowerCase();
 
     return {
@@ -208,7 +208,7 @@ export function ColorDialog({
   const setDefaults = (): void => {
     const defaults: ChosenColors = {};
     for (const item of knownThemeableItems) {
-      const { foreground, background } = (defaults[item] = themeableItems[item].defaults);
+      const { foreground, background } = (defaults[item] = themes.default[item]);
 
       if (!originalColors[item]?.foreground || !originalColors[item]?.background) {
         const currentColors = getCurrentItemColors(item);
