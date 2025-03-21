@@ -8,7 +8,7 @@ import { App } from './App';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="anerdguynow">
       <Routes>
         <Route path="/:file?" element={<App />}></Route>
       </Routes>
