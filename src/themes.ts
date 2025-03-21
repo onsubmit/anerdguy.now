@@ -58,6 +58,7 @@ export const themeNames = [
   'Monochrome',
   'Ocean',
   'Plasma',
+  'Spoon',
 ] as const;
 export type ThemeName = (typeof themeNames)[number];
 export type Themes = Record<ThemeName, Theme>;
@@ -367,6 +368,40 @@ export const themes = {
     'Dialog Buttons': {
       foreground: 'Black',
       background: 'Pink',
+    },
+  },
+  Spoon: {
+    'Normal Text': {
+      foreground: 'BrGreen',
+      background: 'Black',
+    },
+    'Selected Text': {
+      foreground: 'Black',
+      background: 'BrGreen',
+    },
+    'Window Border': {
+      foreground: 'BrGreen',
+      background: 'Black',
+    },
+    Menubar: {
+      foreground: 'Black',
+      background: 'BrGreen',
+    },
+    'Status Line': {
+      foreground: 'Black',
+      background: 'BrGreen',
+    },
+    Dialogs: {
+      foreground: 'Black',
+      background: 'BrGreen',
+    },
+    'Dialog Titlebar': {
+      foreground: 'BrGreen',
+      background: 'Black',
+    },
+    'Dialog Buttons': {
+      foreground: 'BrGreen',
+      background: 'Black',
     },
   },
 } as const satisfies Themes;
