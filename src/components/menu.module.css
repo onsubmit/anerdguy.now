@@ -42,3 +42,13 @@
     }
   }
 }
+
+@media only screen and (max-width: 600px) {
+  .menu {
+    > ul {
+      > li {
+        flex-basis: 33%;
+      }
+    }
+  }
+}

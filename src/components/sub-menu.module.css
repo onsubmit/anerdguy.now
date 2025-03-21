@@ -49,3 +49,13 @@
     height: 0.0625rem;
   }
 }
+
+@media only screen and (max-width: 600px) {
+  .subMenu {
+    position: fixed;
+    top: 4.5rem;
+    left: 0rem;
+    width: 100%;
+    box-shadow: none;
+  }
+}
