@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { getKnownColor, KnownColor } from '../colors';
 import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
@@ -8,7 +8,6 @@ import {
   KnownThemeableItem,
   knownThemeableItems,
   setCssVariable,
-  themes,
 } from '../themes';
 import styles from './color-dialog.module.css';
 import { ColorOptionList } from './color-option-list';
@@ -26,30 +25,6 @@ export type ChosenColors = Partial<
   Record<KnownThemeableItem, Partial<{ foreground: KnownColor; background: KnownColor }>>
 >;
 
-const cachedTheme = getCachedItem('theme');
-if (cachedTheme) {
-  for (const [key, { foreground, background }] of Object.entries(cachedTheme)) {
-    const item = key as KnownThemeableItem;
-    if (foreground) {
-      setCssVariable('foreground', item, foreground);
-    }
-
-    if (background) {
-      setCssVariable('background', item, background);
-    }
-  }
-}
-
-const initialItem: KnownThemeableItem = 'Normal Text';
-const initialForegroundColor: KnownColor = cachedTheme?.[initialItem]?.foreground ?? 'White';
-const initialBackgroundColor: KnownColor = cachedTheme?.[initialItem]?.background ?? 'Blue';
-const initialColors: ChosenColors = {
-  [initialItem]: {
-    foreground: initialForegroundColor,
-    background: initialBackgroundColor,
-  },
-};
-
 export function ColorDialog({
   open,
   openDialog,
@@ -60,10 +35,10 @@ export function ColorDialog({
   const foregroundColorRef = useRef<OptionListOperations<KnownColor>>(null);
   const backgroundColorRef = useRef<OptionListOperations<KnownColor>>(null);
 
-  const [selectedItem, setSelectedItem] = useState<KnownThemeableItem>(initialItem);
-  const [selectedForeground, setSelectedForeground] = useState<KnownColor>(initialForegroundColor);
-  const [selectedBackground, setSelectedBackground] = useState<KnownColor>(initialBackgroundColor);
-  const [originalColors, setOriginalColors] = useState<ChosenColors>(initialColors);
+  const [selectedItem, setSelectedItem] = useState<KnownThemeableItem>('Normal Text');
+  const [selectedForeground, setSelectedForeground] = useState<KnownColor>('White');
+  const [selectedBackground, setSelectedBackground] = useState<KnownColor>('Black');
+  const [originalColors, setOriginalColors] = useState<ChosenColors>({});
   const [pendingColors, setPendingColors] = useState<ChosenColors>({});
 
   dialogRef.current?.[open ? 'showModal' : 'close']();
@@ -201,32 +176,39 @@ export function ColorDialog({
     };
   };
 
-  const setDefaults = (): void => {
-    const defaults: ChosenColors = {};
-    for (const item of knownThemeableItems) {
-      const { foreground, background } = (defaults[item] = themes.Default[item]);
+  useEffect(() => {
+    const cachedTheme = getCachedItem('theme');
+    if (cachedTheme) {
+      for (const [key, { foreground, background }] of Object.entries(cachedTheme)) {
+        const item = key as KnownThemeableItem;
+        if (foreground) {
+          setCssVariable('foreground', item, foreground);
+        }
 
-      if (!originalColors[item]?.foreground || !originalColors[item]?.background) {
-        const currentColors = getCurrentItemColors(item);
-        setOriginalColors((x) => ({
-          ...x,
-          [item]: currentColors,
-        }));
-      }
-
-      setCssVariable('foreground', item, foreground);
-      setCssVariable('background', item, background);
-
-      if (selectedItem === item) {
-        setSelectedForeground(foreground);
-        foregroundColorRef.current?.reselect(foreground);
-        setSelectedBackground(background);
-        backgroundColorRef.current?.reselect(background);
+        if (background) {
+          setCssVariable('background', item, background);
+        }
       }
     }
 
-    setPendingColors(defaults);
-  };
+    const initialForegroundColor: KnownColor = cachedTheme?.[selectedItem]?.foreground ?? 'White';
+    const initialBackgroundColor: KnownColor = cachedTheme?.[selectedItem]?.background ?? 'Blue';
+    const initialColors: ChosenColors = {
+      [selectedItem]: {
+        foreground: initialForegroundColor,
+        background: initialBackgroundColor,
+      },
+    };
+
+    setSelectedForeground(initialForegroundColor);
+    setSelectedBackground(initialBackgroundColor);
+    setOriginalColors(initialColors);
+
+    itemRef.current?.reselect(selectedItem);
+    foregroundColorRef.current?.reselect(initialForegroundColor);
+    backgroundColorRef.current?.reselect(initialBackgroundColor);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only update selections when the dialog opens
+  }, [open]);
 
   return (
     <Dialog open={open} title="Colors" closeDialog={closeDialog} onCancel={cancelHandler}>
@@ -261,9 +243,6 @@ export function ColorDialog({
         </div>
       </div>
       <DialogButtons>
-        <button type="button" onClick={setDefaults}>
-          Default
-        </button>
         <button type="button" className={styles.active} onClick={okayHandler}>
           OK
         </button>
