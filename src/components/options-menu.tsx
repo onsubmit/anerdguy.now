@@ -35,6 +35,15 @@ export function OptionsMenu({
             Themes...
           </button>
         </li>
+        <li>
+          <button
+            type="button"
+            onFocus={() => setFocusedIndex(2)}
+            onClick={() => openDialog({ type: 'fonts', toFocusOnClose: topMenuButton })}
+          >
+            Fonts...
+          </button>
+        </li>
       </ul>
     </div>
   );

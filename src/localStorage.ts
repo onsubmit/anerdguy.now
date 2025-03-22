@@ -1,4 +1,5 @@
 import { ChosenColors } from './components/color-dialog';
+import { FontName } from './fonts';
 import { ThemeName } from './themes';
 
 type CacheVersion = 1;
@@ -14,6 +15,7 @@ type Cache = {
   1: Partial<{
     selectedTheme: ThemeName | 'Custom';
     theme: ChosenColors;
+    font: FontName;
     files: Record<string, File>;
   }>;
 };

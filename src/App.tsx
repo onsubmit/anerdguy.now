@@ -11,17 +11,20 @@ import { EventsDialog } from './components/events-dialog';
 import { File } from './components/file';
 import { FindDialog, FindDialogOperations } from './components/find-dialog';
 import { FindHelpDialog } from './components/find-help-dialog';
+import { FontsDialog } from './components/fonts-dialog';
 import { Menu } from './components/menu';
 import { OpenFileDialog } from './components/open-file-dialog';
 import { ReplaceHelpDialog } from './components/replace-help-dialog';
 import { ThemesDialog } from './components/themes-dialog';
 import { EditorOperations } from './editor-operation';
+import { fontCssUrls, FontName } from './fonts';
 import { getRawFileContents, rawFileExists } from './importRawFiles';
 import {
   doesFileExistOnDisk,
   getCachedItem,
   getOpenCachedFiles,
   markCachedFile,
+  setCachedItem,
   writeFileToDisk,
 } from './localStorage';
 
@@ -37,6 +40,10 @@ export function App(): React.JSX.Element {
   const findDialogRef = useRef<FindDialogOperations>(null);
   const toFocusOnDialogCloseRef = useRef<Array<HTMLElement>>([]);
 
+  const [selectedFont, setSelectedFont] = useState<FontName>(
+    getCachedItem('font') ?? 'JetBrains Mono',
+  );
+  const [fontFamily, setFontFamily] = useState<FontName>(selectedFont);
   const [openFiles, setOpenFiles] = useState<Array<string>>(
     openCachedFiles.length ? [...new Set([...openCachedFiles, fileName])] : [fileName],
   );
@@ -177,9 +184,31 @@ export function App(): React.JSX.Element {
     loadFileContents(fileName);
   }, [fileName, loadFileContents]);
 
+  useEffect(() => {
+    const link = document.head.querySelector(`link[data-font-name="${selectedFont}"`);
+    if (link) {
+      setFontFamily(selectedFont);
+      return;
+    }
+
+    const cssUrl = fontCssUrls[selectedFont];
+
+    const newLink = document.createElement('link');
+    newLink.className = 'font-link';
+    newLink.href = cssUrl;
+    newLink.rel = 'stylesheet';
+    newLink.setAttribute('data-font-name', selectedFont);
+    newLink.onload = (): void => {
+      setFontFamily(selectedFont);
+      setCachedItem('font', selectedFont);
+    };
+
+    document.head.appendChild(newLink);
+  }, [selectedFont]);
+
   return (
     <>
-      <div className={styles.container}>
+      <div className={styles.container} style={{ fontFamily }}>
         <Menu
           editorMode={searchParams.get('edit') ? 'edit' : 'view'}
           toggleEditorMode={toggleEditorMode}
@@ -205,46 +234,52 @@ export function App(): React.JSX.Element {
           editorMode={searchParams.get('edit') ? 'edit' : 'view'}
           editorRef={editorRef}
         ></File>
+        <OpenFileDialog
+          open={currentDialog === 'open-file'}
+          openFile={openFile}
+          openDialog={openDialog}
+          closeDialog={closeDialog}
+        ></OpenFileDialog>
+        <ThemesDialog open={currentDialog === 'themes'} closeDialog={closeDialog}></ThemesDialog>
+        <FontsDialog
+          open={currentDialog === 'fonts'}
+          closeDialog={closeDialog}
+          selectedFont={selectedFont}
+          setSelectedFont={setSelectedFont}
+        ></FontsDialog>
+        <ColorDialog
+          open={currentDialog === 'color'}
+          openDialog={openDialog}
+          closeDialog={closeDialog}
+        ></ColorDialog>
+        <ColorHelpDialog
+          open={currentDialog === 'color-help'}
+          closeDialog={closeDialog}
+        ></ColorHelpDialog>
+        <EventsDialog open={currentDialog === 'events'} closeDialog={closeDialog}></EventsDialog>
+        <AboutDialog open={currentDialog === 'about'} closeDialog={closeDialog}></AboutDialog>
+        <FindDialog
+          ref={findDialogRef}
+          editorRef={editorRef}
+          replace={currentDialog === 'replace'}
+          open={currentDialog === 'find' || currentDialog === 'replace'}
+          openDialog={openDialog}
+          closeDialog={closeDialog}
+          setCurrentDialog={setCurrentDialog}
+        ></FindDialog>
+        <FindHelpDialog
+          open={currentDialog === 'find-help'}
+          closeDialog={closeDialog}
+        ></FindHelpDialog>
+        <ReplaceHelpDialog
+          open={currentDialog === 'replace-help'}
+          closeDialog={closeDialog}
+        ></ReplaceHelpDialog>
+        <ErrorDialog
+          open={currentDialog === 'error'}
+          {...{ ...errorDialogArgs, closeDialog }}
+        ></ErrorDialog>
       </div>
-      <OpenFileDialog
-        open={currentDialog === 'open-file'}
-        openFile={openFile}
-        openDialog={openDialog}
-        closeDialog={closeDialog}
-      ></OpenFileDialog>
-      <ThemesDialog open={currentDialog === 'themes'} closeDialog={closeDialog}></ThemesDialog>
-      <ColorDialog
-        open={currentDialog === 'color'}
-        openDialog={openDialog}
-        closeDialog={closeDialog}
-      ></ColorDialog>
-      <ColorHelpDialog
-        open={currentDialog === 'color-help'}
-        closeDialog={closeDialog}
-      ></ColorHelpDialog>
-      <EventsDialog open={currentDialog === 'events'} closeDialog={closeDialog}></EventsDialog>
-      <AboutDialog open={currentDialog === 'about'} closeDialog={closeDialog}></AboutDialog>
-      <FindDialog
-        ref={findDialogRef}
-        editorRef={editorRef}
-        replace={currentDialog === 'replace'}
-        open={currentDialog === 'find' || currentDialog === 'replace'}
-        openDialog={openDialog}
-        closeDialog={closeDialog}
-        setCurrentDialog={setCurrentDialog}
-      ></FindDialog>
-      <FindHelpDialog
-        open={currentDialog === 'find-help'}
-        closeDialog={closeDialog}
-      ></FindHelpDialog>
-      <ReplaceHelpDialog
-        open={currentDialog === 'replace-help'}
-        closeDialog={closeDialog}
-      ></ReplaceHelpDialog>
-      <ErrorDialog
-        open={currentDialog === 'error'}
-        {...{ ...errorDialogArgs, closeDialog }}
-      ></ErrorDialog>
     </>
   );
 }

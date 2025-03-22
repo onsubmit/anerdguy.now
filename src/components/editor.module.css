@@ -1,6 +1,7 @@
 .editor {
   background: var(--normal-text-background);
   color: var(--normal-text-foreground);
+  font-family: inherit;
   font-size: 1.5rem;
   border: 0;
   padding: 1rem;
