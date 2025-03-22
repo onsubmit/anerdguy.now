@@ -10,6 +10,10 @@ body {
 }
 
 :root {
+  font-size: var(--root-font-size);
+
+  --root-font-size: 16px;
+
   --black: #000000;
   --blue: #0000a5;
   --green: #00a600;

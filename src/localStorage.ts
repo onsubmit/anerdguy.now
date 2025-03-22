@@ -1,5 +1,5 @@
 import { ChosenColors } from './components/color-dialog';
-import { FontName } from './fonts';
+import { FontName, FontSize } from './fonts';
 import { ThemeName } from './themes';
 
 type CacheVersion = 1;
@@ -16,6 +16,7 @@ type Cache = {
     selectedTheme: ThemeName | 'Custom';
     theme: ChosenColors;
     font: FontName;
+    fontSize: FontSize;
     files: Record<string, File>;
   }>;
 };

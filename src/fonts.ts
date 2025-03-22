@@ -7,6 +7,9 @@ export const fontNames = [
 ] as const;
 export type FontName = (typeof fontNames)[number];
 
+export const fontSizes = ['8', '10', '12', '16', '24', '32'] as const;
+export type FontSize = (typeof fontSizes)[number];
+
 type FontCssUrls = {
   [T in FontName]: string;
 };
