@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
 
+import { dialogTypes } from '../dialogTypes';
 import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
 import { Dialog } from './dialog';
 import { DialogButtons } from './dialog-buttons';
-import { dialogTypes } from './dialogTypes';
 import styles from './events-dialog.module.css';
 
 type EventsDialogParams = {

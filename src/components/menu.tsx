@@ -1,10 +1,10 @@
 import { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { EditorOperations } from '../editor-operation';
 import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
 import { DialogType, OpenDialogArgs } from './dialog';
 import { EditMenu } from './edit-menu';
 import { EditorMode } from './editor';
-import { EditorOperations } from './editor-operation';
 import { FileMenu } from './file-menu';
 import { FindDialogOperations } from './find-dialog';
 import { HelpMenu } from './help-menu';

@@ -1,9 +1,9 @@
 import { RefObject, useCallback, useImperativeHandle, useState } from 'react';
 
+import { EditorOperations, FindParams } from '../editor-operation';
 import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
 import { Dialog, DialogType, OpenDialogArgs } from './dialog';
 import { DialogButtons } from './dialog-buttons';
-import { EditorOperations, FindParams } from './editor-operation';
 import styles from './find-dialog.module.css';
 
 export type FindDialogOperations = {

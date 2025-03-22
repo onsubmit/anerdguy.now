@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 
+import { dialogTypes } from '../dialogTypes';
 import styles from './dialog.module.css';
-import { dialogTypes } from './dialogTypes';
 import { OpenErrorDialogParams } from './error-dialog';
 
 export type DialogType = (typeof dialogTypes)[number];

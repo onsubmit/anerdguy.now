@@ -1,8 +1,8 @@
 import { RefObject, useState } from 'react';
 
+import { EditorOperations } from '../editor-operation';
 import { DialogType, OpenDialogArgs } from './dialog';
 import { CursorPosition, Editor } from './editor';
-import { EditorOperations } from './editor-operation';
 import styles from './file.module.css';
 
 type FileParams = {

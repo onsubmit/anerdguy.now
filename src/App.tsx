@@ -6,7 +6,6 @@ import { AboutDialog } from './components/about-dialog';
 import { ColorDialog } from './components/color-dialog';
 import { ColorHelpDialog } from './components/color-help-dialog';
 import { DialogType, OpenDialogArgs, OpenDialogEvent } from './components/dialog';
-import { EditorOperations } from './components/editor-operation';
 import { ErrorDialog, OpenErrorDialogParams } from './components/error-dialog';
 import { EventsDialog } from './components/events-dialog';
 import { File } from './components/file';
@@ -16,6 +15,7 @@ import { Menu } from './components/menu';
 import { OpenFileDialog } from './components/open-file-dialog';
 import { ReplaceHelpDialog } from './components/replace-help-dialog';
 import { ThemesDialog } from './components/themes-dialog';
+import { EditorOperations } from './editor-operation';
 import { getRawFileContents, rawFileExists } from './importRawFiles';
 import {
   doesFileExistOnDisk,

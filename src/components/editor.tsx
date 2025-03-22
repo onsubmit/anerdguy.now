@@ -1,8 +1,8 @@
 import React, { RefObject, useImperativeHandle, useRef } from 'react';
 
+import { EditorOperations, FindParams } from '../editor-operation';
 import { DialogType, OpenDialogArgs } from './dialog';
 import styles from './editor.module.css';
-import { EditorOperations, FindParams } from './editor-operation';
 
 export type CursorPosition = {
   line: number;

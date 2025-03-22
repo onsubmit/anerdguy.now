@@ -1,9 +1,9 @@
 import classNames from 'classnames';
 import { RefObject, useRef } from 'react';
 
+import { EditorOperations } from '../editor-operation';
 import { useSubMenuFocusHandler } from '../hooks/useSubMenuFocusHandler';
 import { EditorMode } from './editor';
-import { EditorOperations } from './editor-operation';
 import { SubMenuParams } from './sub-menu';
 import styles from './sub-menu.module.css';
 
