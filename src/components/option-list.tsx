@@ -104,6 +104,7 @@ export function OptionsList<T extends string>({
               setFocusedIndex(i);
               onSelectionChange?.(option);
             }}
+            onFocus={() => setFocusedIndex(i)}
             onDoubleClick={() => onDoubleClick?.(option)}
           >
             <button type="button">{option}</button>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { FontName, fontNames, FontSize, fontSizes } from '../fonts';
 import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
@@ -6,7 +6,7 @@ import { getCachedItem, setCachedItem } from '../localStorage';
 import { Dialog } from './dialog';
 import { DialogButtons } from './dialog-buttons';
 import styles from './fonts-dialog.module.css';
-import { OptionsList } from './option-list';
+import { OptionListOperations, OptionsList } from './option-list';
 
 type FontsDialogParams = {
   open: boolean;
@@ -21,6 +21,9 @@ export function FontsDialog({
   selectedFont,
   setSelectedFont,
 }: FontsDialogParams): React.JSX.Element {
+  const fontNameRef = useRef<OptionListOperations<FontName>>(null);
+  const fontSizeRef = useRef<OptionListOperations<FontSize>>(null);
+
   const [fontSize, setFontSize] = useState<FontSize>(getCachedItem('fontSize') ?? '16');
   const [originalFont, setOriginalFont] = useState<FontName>(selectedFont);
   const [originalFontSize, setOriginalFontSize] = useState<FontSize>(fontSize);
@@ -41,9 +44,26 @@ export function FontsDialog({
       if (e.key === 'Enter') {
         okayHandler();
         e.preventDefault();
+        return;
+      }
+
+      if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        const order = [fontNameRef.current, fontSizeRef.current];
+        const current = order.findIndex((r) => r?.hasActiveElement());
+        const amount = e.key === 'ArrowLeft' ? -1 : 1;
+        let newIndex = (current + amount) % order.length;
+        if (newIndex < 0) {
+          newIndex = order.length - 1;
+        }
+
+        if (newIndex === 0) {
+          fontNameRef.current?.focus(selectedFont);
+        } else {
+          fontSizeRef.current?.focus(fontSize);
+        }
       }
     },
-    [okayHandler, open],
+    [fontSize, okayHandler, open, selectedFont],
   );
 
   useKeyDownHandler(handleKeyDown);
@@ -65,6 +85,7 @@ export function FontsDialog({
           <div>Family:</div>
           <div>
             <OptionsList
+              ref={fontNameRef}
               selectedOption={selectedFont}
               setSelectedOption={setSelectedFont}
               options={fontNames}
@@ -76,6 +97,7 @@ export function FontsDialog({
           <div>Size:</div>
           <div>
             <OptionsList
+              ref={fontSizeRef}
               selectedOption={fontSize}
               setSelectedOption={setFontSize}
               onSelectionChange={(size) => {
