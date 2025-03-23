@@ -73,7 +73,6 @@ export function OpenFileDialog({
         <button type="button" onClick={() => closeDialog()}>
           Cancel
         </button>
-        <button type="button">Help</button>
       </DialogButtons>
     </Dialog>
   );
