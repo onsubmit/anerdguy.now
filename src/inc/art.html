@@ -1,0 +1,70 @@
+<p>
+  I make generative art using JavaScript and a &lt;canvas&gt;. Switch to Edit mode to see the
+  formula, and make your own changes!
+</p>
+
+<canvas id="canvas"></canvas>
+
+<script type="module">
+  const { sin, cos, tan, abs, round, sqrt } = Math;
+  const context = canvas.getContext('2d');
+
+  // Dimensions of the <canvas>
+  const parent = canvas.parentElement;
+  const style = getComputedStyle(parent);
+  const canvasSize =
+    parent.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+  const canvasSizeHalf = canvasSize / 2;
+
+  // Overall quality of the render
+  // Increasing this will slow the render down a lot.
+  const quality = 0.1;
+  const pixelSize = 1 / quality;
+  const increment = 1 / (canvasSize * quality);
+
+  const range = Math.PI;
+  const min = { x: -range, y: -range };
+  const max = { x: range, y: range };
+
+  canvas.width = canvasSize;
+  canvas.height = canvasSize;
+
+  function getColorAtPixel(x, y) {
+    const x2 = x * x;
+    const y2 = y * y;
+    const y3 = y2 * y;
+
+    const diff = abs((tan(x2 * sin(y2) + y3 * cos(x)) / 64) * sqrt(x2 + y2) - sin(x * y));
+    const inv = 1 / diff;
+
+    const r = 6 * inv * (1 + cos(x + y));
+    const g = 8 * inv * (1 + sin(x + y));
+    const b = 32 * inv;
+    const a = 1;
+
+    const color = `rgba(${[r, g, b, a].join(',')})`;
+    return color;
+  }
+
+  for (let y = min.y; y <= max.y; y += increment) {
+    setTimeout(() => {
+      for (let x = min.x; x <= max.x; x += increment) {
+        const color = getColorAtPixel(x, y);
+        drawCoordinate(x, y, color);
+      }
+    });
+  }
+
+  function mapCoordsToCanvas(x, y) {
+    return {
+      x: round(canvasSizeHalf + (x * canvasSizeHalf) / range),
+      y: round(canvasSizeHalf + (y * canvasSizeHalf) / range),
+    };
+  }
+
+  function drawCoordinate(x, y, color) {
+    const c = mapCoordsToCanvas(x, y);
+    context.fillStyle = color;
+    context.fillRect(c.x, c.y, pixelSize, pixelSize);
+  }
+</script>

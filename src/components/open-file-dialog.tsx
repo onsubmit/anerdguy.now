@@ -13,7 +13,13 @@ type OpenFileDialogParams = {
   closeDialog: () => void;
 };
 
-const defaultFiles: Array<string> = ['index.html', 'bio.html', 'resume.html', 'socials.html'];
+const defaultFiles: Array<string> = [
+  'art.html',
+  'index.html',
+  'bio.html',
+  'resume.html',
+  'socials.html',
+];
 
 export function OpenFileDialog({
   open,

@@ -1,4 +1,4 @@
-import React, { RefObject, useImperativeHandle, useRef } from 'react';
+import React, { RefObject, useImperativeHandle, useLayoutEffect, useRef } from 'react';
 
 import { EditorOperations, FindParams } from '../editor-operation';
 import { DialogType, OpenDialogArgs } from './dialog';
@@ -295,6 +295,20 @@ export function Editor({
       replace: find,
     };
   }, [contents, mode, openDialog, setContents]);
+
+  useLayoutEffect(() => {
+    if (!previewRef.current) {
+      return;
+    }
+
+    const range = document.createRange();
+    range.selectNode(previewRef.current);
+    const documentFragment = range.createContextualFragment(contents);
+
+    // Inject the markup, triggering a re-run!
+    previewRef.current.innerHTML = '';
+    previewRef.current.append(documentFragment);
+  }, [contents, mode]);
 
   return mode === 'edit' ? (
     <textarea
