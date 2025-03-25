@@ -34,8 +34,8 @@ export function HelpMenu({
 
   return (
     <div className={classNames(styles.subMenu, open ? styles.open : undefined)}>
-      <ul ref={listRef}>
-        <li>
+      <ul ref={listRef} role="menu">
+        <li role="menuitem">
           <button
             type="button"
             onFocus={() => setFocusedIndex(0)}
@@ -44,7 +44,7 @@ export function HelpMenu({
             Events...
           </button>
         </li>
-        <li>
+        <li role="menuitem">
           <button
             type="button"
             onFocus={() => setFocusedIndex(1)}

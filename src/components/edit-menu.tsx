@@ -22,16 +22,22 @@ export function EditMenu({
 }: EditMenuParams): React.JSX.Element {
   const listRef = useRef<HTMLUListElement>(null);
   const setFocusedIndex = useSubMenuFocusHandler({ ref, listRef, disable: !open });
+  const disabledInViewMode = editorMode === 'view';
 
   return (
     <div className={classNames(styles.subMenu, open ? styles.open : undefined)}>
-      <ul ref={listRef}>
-        <li>
+      <ul ref={listRef} role="menu">
+        <li role="menuitem">
           <button
             type="button"
-            disabled={editorMode === 'view'}
+            className={disabledInViewMode ? styles.disabled : undefined}
+            aria-disabled={disabledInViewMode}
             onFocus={() => setFocusedIndex(0)}
             onClick={() => {
+              if (disabledInViewMode) {
+                return;
+              }
+
               closeMenu();
               editorRef.current?.cut();
             }}
@@ -39,7 +45,7 @@ export function EditMenu({
             Cut{'      '}Ctrl+X
           </button>
         </li>
-        <li>
+        <li role="menuitem">
           <button
             type="button"
             onFocus={() => setFocusedIndex(1)}
@@ -66,12 +72,17 @@ export function EditMenu({
             Copy{'     '}Ctrl+C
           </button>
         </li>
-        <li>
+        <li role="menuitem">
           <button
             type="button"
-            disabled={editorMode === 'view'}
+            className={disabledInViewMode ? styles.disabled : undefined}
+            aria-disabled={disabledInViewMode}
             onFocus={() => setFocusedIndex(2)}
             onClick={() => {
+              if (disabledInViewMode) {
+                return;
+              }
+
               closeMenu();
               editorRef.current?.paste();
             }}
@@ -79,12 +90,16 @@ export function EditMenu({
             Paste{'    '}Ctrl+V
           </button>
         </li>
-        <li>
+        <li role="menuitem">
           <button
             type="button"
-            disabled={editorMode === 'view'}
+            className={disabledInViewMode ? styles.disabled : undefined}
+            aria-disabled={disabledInViewMode}
             onFocus={() => setFocusedIndex(3)}
             onClick={() => {
+              if (disabledInViewMode) {
+                return;
+              }
               closeMenu();
               editorRef.current?.delete();
             }}

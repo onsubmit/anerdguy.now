@@ -213,9 +213,13 @@ export function Menu({
 
   return (
     <div ref={containerRef} className={styles.menu}>
-      <ul>
+      <ul role="menubar">
         {menus.map(({ title, component }, index) => (
-          <li key={title} className={activeMenuIndex === index ? styles.active : undefined}>
+          <li
+            key={title}
+            role="menuitem"
+            className={activeMenuIndex === index ? styles.active : undefined}
+          >
             <button
               ref={(el) => {
                 topMenuItemsRef.current[index] = el;

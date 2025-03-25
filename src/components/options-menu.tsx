@@ -16,8 +16,8 @@ export function OptionsMenu({
 
   return (
     <div className={classNames(styles.subMenu, open ? styles.open : undefined)}>
-      <ul ref={listRef}>
-        <li>
+      <ul ref={listRef} role="menu">
+        <li role="menuitem">
           <button
             type="button"
             onFocus={() => setFocusedIndex(0)}
@@ -26,7 +26,7 @@ export function OptionsMenu({
             Colors...
           </button>
         </li>
-        <li>
+        <li role="menuitem">
           <button
             type="button"
             onFocus={() => setFocusedIndex(1)}
@@ -35,7 +35,7 @@ export function OptionsMenu({
             Themes...
           </button>
         </li>
-        <li>
+        <li role="menuitem">
           <button
             type="button"
             onFocus={() => setFocusedIndex(2)}

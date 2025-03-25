@@ -53,8 +53,8 @@ export function SearchMenu({
 
   return (
     <div className={classNames(styles.subMenu, open ? styles.open : undefined)}>
-      <ul ref={listRef}>
-        <li>
+      <ul ref={listRef} role="menu">
+        <li role="menuitem">
           <button
             type="button"
             onFocus={() => setFocusedIndex(0)}
@@ -63,7 +63,7 @@ export function SearchMenu({
             Find...{'             '}Ctrl+F
           </button>
         </li>
-        <li>
+        <li role="menuitem">
           <button
             type="button"
             onFocus={() => setFocusedIndex(1)}
@@ -75,12 +75,19 @@ export function SearchMenu({
             Repeat Last Find{'    '}F3
           </button>
         </li>
-        <li>
+        <li role="menuitem">
           <button
             type="button"
-            disabled={disableReplace}
+            className={disableReplace ? styles.disable : undefined}
+            aria-disabled={disableReplace}
             onFocus={() => setFocusedIndex(2)}
-            onClick={() => openDialog({ type: 'replace', toFocusOnClose: topMenuButton })}
+            onClick={() => {
+              if (disableReplace) {
+                return;
+              }
+
+              openDialog({ type: 'replace', toFocusOnClose: topMenuButton });
+            }}
           >
             Replace{'             '}Ctrl+H
           </button>

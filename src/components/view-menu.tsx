@@ -43,7 +43,7 @@ export function ViewMenu({
 
     const maxNameLength = Math.max('Split Window'.length, ...openFiles.map((f) => f.length));
     return openFiles.map((f, i) => (
-      <li key={f}>
+      <li key={f} role="menuitem">
         <button
           type="button"
           onFocus={() => setFocusedIndex(3 + i)}
@@ -61,7 +61,9 @@ export function ViewMenu({
 
   return (
     <div className={classNames(styles.subMenu, open ? styles.open : undefined)}>
-      <ul ref={listRef}>{getOpenFilesMenuItems()}</ul>
+      <ul ref={listRef} role="menu">
+        {getOpenFilesMenuItems()}
+      </ul>
     </div>
   );
 }

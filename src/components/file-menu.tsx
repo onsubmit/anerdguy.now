@@ -90,8 +90,8 @@ export function FileMenu({
 
   return (
     <div className={classNames(styles.subMenu, open ? styles.open : undefined)}>
-      <ul ref={listRef}>
-        <li>
+      <ul ref={listRef} role="menu">
+        <li role="menuitem">
           <button
             type="button"
             onFocus={() => setFocusedIndex(0)}
@@ -100,28 +100,29 @@ export function FileMenu({
             {`Open...      Ctrl+O`}
           </button>
         </li>
-        <li>
+        <li role="menuitem">
           <button type="button" onFocus={() => setFocusedIndex(1)} onClick={saveHandler}>
             {`Save         Ctrl+S`}
           </button>
         </li>
-        <li>
+        <li role="menuitem">
           <button
             type="button"
-            disabled={disableClose}
+            className={disableClose ? styles.disabled : undefined}
+            aria-disabled={disableClose}
             onFocus={() => setFocusedIndex(2)}
-            onClick={closeHandler}
+            onClick={() => (disableClose ? undefined : closeHandler())}
           >
             {`Close        Ctrl+Alt+W`}
           </button>
           <hr />
         </li>
-        <li>
+        <li role="menuitem">
           <button type="button" onFocus={() => setFocusedIndex(3)} onClick={revertHandler}>
             {`Revert       Ctrl+R`}
           </button>
         </li>
-        <li>
+        <li role="menuitem">
           <button
             type="button"
             onFocus={() => setFocusedIndex(4)}
