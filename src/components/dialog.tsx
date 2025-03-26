@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 import { dialogTypes } from '../dialogTypes';
+import { useAppDispatch } from '../hooks';
+import { close } from '../slices/dialogSlice';
 import styles from './dialog.module.css';
 import { OpenErrorDialogParams } from './error-dialog';
 
@@ -18,32 +20,26 @@ export type OpenDialogParams<T extends DialogType> = T extends 'error'
 export type OpenDialogArgs<T extends DialogType> = {
   type: T;
   params?: OpenDialogParams<T>;
-  toFocusOnClose?: HTMLElement | null;
+  toFocusOnClose: HTMLElement | null;
 };
 
 type DialogParams = {
   title: string;
   children: React.ReactNode;
   open: boolean;
-  closeDialog: (typeToOpen: DialogType | null) => void;
   onCancel?: () => void;
 };
 
-export function Dialog({
-  title,
-  children,
-  open,
-  closeDialog,
-  onCancel,
-}: DialogParams): React.JSX.Element {
+export function Dialog({ title, children, open, onCancel }: DialogParams): React.JSX.Element {
+  const dispatch = useAppDispatch();
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   dialogRef.current?.[open ? 'showModal' : 'close']();
 
   const cancelHandler = useCallback((): void => {
     onCancel?.();
-    closeDialog(null);
-  }, [closeDialog, onCancel]);
+    dispatch(close(null));
+  }, [dispatch, onCancel]);
 
   useEffect(() => {
     const dialog = dialogRef.current;

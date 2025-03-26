@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { getKnownColor, KnownColor } from '../colors';
+import { useAppDispatch } from '../hooks';
 import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
 import { getCachedItem, setCachedItem } from '../localStorage';
+import { close } from '../slices/dialogSlice';
 import {
   cssVariableNames,
   KnownThemeableItem,
@@ -18,18 +20,15 @@ import { OptionListOperations, OptionsList } from './option-list';
 type ColorDialogParams = {
   open: boolean;
   openDialog: <T extends DialogType>({ type, toFocusOnClose }: OpenDialogArgs<T>) => void;
-  closeDialog: () => void;
 };
 
 export type ChosenColors = Partial<
   Record<KnownThemeableItem, Partial<{ foreground: KnownColor; background: KnownColor }>>
 >;
 
-export function ColorDialog({
-  open,
-  openDialog,
-  closeDialog,
-}: ColorDialogParams): React.JSX.Element {
+export function ColorDialog({ open, openDialog }: ColorDialogParams): React.JSX.Element {
+  const dispatch = useAppDispatch();
+
   const dialogRef = useRef<HTMLDialogElement>(null);
   const itemRef = useRef<OptionListOperations<KnownThemeableItem>>(null);
   const foregroundColorRef = useRef<OptionListOperations<KnownColor>>(null);
@@ -55,8 +54,8 @@ export function ColorDialog({
     });
 
     setCachedItem('selectedTheme', 'Custom');
-    closeDialog();
-  }, [closeDialog, pendingColors]);
+    dispatch(close(null));
+  }, [dispatch, pendingColors]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent): void => {
@@ -211,7 +210,7 @@ export function ColorDialog({
   }, [open]);
 
   return (
-    <Dialog open={open} title="Colors" closeDialog={closeDialog} onCancel={cancelHandler}>
+    <Dialog open={open} title="Colors" onCancel={cancelHandler}>
       <div className={styles.settings}>
         <div>
           <div>Item:</div>
@@ -250,7 +249,7 @@ export function ColorDialog({
           type="button"
           onClick={() => {
             cancelHandler();
-            closeDialog();
+            dispatch(close(null));
           }}
         >
           Cancel

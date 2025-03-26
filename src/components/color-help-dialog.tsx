@@ -1,15 +1,19 @@
+import { useAppDispatch } from '../hooks';
+import { close } from '../slices/dialogSlice';
 import styles from './color-help-dialog.module.css';
-import { Dialog, DialogType } from './dialog';
+import { Dialog } from './dialog';
 import { DialogButtons } from './dialog-buttons';
+import { Button } from './ui/button';
 
 type ColorHelpDialogParams = {
   open: boolean;
-  closeDialog: (typeToOpen: DialogType | null) => void;
 };
 
-export function ColorHelpDialog({ open, closeDialog }: ColorHelpDialogParams): React.JSX.Element {
+export function ColorHelpDialog({ open }: ColorHelpDialogParams): React.JSX.Element {
+  const dispatch = useAppDispatch();
+
   return (
-    <Dialog open={open} title="Colors" closeDialog={closeDialog}>
+    <Dialog open={open} title="Colors">
       <div className={styles.help}>
         <p>Determines the color of screen elements.</p>
         <ol>
@@ -26,15 +30,7 @@ export function ColorHelpDialog({ open, closeDialog }: ColorHelpDialogParams): R
         </ul>
       </div>
       <DialogButtons>
-        <button
-          type="button"
-          className={styles.active}
-          onClick={() => {
-            closeDialog('color');
-          }}
-        >
-          OK
-        </button>
+        <Button text="OK" onClick={() => dispatch(close('color'))}></Button>
       </DialogButtons>
     </Dialog>
   );

@@ -1,15 +1,18 @@
-import { Dialog, DialogType } from './dialog';
+import { useAppDispatch } from '../hooks';
+import { close } from '../slices/dialogSlice';
+import { Dialog } from './dialog';
 import { DialogButtons } from './dialog-buttons';
 import styles from './find-help-dialog.module.css';
 
 type FindHelpDialogParams = {
   open: boolean;
-  closeDialog: (typeToOpen: DialogType | null) => void;
 };
 
-export function FindHelpDialog({ open, closeDialog }: FindHelpDialogParams): React.JSX.Element {
+export function FindHelpDialog({ open }: FindHelpDialogParams): React.JSX.Element {
+  const dispatch = useAppDispatch();
+
   return (
-    <Dialog open={open} title="Find" closeDialog={closeDialog}>
+    <Dialog open={open} title="Find">
       <div className={styles.help}>
         <p>Finds text in a file.</p>
         <ul>
@@ -32,7 +35,7 @@ export function FindHelpDialog({ open, closeDialog }: FindHelpDialogParams): Rea
           type="button"
           className={styles.active}
           onClick={() => {
-            closeDialog('find');
+            dispatch(close('find'));
           }}
         >
           OK

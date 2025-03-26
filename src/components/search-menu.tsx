@@ -42,7 +42,7 @@ export function SearchMenu({
           return;
         }
 
-        openDialog({ type: e.key === 'f' ? 'find' : 'replace' });
+        openDialog({ type: e.key === 'f' ? 'find' : 'replace', toFocusOnClose: null });
         return;
       }
     },

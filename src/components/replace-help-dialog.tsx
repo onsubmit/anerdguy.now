@@ -1,18 +1,18 @@
-import { Dialog, DialogType } from './dialog';
+import { useAppDispatch } from '../hooks';
+import { close } from '../slices/dialogSlice';
+import { Dialog } from './dialog';
 import { DialogButtons } from './dialog-buttons';
 import styles from './replace-help-dialog.module.css';
 
 type ReplaceHelpDialogParams = {
   open: boolean;
-  closeDialog: (typeToOpen: DialogType | null) => void;
 };
 
-export function ReplaceHelpDialog({
-  open,
-  closeDialog,
-}: ReplaceHelpDialogParams): React.JSX.Element {
+export function ReplaceHelpDialog({ open }: ReplaceHelpDialogParams): React.JSX.Element {
+  const dispatch = useAppDispatch();
+
   return (
-    <Dialog open={open} title="Replace" closeDialog={closeDialog}>
+    <Dialog open={open} title="Replace">
       <div className={styles.help}>
         <p>Finds specified text and replaces it with new text.</p>
         <ul>
@@ -36,7 +36,7 @@ export function ReplaceHelpDialog({
           type="button"
           className={styles.active}
           onClick={() => {
-            closeDialog('replace');
+            dispatch(close('replace'));
           }}
         >
           OK

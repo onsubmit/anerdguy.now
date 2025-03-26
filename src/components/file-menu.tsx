@@ -19,6 +19,7 @@ type FileMenuParams = {
 
 export function FileMenu({
   open,
+  topMenuButton,
   closeFile,
   saveFile,
   revertFile,
@@ -62,7 +63,7 @@ export function FileMenu({
           case 'n':
             return;
           case 'o':
-            return openDialog({ type: 'open-file' });
+            return openDialog({ type: 'open-file', toFocusOnClose: topMenuButton });
           case 'r':
             return revertHandler();
           case 's':
@@ -83,6 +84,7 @@ export function FileMenu({
       revertHandler,
       saveHandler,
       toggleEditorMode,
+      topMenuButton,
     ],
   );
 
@@ -95,7 +97,7 @@ export function FileMenu({
           <button
             type="button"
             onFocus={() => setFocusedIndex(0)}
-            onClick={() => openDialog({ type: 'open-file' })}
+            onClick={() => openDialog({ type: 'open-file', toFocusOnClose: topMenuButton })}
           >
             {`Open...      Ctrl+O`}
           </button>

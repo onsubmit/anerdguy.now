@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { FontName, fontNames, FontSize, fontSizes } from '../fonts';
+import { useAppDispatch } from '../hooks';
 import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
 import { getCachedItem, setCachedItem } from '../localStorage';
+import { close } from '../slices/dialogSlice';
 import { Dialog } from './dialog';
 import { DialogButtons } from './dialog-buttons';
 import styles from './fonts-dialog.module.css';
@@ -10,17 +12,17 @@ import { OptionListOperations, OptionsList } from './option-list';
 
 type FontsDialogParams = {
   open: boolean;
-  closeDialog: () => void;
   selectedFont: FontName;
   setSelectedFont: React.Dispatch<React.SetStateAction<FontName>>;
 };
 
 export function FontsDialog({
   open,
-  closeDialog,
   selectedFont,
   setSelectedFont,
 }: FontsDialogParams): React.JSX.Element {
+  const dispatch = useAppDispatch();
+
   const fontNameRef = useRef<OptionListOperations<FontName>>(null);
   const fontSizeRef = useRef<OptionListOperations<FontSize>>(null);
 
@@ -32,8 +34,8 @@ export function FontsDialog({
     setOriginalFont(selectedFont);
     setOriginalFontSize(fontSize);
     setCachedItem('fontSize', fontSize);
-    closeDialog();
-  }, [closeDialog, fontSize, selectedFont]);
+    dispatch(close(null));
+  }, [dispatch, fontSize, selectedFont]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent): void => {
@@ -79,7 +81,7 @@ export function FontsDialog({
   }, [open, originalFontSize]);
 
   return (
-    <Dialog open={open} title="Fonts" closeDialog={closeDialog} onCancel={cancelHandler}>
+    <Dialog open={open} title="Fonts" onCancel={cancelHandler}>
       <div className={styles.settings}>
         <div>
           <div>Family:</div>
@@ -118,7 +120,7 @@ export function FontsDialog({
           type="button"
           onClick={() => {
             cancelHandler();
-            closeDialog();
+            dispatch(close(null));
           }}
         >
           Cancel

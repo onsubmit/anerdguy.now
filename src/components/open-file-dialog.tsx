@@ -1,6 +1,8 @@
 import { useCallback, useState } from 'react';
 
+import { useAppDispatch } from '../hooks';
 import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
+import { close } from '../slices/dialogSlice';
 import { Dialog, DialogType, OpenDialogArgs } from './dialog';
 import { DialogButtons } from './dialog-buttons';
 import styles from './open-file-dialog.module.css';
@@ -10,7 +12,6 @@ type OpenFileDialogParams = {
   open: boolean;
   openFile: (filename: string) => Promise<void>;
   openDialog: <T extends DialogType>({ type, toFocusOnClose }: OpenDialogArgs<T>) => void;
-  closeDialog: () => void;
 };
 
 const defaultFiles: Array<string> = [
@@ -21,19 +22,17 @@ const defaultFiles: Array<string> = [
   'socials.html',
 ];
 
-export function OpenFileDialog({
-  open,
-  openFile,
-  closeDialog,
-}: OpenFileDialogParams): React.JSX.Element {
+export function OpenFileDialog({ open, openFile }: OpenFileDialogParams): React.JSX.Element {
+  const dispatch = useAppDispatch();
+
   const [filter, setFilter] = useState('*.*');
   const [selectedFile, setSelectedFile] = useState<string>('');
   const [files, _setFiles] = useState<Array<string>>(defaultFiles);
 
   const okayHandler = useCallback(() => {
-    closeDialog();
+    dispatch(close(null));
     openFile(selectedFile);
-  }, [closeDialog, openFile, selectedFile]);
+  }, [dispatch, openFile, selectedFile]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent): void => {
@@ -52,7 +51,7 @@ export function OpenFileDialog({
   useKeyDownHandler(handleKeyDown);
 
   return (
-    <Dialog open={open} title="Open" closeDialog={closeDialog}>
+    <Dialog open={open} title="Open">
       <div className={styles.open}>
         <label>
           <span>Filter:</span>
@@ -76,7 +75,7 @@ export function OpenFileDialog({
         <button type="button" onClick={okayHandler}>
           OK
         </button>
-        <button type="button" onClick={() => closeDialog()}>
+        <button type="button" onClick={() => dispatch(close(null))}>
           Cancel
         </button>
       </DialogButtons>

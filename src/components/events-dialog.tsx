@@ -1,17 +1,20 @@
 import { useCallback } from 'react';
 
 import { dialogTypes } from '../dialogTypes';
+import { useAppDispatch } from '../hooks';
 import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
+import { close } from '../slices/dialogSlice';
 import { Dialog } from './dialog';
 import { DialogButtons } from './dialog-buttons';
 import styles from './events-dialog.module.css';
 
 type EventsDialogParams = {
   open: boolean;
-  closeDialog: () => void;
 };
 
-export function EventsDialog({ open, closeDialog }: EventsDialogParams): React.JSX.Element {
+export function EventsDialog({ open }: EventsDialogParams): React.JSX.Element {
+  const dispatch = useAppDispatch();
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent): void => {
       if (!open) {
@@ -19,16 +22,16 @@ export function EventsDialog({ open, closeDialog }: EventsDialogParams): React.J
       }
 
       if (e.key === 'Enter') {
-        closeDialog();
+        dispatch(close(null));
       }
     },
-    [closeDialog, open],
+    [dispatch, open],
   );
 
   useKeyDownHandler(handleKeyDown);
 
   return (
-    <Dialog open={open} title="Events" closeDialog={closeDialog}>
+    <Dialog open={open} title="Events">
       <div className={styles.events}>
         <p>You can edit the contents of any page on this site.</p>
         <p>Events can be dispatched from the document to provide interactivity.</p>
@@ -69,7 +72,7 @@ export function EventsDialog({ open, closeDialog }: EventsDialogParams): React.J
           type="button"
           className={styles.active}
           onClick={() => {
-            closeDialog();
+            dispatch(close(null));
           }}
         >
           OK

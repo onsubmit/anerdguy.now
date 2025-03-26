@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { useAppDispatch } from '../hooks';
 import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
 import { getCachedItem, setCachedItem } from '../localStorage';
+import { close } from '../slices/dialogSlice';
 import {
   KnownThemeableItem,
   knownThemeableItems,
@@ -18,10 +20,11 @@ import styles from './themes-dialog.module.css';
 
 type ThemesDialogParams = {
   open: boolean;
-  closeDialog: () => void;
 };
 
-export function ThemesDialog({ open, closeDialog }: ThemesDialogParams): React.JSX.Element {
+export function ThemesDialog({ open }: ThemesDialogParams): React.JSX.Element {
+  const dispatch = useAppDispatch();
+
   const [selectedTheme, setSelectedTheme] = useState<ThemeName | 'Custom'>(
     getCachedItem('selectedTheme') ?? 'Custom',
   );
@@ -37,8 +40,8 @@ export function ThemesDialog({ open, closeDialog }: ThemesDialogParams): React.J
     setOriginalTheme(pendingTheme ?? 'Custom');
     setPendingTheme(null);
     setCachedItem('theme', pendingColors);
-    closeDialog();
-  }, [closeDialog, pendingColors, pendingTheme]);
+    dispatch(close(null));
+  }, [dispatch, pendingColors, pendingTheme]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent): void => {
@@ -95,7 +98,7 @@ export function ThemesDialog({ open, closeDialog }: ThemesDialogParams): React.J
   }, [open, selectedTheme]);
 
   return (
-    <Dialog open={open} title="Themes" closeDialog={closeDialog} onCancel={cancelHandler}>
+    <Dialog open={open} title="Themes" onCancel={cancelHandler}>
       <div className={styles.open}>
         <OptionsList
           selectedOption={selectedTheme}
@@ -114,7 +117,7 @@ export function ThemesDialog({ open, closeDialog }: ThemesDialogParams): React.J
           type="button"
           onClick={() => {
             cancelHandler();
-            closeDialog();
+            dispatch(close(null));
           }}
         >
           Cancel

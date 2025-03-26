@@ -18,6 +18,7 @@ import { ReplaceHelpDialog } from './components/replace-help-dialog';
 import { ThemesDialog } from './components/themes-dialog';
 import { EditorOperations } from './editor-operation';
 import { fontCssUrls, FontName } from './fonts';
+import { useAppDispatch, useAppSelector } from './hooks';
 import { getRawFileContents, rawFileExists } from './importRawFiles';
 import {
   doesFileExistOnDisk,
@@ -27,6 +28,8 @@ import {
   setCachedItem,
   writeFileToDisk,
 } from './localStorage';
+import { open } from './slices/dialogSlice';
+import { store } from './store';
 
 const openCachedFiles = getOpenCachedFiles();
 
@@ -35,6 +38,9 @@ export function App(): React.JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const fileName = file ?? 'index.html';
+
+  const currentDialog = useAppSelector((state) => state.dialog.type);
+  const dispatch = useAppDispatch();
 
   const editorRef = useRef<EditorOperations>(null);
   const findDialogRef = useRef<FindDialogOperations>(null);
@@ -48,7 +54,6 @@ export function App(): React.JSX.Element {
     openCachedFiles.length ? [...new Set([...openCachedFiles, fileName])] : [fileName],
   );
   const [openFileContents, setOpenFileContents] = useState<Record<string, string>>({});
-  const [currentDialog, setCurrentDialog] = useState<DialogType | null>(null);
   const [errorDialogArgs, setErrorDialogArgs] = useState<OpenErrorDialogParams>({
     message: '',
     detail: '',
@@ -110,40 +115,40 @@ export function App(): React.JSX.Element {
     }));
   }, []);
 
-  const openDialog = <T extends DialogType>({
-    type,
-    params,
-    toFocusOnClose,
-  }: OpenDialogArgs<T>): void => {
-    if (type === 'error') {
-      setErrorDialogArgs(
-        params ?? {
-          message: '',
-          detail: '',
-        },
-      );
-    }
-
-    setCurrentDialog(type);
-
-    if (toFocusOnClose) {
-      toFocusOnDialogCloseRef.current.push(toFocusOnClose);
-    }
-  };
-
-  const closeDialog = (typeToOpen: DialogType | null = null): void => {
-    setCurrentDialog(typeToOpen);
-
-    setTimeout(() => {
-      if (toFocusOnDialogCloseRef.current.length) {
-        toFocusOnDialogCloseRef.current.pop()?.focus();
-      } else {
-        if (searchParams.get('edit')) {
-          setTimeout(() => editorRef.current?.focus());
-        }
+  const openDialog = useCallback(
+    <T extends DialogType>({ type, params, toFocusOnClose }: OpenDialogArgs<T>): void => {
+      if (type === 'error') {
+        setErrorDialogArgs(
+          params ?? {
+            message: '',
+            detail: '',
+          },
+        );
       }
-    });
-  };
+
+      dispatch(open(type));
+
+      if (toFocusOnClose) {
+        toFocusOnDialogCloseRef.current.push(toFocusOnClose);
+      }
+    },
+    [dispatch],
+  );
+
+  store.subscribe(() => {
+    const { dialog } = store.getState();
+    if (dialog.type === null) {
+      setTimeout(() => {
+        if (toFocusOnDialogCloseRef.current.length) {
+          toFocusOnDialogCloseRef.current.pop()?.focus();
+        } else {
+          if (searchParams.get('edit')) {
+            setTimeout(() => editorRef.current?.focus());
+          }
+        }
+      });
+    }
+  });
 
   const toggleEditorMode = useCallback((): void => {
     if (currentDialog !== null) {
@@ -166,9 +171,9 @@ export function App(): React.JSX.Element {
 
       const { type } = event.detail;
       if (type === 'error') {
-        openDialog({ type, params: event.detail.params });
+        openDialog({ type, params: event.detail.params, toFocusOnClose: null });
       } else {
-        openDialog({ type });
+        openDialog({ type, toFocusOnClose: null });
       }
     };
 
@@ -178,7 +183,7 @@ export function App(): React.JSX.Element {
       Object.entries(events).forEach(([name, handler]) =>
         document.removeEventListener(name, handler),
       );
-  }, [toggleEditorMode]);
+  }, [openDialog, toggleEditorMode]);
 
   useEffect(() => {
     loadFileContents(fileName);
@@ -223,6 +228,7 @@ export function App(): React.JSX.Element {
         ></Menu>
         <File
           filename={fileName}
+          openDialog={openDialog}
           contents={openFileContents[fileName]}
           setContents={(contents: string) => {
             setOpenFileContents((x) => ({
@@ -230,55 +236,34 @@ export function App(): React.JSX.Element {
               [fileName]: contents,
             }));
           }}
-          openDialog={openDialog}
           editorMode={searchParams.get('edit') ? 'edit' : 'view'}
           editorRef={editorRef}
         ></File>
         <OpenFileDialog
           open={currentDialog === 'open-file'}
-          openFile={openFile}
           openDialog={openDialog}
-          closeDialog={closeDialog}
+          openFile={openFile}
         ></OpenFileDialog>
-        <ThemesDialog open={currentDialog === 'themes'} closeDialog={closeDialog}></ThemesDialog>
+        <ThemesDialog open={currentDialog === 'themes'}></ThemesDialog>
         <FontsDialog
           open={currentDialog === 'fonts'}
-          closeDialog={closeDialog}
           selectedFont={selectedFont}
           setSelectedFont={setSelectedFont}
         ></FontsDialog>
-        <ColorDialog
-          open={currentDialog === 'color'}
-          openDialog={openDialog}
-          closeDialog={closeDialog}
-        ></ColorDialog>
-        <ColorHelpDialog
-          open={currentDialog === 'color-help'}
-          closeDialog={closeDialog}
-        ></ColorHelpDialog>
-        <EventsDialog open={currentDialog === 'events'} closeDialog={closeDialog}></EventsDialog>
-        <AboutDialog open={currentDialog === 'about'} closeDialog={closeDialog}></AboutDialog>
+        <ColorDialog open={currentDialog === 'color'} openDialog={openDialog}></ColorDialog>
+        <ColorHelpDialog open={currentDialog === 'color-help'}></ColorHelpDialog>
+        <EventsDialog open={currentDialog === 'events'}></EventsDialog>
+        <AboutDialog open={currentDialog === 'about'}></AboutDialog>
         <FindDialog
           ref={findDialogRef}
           editorRef={editorRef}
           replace={currentDialog === 'replace'}
           open={currentDialog === 'find' || currentDialog === 'replace'}
           openDialog={openDialog}
-          closeDialog={closeDialog}
-          setCurrentDialog={setCurrentDialog}
         ></FindDialog>
-        <FindHelpDialog
-          open={currentDialog === 'find-help'}
-          closeDialog={closeDialog}
-        ></FindHelpDialog>
-        <ReplaceHelpDialog
-          open={currentDialog === 'replace-help'}
-          closeDialog={closeDialog}
-        ></ReplaceHelpDialog>
-        <ErrorDialog
-          open={currentDialog === 'error'}
-          {...{ ...errorDialogArgs, closeDialog }}
-        ></ErrorDialog>
+        <FindHelpDialog open={currentDialog === 'find-help'}></FindHelpDialog>
+        <ReplaceHelpDialog open={currentDialog === 'replace-help'}></ReplaceHelpDialog>
+        <ErrorDialog open={currentDialog === 'error'} {...{ ...errorDialogArgs }}></ErrorDialog>
       </div>
     </>
   );

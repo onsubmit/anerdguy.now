@@ -1,7 +1,9 @@
 import { RefObject, useCallback, useImperativeHandle, useState } from 'react';
 
 import { EditorOperations, FindParams } from '../editor-operation';
+import { useAppDispatch } from '../hooks';
 import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
+import { close } from '../slices/dialogSlice';
 import { Dialog, DialogType, OpenDialogArgs } from './dialog';
 import { DialogButtons } from './dialog-buttons';
 import styles from './find-dialog.module.css';
@@ -14,8 +16,6 @@ type FindDialogParams = {
   open: boolean;
   replace: boolean;
   openDialog: <T extends DialogType>({ type, toFocusOnClose }: OpenDialogArgs<T>) => void;
-  closeDialog: () => void;
-  setCurrentDialog: React.Dispatch<React.SetStateAction<DialogType | null>>;
   editorRef: RefObject<EditorOperations | null>;
   ref: RefObject<FindDialogOperations | null>;
 };
@@ -24,10 +24,11 @@ export function FindDialog({
   open,
   replace,
   openDialog,
-  closeDialog,
   editorRef,
   ref,
 }: FindDialogParams): React.JSX.Element {
+  const dispatch = useAppDispatch();
+
   const [originalParams, setOriginalParams] = useState<FindParams>({
     value: '',
     matchWord: false,
@@ -37,7 +38,8 @@ export function FindDialog({
   const [pendingParams, setPendingParams] = useState<Partial<FindParams>>({});
 
   const okayHandler = useCallback(() => {
-    closeDialog();
+    dispatch(close(null));
+
     const findParams = {
       ...originalParams,
       ...pendingParams,
@@ -57,7 +59,7 @@ export function FindDialog({
         replaceAll: undefined,
       });
     }
-  }, [closeDialog, editorRef, originalParams, pendingParams, replace]);
+  }, [dispatch, editorRef, originalParams, pendingParams, replace]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent): void => {
@@ -92,12 +94,7 @@ export function FindDialog({
   }, [editorRef, originalParams]);
 
   return (
-    <Dialog
-      open={open}
-      title={replace ? 'Replace' : 'Find'}
-      closeDialog={closeDialog}
-      onCancel={cancelHandler}
-    >
+    <Dialog open={open} title={replace ? 'Replace' : 'Find'} onCancel={cancelHandler}>
       <div className={styles.find}>
         <label>
           <span>Find What:{replace ? '   ' : ''}</span>
@@ -170,7 +167,8 @@ export function FindDialog({
             <button
               type="button"
               onClick={() => {
-                closeDialog();
+                dispatch(close(null));
+
                 const findParams = {
                   ...originalParams,
                   ...pendingParams,
@@ -194,7 +192,7 @@ export function FindDialog({
           type="button"
           onClick={() => {
             cancelHandler();
-            closeDialog();
+            dispatch(close(null));
           }}
         >
           Cancel

@@ -1,6 +1,8 @@
 import { useCallback } from 'react';
 
+import { useAppDispatch } from '../hooks';
 import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
+import { close } from '../slices/dialogSlice';
 import { Dialog } from './dialog';
 import { DialogButtons } from './dialog-buttons';
 import styles from './error-dialog.module.css';
@@ -14,15 +16,11 @@ type ErrorDialogParams = {
   message: string;
   detail: string;
   open: boolean;
-  closeDialog: () => void;
 };
 
-export function ErrorDialog({
-  message,
-  detail,
-  open,
-  closeDialog,
-}: ErrorDialogParams): React.JSX.Element {
+export function ErrorDialog({ message, detail, open }: ErrorDialogParams): React.JSX.Element {
+  const dispatch = useAppDispatch();
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent): void => {
       if (!open) {
@@ -30,17 +28,17 @@ export function ErrorDialog({
       }
 
       if (e.key === 'Enter') {
-        closeDialog();
+        dispatch(close(null));
         e.preventDefault();
       }
     },
-    [closeDialog, open],
+    [dispatch, open],
   );
 
   useKeyDownHandler(handleKeyDown);
 
   return (
-    <Dialog open={open} title="Error" closeDialog={closeDialog}>
+    <Dialog open={open} title="Error">
       <div className={styles.error}>
         <p>{message}</p>
         <p>{detail}</p>
@@ -50,7 +48,7 @@ export function ErrorDialog({
           type="button"
           className={styles.active}
           onClick={() => {
-            closeDialog();
+            dispatch(close(null));
           }}
         >
           OK
