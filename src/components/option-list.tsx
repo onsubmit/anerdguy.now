@@ -6,7 +6,7 @@ import styles from './option-list.module.css';
 export type OptionListParams<T extends string> = {
   options: ReadonlyArray<T>;
   selectedOption: T;
-  setSelectedOption: React.Dispatch<React.SetStateAction<T>>;
+  setSelectedOption: (option: T) => void;
   onSelectionChange?: (option: T) => void;
   onDoubleClick?: (option: T) => void;
   filter?: RegExp;

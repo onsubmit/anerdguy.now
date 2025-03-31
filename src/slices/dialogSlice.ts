@@ -1,11 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { DialogType } from '../components/dialog';
-import { RootState } from '../store';
 
-export interface DialogState {
+export type DialogState = {
   type: DialogType | null;
-}
+};
 
 const initialState: DialogState = {
   type: null,
@@ -25,7 +24,5 @@ export const dialogSlice = createSlice({
 });
 
 export const { open, close } = dialogSlice.actions;
-
-export const selectDialog = (state: RootState): DialogType | null => state.dialog.type;
 
 export const dialogReducer = dialogSlice.reducer;

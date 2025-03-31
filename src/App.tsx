@@ -29,6 +29,7 @@ import {
   writeFileToDisk,
 } from './localStorage';
 import { open } from './slices/dialogSlice';
+import { selectFont } from './slices/fontSlice';
 import { store } from './store';
 
 const openCachedFiles = getOpenCachedFiles();
@@ -42,13 +43,12 @@ export function App(): React.JSX.Element {
   const currentDialog = useAppSelector((state) => state.dialog.type);
   const dispatch = useAppDispatch();
 
+  const selectedFont = useAppSelector(selectFont);
+
   const editorRef = useRef<EditorOperations>(null);
   const findDialogRef = useRef<FindDialogOperations>(null);
   const toFocusOnDialogCloseRef = useRef<Array<HTMLElement>>([]);
 
-  const [selectedFont, setSelectedFont] = useState<FontName>(
-    getCachedItem('font') ?? 'JetBrains Mono',
-  );
   const [fontFamily, setFontFamily] = useState<FontName>(selectedFont);
   const [openFiles, setOpenFiles] = useState<Array<string>>(
     openCachedFiles.length ? [...new Set([...openCachedFiles, fileName])] : [fileName],
@@ -245,11 +245,7 @@ export function App(): React.JSX.Element {
           openFile={openFile}
         ></OpenFileDialog>
         <ThemesDialog open={currentDialog === 'themes'}></ThemesDialog>
-        <FontsDialog
-          open={currentDialog === 'fonts'}
-          selectedFont={selectedFont}
-          setSelectedFont={setSelectedFont}
-        ></FontsDialog>
+        <FontsDialog open={currentDialog === 'fonts'} selectedFont={selectedFont}></FontsDialog>
         <ColorDialog open={currentDialog === 'color'} openDialog={openDialog}></ColorDialog>
         <ColorHelpDialog open={currentDialog === 'color-help'}></ColorHelpDialog>
         <EventsDialog open={currentDialog === 'events'}></EventsDialog>
