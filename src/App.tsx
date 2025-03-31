@@ -28,7 +28,7 @@ import {
   setCachedItem,
   writeFileToDisk,
 } from './localStorage';
-import { open } from './slices/dialogSlice';
+import { open, selectDialog } from './slices/dialogSlice';
 import { selectFont } from './slices/fontSlice';
 import { store } from './store';
 
@@ -40,9 +40,8 @@ export function App(): React.JSX.Element {
   const navigate = useNavigate();
   const fileName = file ?? 'index.html';
 
-  const currentDialog = useAppSelector((state) => state.dialog.type);
   const dispatch = useAppDispatch();
-
+  const currentDialog = useAppSelector(selectDialog);
   const selectedFont = useAppSelector(selectFont);
 
   const editorRef = useRef<EditorOperations>(null);
