@@ -245,7 +245,7 @@ export function App(): React.JSX.Element {
           openFile={openFile}
         ></OpenFileDialog>
         <ThemesDialog open={currentDialog === 'themes'}></ThemesDialog>
-        <FontsDialog open={currentDialog === 'fonts'} selectedFont={selectedFont}></FontsDialog>
+        <FontsDialog open={currentDialog === 'fonts'}></FontsDialog>
         <ColorDialog open={currentDialog === 'color'} openDialog={openDialog}></ColorDialog>
         <ColorHelpDialog open={currentDialog === 'color-help'}></ColorHelpDialog>
         <EventsDialog open={currentDialog === 'events'}></EventsDialog>

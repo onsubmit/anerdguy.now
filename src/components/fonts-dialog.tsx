@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { FontName, fontNames, FontSize, fontSizes } from '../fonts';
-import { useAppDispatch } from '../hooks';
+import { useAppDispatch, useAppSelector } from '../hooks';
 import { useDispatch } from '../hooks/useDispatch';
 import { useKeyDownHandler } from '../hooks/useKeyDownHandler';
 import { getCachedItem, setCachedItem } from '../localStorage';
 import { close } from '../slices/dialogSlice';
-import { setFont } from '../slices/fontSlice';
+import { selectFont, setFont } from '../slices/fontSlice';
 import { Dialog } from './dialog';
 import { DialogButtons } from './dialog-buttons';
 import styles from './fonts-dialog.module.css';
@@ -14,11 +14,11 @@ import { OptionListOperations, OptionsList } from './option-list';
 
 type FontsDialogParams = {
   open: boolean;
-  selectedFont: FontName;
 };
 
-export function FontsDialog({ open, selectedFont }: FontsDialogParams): React.JSX.Element {
+export function FontsDialog({ open }: FontsDialogParams): React.JSX.Element {
   const dispatch = useAppDispatch();
+  const selectedFont = useAppSelector(selectFont);
 
   const fontNameRef = useRef<OptionListOperations<FontName>>(null);
   const fontSizeRef = useRef<OptionListOperations<FontSize>>(null);
