@@ -132,6 +132,7 @@ export function Editor({
         openDialog({
           type: 'error',
           params: { message: 'Unable to access clipboard.', detail },
+          toFocusOnClose: textAreaRef.current,
         });
         return;
       }

@@ -63,6 +63,7 @@ export function EditMenu({
                     openDialog({
                       type: 'error',
                       params: { message: 'Unable to access clipboard.', detail },
+                      toFocusOnClose: listRef.current
                     });
                   }
                 }
