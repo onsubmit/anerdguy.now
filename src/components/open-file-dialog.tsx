@@ -18,6 +18,7 @@ const defaultFiles: Array<string> = [
   'art.html',
   'index.html',
   'bio.html',
+  'doom.html',
   'resume.html',
   'socials.html',
 ];

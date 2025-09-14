@@ -1,0 +1,33 @@
+<iframe
+  srcdoc='<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://v8.js-dos.com/latest/js-dos.css" />
+    <script src="https://v8.js-dos.com/latest/js-dos.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="dos" style="width: 100%; height: 100%;"></div>
+    <script>
+      Dos(document.getElementById("dos"), {
+        url: "https://cdn.dos.zone/custom/dos/doom.jsdos",
+      });
+    </script>
+  </body>
+  </html>'
+></iframe>
+
+<style>
+  iframe {
+    width: calc(100% - 1rem);
+    height: calc(100vh - 9rem);
+  }
+</style>
