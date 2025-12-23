@@ -1,25 +1,44 @@
+import { z } from 'zod';
+
+import { knownColors } from './colors';
 import { ChosenColors } from './components/color-dialog';
-import { FontName, FontSize } from './fonts';
-import { ThemeName } from './themes';
+import { fontNames, fontSizes } from './fonts';
+import { knownThemeableItems, themeNames } from './themes';
 
 type CacheVersion = 1;
 const currentVersion: CacheVersion = 1 as const;
 type CurrentVersion = typeof currentVersion;
 
-type File = {
-  isOpen: boolean;
-  contentsOnDisk: string;
-};
+const MINUTES_TO_LIVE = 60;
 
-type Cache = {
-  1: Partial<{
-    selectedTheme: ThemeName | 'Custom';
-    theme: ChosenColors;
-    font: FontName;
-    fontSize: FontSize;
-    files: Record<string, File>;
-  }>;
-};
+const fileSchema = z.object({
+  isOpen: z.boolean(),
+  contentsOnDisk: z.string(),
+  diskContentsExpirationDate: z.coerce.date().optional(),
+});
+
+const cacheSchema = z.object({
+  1: z
+    .object({
+      selectedTheme: z.enum([...themeNames, 'Custom']),
+      theme: z.partialRecord(
+        z.enum(knownThemeableItems),
+        z
+          .object({
+            foreground: z.enum(knownColors),
+            background: z.enum(knownColors),
+          })
+          .partial(),
+      ),
+      font: z.enum(fontNames),
+      fontSize: z.enum(fontSizes),
+      files: z.record(z.string(), fileSchema),
+    })
+    .partial(),
+});
+
+type File = z.infer<typeof fileSchema>;
+type Cache = z.infer<typeof cacheSchema>;
 
 const LOCAL_STORAGE_KEY = 'cache';
 
@@ -56,12 +75,37 @@ export const writeFileToDisk = (filename: string, contents: string): void => {
     files[filename] = {
       isOpen: true,
       contentsOnDisk: contents,
+      diskContentsExpirationDate: getDiskContentsExpirationDate(),
     };
   } else {
     files[filename].contentsOnDisk = contents;
   }
 
   writeCache(cache);
+};
+
+export const updateExpiredFileContentCache = (filename: string): void => {
+  const cache = getCache();
+  const files = cache[currentVersion].files;
+
+  if (files?.[filename] === undefined) {
+    return;
+  }
+
+  let write = false;
+  if (!files[filename].diskContentsExpirationDate) {
+    files[filename].diskContentsExpirationDate = getDiskContentsExpirationDate();
+    write = true;
+  }
+
+  if (new Date(Date.now()) > files[filename].diskContentsExpirationDate) {
+    delete files[filename];
+    write = true;
+  }
+
+  if (write) {
+    writeCache(cache);
+  }
 };
 
 export const markCachedFile = <K extends keyof File>(
@@ -89,8 +133,8 @@ const getCache = (): Cache => {
   }
 
   try {
-    // TODO: Use Zod to validate schema
-    return (JSON.parse(cacheStr) ?? {}) as Cache;
+    const cacheResult = cacheSchema.safeParse(JSON.parse(cacheStr));
+    return cacheResult.success ? cacheResult.data : { [currentVersion]: {} };
   } catch {
     return { [currentVersion]: {} };
   }
@@ -111,4 +155,8 @@ export const getOpenCachedFiles = (): Array<string> => {
     ? Object.keys(cachedFiles).filter((f) => cachedFiles[f].isOpen)
     : [];
   return openCachedFiles;
+};
+
+const getDiskContentsExpirationDate = (): Date => {
+  return new Date(Date.now() + MINUTES_TO_LIVE * 60 * 1000);
 };

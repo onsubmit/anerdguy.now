@@ -18,6 +18,7 @@ import {
   getOpenCachedFiles,
   markCachedFile,
   setCachedItem,
+  updateExpiredFileContentCache,
   writeFileToDisk,
 } from './localStorage';
 import { selectDialog } from './slices/dialogSlice';
@@ -90,6 +91,8 @@ export function App(): React.JSX.Element {
   };
 
   const loadFileContents = useCallback(async (filename: string): Promise<void> => {
+    updateExpiredFileContentCache(filename);
+
     const files = getCachedItem('files');
 
     const contents =

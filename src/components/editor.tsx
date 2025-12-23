@@ -298,7 +298,7 @@ export function Editor({
   }, [contents, mode, openDialog, setContents]);
 
   useLayoutEffect(() => {
-    if (!previewRef.current) {
+    if (!previewRef.current || contents === undefined) {
       return;
     }
 
