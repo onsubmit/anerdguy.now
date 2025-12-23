@@ -2,7 +2,15 @@
 
 <p>Greetings friend 👋. I'm Andy, and I'm glad you're here.</p>
 
-<p>To learn more about me, select <b>File</b> &gt; <b>Open...</b> and choose your file.</p>
+<p>
+  To learn more about me, select
+  <button
+    type="button"
+    onclick="document.dispatchEvent(new CustomEvent('open-dialog', { detail: { type: 'open-file' } }))"
+  >
+    <b>File</b> &gt; <b>Open...</b>
+  </button>
+</p>
 
 <p>
   Feel like modifying this page? Switch to Edit mode by selecting
@@ -23,11 +31,14 @@
 
 <hr />
 
-<h2>Bio tl;dr</h2>
+<h2>Quick Bio</h2>
 <p>
-  I'm currently a principal software engineer building
-  <a href="https://www.tableau.com/" target="_blank">Tableau</a>'s embedded analytics platform and
-  the Tableau MCP server. I was previously at Microsoft building
+  I'm currently a principal software engineer at
+  <a href="https://tableau.com/" target="_blank">Tableau</a> building its official
+  <a href="https://github.com/tableau/tableau-mcp" target="_blank">MCP server</a> and
+  <a href="https://www.tableau.com/products/embedded-analytics" target="_blank"
+    >embedded analytics platform</a
+  >. I was previously at Microsoft building
   <a href="https://learn.microsoft.com/en-us/entra/fundamentals/what-is-entra" target="_blank"
     >Microsoft Entra</a
   >.
@@ -37,7 +48,7 @@
   I've been making web pages for longer than any reasonable person should. The first HTML editor I
   used was the
   <a href="https://en.wikipedia.org/wiki/MS-DOS_Editor" target="_blank">MS-DOS Editor: edit.com</a>,
-  which heavily inspired the design of this page.
+  which may have inspired the design of this page.
 </p>
 
 <hr />
