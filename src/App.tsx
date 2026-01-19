@@ -82,12 +82,30 @@ export function App(): React.JSX.Element {
   const revertFile = async (): Promise<void> => {
     const contents = rawFileExists(fileName)
       ? await getRawFileContents(fileName)
-      : (getCachedItem('files')?.[fileName]?.contentsOnDisk ?? '');
+      : fileName === 'resume.html'
+        ? await loadResume()
+        : (getCachedItem('files')?.[fileName]?.contentsOnDisk ?? '');
+
     setOpenFileContents((x) => ({
       ...x,
       [fileName]: contents,
     }));
     writeFileToDisk(fileName, contents);
+  };
+
+  const loadResume = async (): Promise<string> => {
+    try {
+      const response = await fetch(
+        'https://raw.githubusercontent.com/onsubmit/resume/refs/heads/main/resume_andy_young.html',
+      );
+      if (response.ok) {
+        return await response.text();
+      } else {
+        return `There was an error retrieving the contents of resume.html: ${await response.text()}`;
+      }
+    } catch (e) {
+      return `There was an error retrieving the contents of resume.html: ${e}`;
+    }
   };
 
   const loadFileContents = useCallback(async (filename: string): Promise<void> => {
@@ -97,7 +115,11 @@ export function App(): React.JSX.Element {
 
     const contents =
       files?.[filename]?.contentsOnDisk ??
-      (rawFileExists(filename) ? await getRawFileContents(filename) : '');
+      (filename === 'resume.html'
+        ? await loadResume()
+        : rawFileExists(filename)
+          ? await getRawFileContents(filename)
+          : '');
 
     if (doesFileExistOnDisk(filename)) {
       markCachedFile(filename, 'isOpen', true);
